@@ -14,5 +14,11 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 
 protected:
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Dice")
 	TObjectPtr<UStaticMeshComponent> mDiceMesh;
+
+public:
+	UFUNCTION(BlueprintNativeEvent, Category = "Dice")
+	void Rolling();
+	void Rolling_Implementation();
 };
