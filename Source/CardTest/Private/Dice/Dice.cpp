@@ -27,15 +27,76 @@ void ADice::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ADice::Rolling_Implementation()
+FVector ADice::GetRandomLocation()
 {
-	SetActorRotation(FRotator(
-		FMath::FRandRange(-180.f, 180.f), FMath::FRandRange(-180.f, 180.f), FMath::FRandRange(-180.f, 180.f)));
-	FVector offset(0.,0.,700.);
-	//박스나 원 컴포넌트를 갖는 액터를 생성해서 에디터에서 집어넣고
-	//여기서 해당 액터의 박스나 원 안에서 램덤한 x,y위치를 받아오고 오프셋과 더한다
-	SetActorLocation(offset);
-	mDiceMesh->AddImpulse(FVector(FMath::FRandRange(1000.f, 10000.f), 
-		FMath::FRandRange(1000.f, 10000.f), FMath::FRandRange(1000.f, 10000.f)));
+	return FVector();
 }
 
+void ADice::CalculateDiceResult()
+{
+	float dir = GetActorForwardVector().Z;
+	if (dir == 1.f)
+	{
+		mRollingResult = 2;
+	}
+	else if (dir == -1.f)
+	{
+		mRollingResult = 5;
+	}
+	dir = GetActorUpVector().Z;
+	if (dir == 1.f)
+	{
+		mRollingResult = 4;
+	}
+	else if (dir == -1.f)
+	{
+		mRollingResult = 3;
+	}
+	dir = GetActorRightVector().Z;
+	if (dir == 1.f)
+	{
+		mRollingResult = 1;
+	}
+	else if (dir == -1.f)
+	{
+		mRollingResult = 6;
+	}
+}
+
+void ADice::SendRollingResult(int32 result)
+{
+	if(result!=0)
+	{
+		mRollingResult = result;
+	}
+}
+
+void ADice::CheckStillRolling_Implementation()
+{
+	if (GetActorLocation() != mDiceLoc)
+	{
+		mDiceLoc = GetActorLocation();
+		return;
+	}
+	GetWorld()->GetTimerManager().ClearTimer(mDiceTimer);
+	CalculateDiceResult();
+	UE_LOG(LogTemp, Warning, TEXT("Dice is Stop : %i"), mRollingResult);
+}
+
+void ADice::Rolling_Implementation()
+{
+	float randRange[3];
+	for (int32 i = 0; i < 3;++i)
+	{
+		randRange[i] = FMath::FRandRange(-180.f, 180.f);
+	}
+	SetActorRotation(FRotator(randRange[0], randRange[1], randRange[2]));
+	FVector offset(0.,0.,700.);
+	FVector randLoc(GetRandomLocation());
+	SetActorLocation(offset);
+	mDiceMesh->AddImpulse(FVector(randRange[0], randRange[1], randRange[2])*10.);
+	//mDiceMesh->AddImpulse(FVector(FMath::FRandRange(1000.f, 10000.f), 
+	//	FMath::FRandRange(1000.f, 10000.f), FMath::FRandRange(1000.f, 10000.f)));
+	mDiceLoc = GetActorLocation();
+	GetWorld()->GetTimerManager().SetTimer(mDiceTimer, this, &ADice::CheckStillRolling, 0.5f, true);
+}
