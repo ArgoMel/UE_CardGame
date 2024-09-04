@@ -2,3 +2,11 @@
 
 #include "CardGameInstance.h"
 
+UCardGameInstance::UCardGameInstance()
+{
+}
+
+void UCardGameInstance::Init()
+{
+	Super::Init();
+}
