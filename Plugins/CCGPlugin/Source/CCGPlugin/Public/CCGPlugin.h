@@ -360,7 +360,7 @@ enum class EErrors : uint8
 };
 
 UENUM(BlueprintType)
-enum class ManaCostSorting : uint8
+enum class EManaCostSorting : uint8
 {
 	LowestToHighest UMETA(DisplayName = "LowestToHighest"),
 	HighestToLowest UMETA(DisplayName = "HighestToLowest"),
@@ -368,7 +368,7 @@ enum class ManaCostSorting : uint8
 };
 
 UENUM(BlueprintType)
-enum class Platform : uint8
+enum class EPlatform : uint8
 {
 	Windows UMETA(DisplayName = "Windows"),
 	iOS UMETA(DisplayName = "iOS"),
@@ -378,9 +378,10 @@ enum class Platform : uint8
 	Linux UMETA(DisplayName = "Linux"),
 	Max UMETA(Hidden)
 };
+ENUM_RANGE_BY_COUNT(EPlatform, EPlatform::Max);
 
 UENUM(BlueprintType)
-enum class Priority : uint8
+enum class EPriority : uint8
 {
 	None UMETA(DisplayName = "None"),
 	Low UMETA(DisplayName = "Low"),
@@ -390,7 +391,7 @@ enum class Priority : uint8
 };
 
 UENUM(BlueprintType)
-enum class SortingTypeFilter : uint8
+enum class ESortingTypeFilter : uint8
 {
 	Name UMETA(DisplayName = "Name"),
 	ManaCost UMETA(DisplayName = "ManaCost"),
