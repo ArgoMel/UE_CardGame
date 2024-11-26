@@ -400,10 +400,7 @@ enum class ESortingTypeFilter : uint8
 #pragma endregion
 
 #pragma region LoadAsset
-/*    Object AssetÀ» ¹Ş½À´Ï´Ù.
-*    RETURN_POINTER : ¹ŞÀ» Æ÷ÀÎÅÍ
-*    CLASS_TYPE : ¹ŞÀ» ¿ÀºêÁ§Æ®ÀÇ Å¬·¡½º
-*    PATH : °æ·Î (TEXT¸¦ ºÙÀÌÁö ¾Ê½À´Ï´Ù.)*/
+//ì˜¤ë¸Œì íŠ¸ ì—ì…‹
 #define GetObjectAsset(RETURN_POINTER, CLASS_TYPE, PATH)\
 static ConstructorHelpers::FObjectFinder<CLASS_TYPE> __##RETURN_POINTER(TEXT(PATH));\
 if (__##RETURN_POINTER.Succeeded()) \
@@ -426,10 +423,8 @@ else \
 {\
 	UE_LOG(LogTemp,Warning,TEXT("Failed AddObjectAsset : %d"),TEXT(PATH));\
 }
-/*    Class AssetÀ» ¹Ş½À´Ï´Ù.
-*    RETURN_POINTER : ¹ŞÀ» Æ÷ÀÎÅÍ
-*    CLASS_TYPE : ¹ŞÀ» Å¬·¡½º Å¸ÀÔ
-*    PATH : °æ·Î (TEXT¸¦ ºÙÀÌÁö ¾Ê½À´Ï´Ù.)*/
+
+//í´ë˜ìŠ¤ ì—ì…‹
 #define GetClassAsset(RETURN_POINTER, CLASS_TYPE, PATH)\
 static ConstructorHelpers::FClassFinder<CLASS_TYPE> __##RETURN_POINTER(TEXT(PATH));\
 if (__##RETURN_POINTER.Succeeded()) \
