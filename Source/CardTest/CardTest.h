@@ -1,13 +1,8 @@
 #pragma once
-#include "Engine.h"
-#include "EnhancedInputComponent.h"
-#include "AudioDevice.h"
+#include "CoreMinimal.h"
 
 #pragma region LoadAsset
-/*    Object Asset¿ª πﬁΩ¿¥œ¥Ÿ.
-*    RETURN_POINTER : πﬁ¿ª ∆˜¿Œ≈Õ
-*    CLASS_TYPE : πﬁ¿ª ø¿∫Í¡ß∆Æ¿« ≈¨∑°Ω∫
-*    PATH : ∞Ê∑Œ (TEXT∏¶ ∫Ÿ¿Ã¡ˆ æ Ω¿¥œ¥Ÿ.)*/
+/* Ïò§Î∏åÏ†ùÌä∏ ÏóêÏÖã*/
 #define GetObjectAsset(RETURN_POINTER, CLASS_TYPE, PATH)\
 static ConstructorHelpers::FObjectFinder<CLASS_TYPE> __##RETURN_POINTER(TEXT(PATH));\
 if (__##RETURN_POINTER.Succeeded()) \
@@ -19,10 +14,7 @@ else \
 	UE_LOG(LogTemp,Warning,TEXT("Failed GetObjectAsset : %d"),TEXT(PATH));\
 	RETURN_POINTER = nullptr;\
 }\
-/*    Class Asset¿ª πﬁΩ¿¥œ¥Ÿ.
-*    RETURN_POINTER : πﬁ¿ª ∆˜¿Œ≈Õ
-*    CLASS_TYPE : πﬁ¿ª ≈¨∑°Ω∫ ≈∏¿‘
-*    PATH : ∞Ê∑Œ (TEXT∏¶ ∫Ÿ¿Ã¡ˆ æ Ω¿¥œ¥Ÿ.)*/
+/* ÌÅ¥ÎûòÏä§ ÏóêÏÖã */
 #define GetClassAsset(RETURN_POINTER, CLASS_TYPE, PATH)\
 static ConstructorHelpers::FClassFinder<CLASS_TYPE> __##RETURN_POINTER(TEXT(PATH));\
 if (__##RETURN_POINTER.Succeeded()) \
@@ -49,14 +41,14 @@ FString EnumToFString(T enumValue)
 	if (bEnumNameInit == false)
 	{
 		bEnumNameInit = true;
-		FString functionSignature(__FUNCSIG__);
-		UE_LOG(LogTemp, Display, TEXT("Enum funcsig: [%s]"), *functionSignature);
+		const FString functionSignature(__FUNCSIG__);
+		UE_LOG(LogTemp, Display, TEXT("Enum function: [%s]"), *functionSignature);
 		int32 firstIDX = functionSignature.Find(TEXT("(enum "), ESearchCase::CaseSensitive, ESearchDir::FromEnd);
 
 		if (firstIDX != INDEX_NONE)
 		{
 			firstIDX += 6;
-			int32 lastIDX = (functionSignature.Len() - 1);
+			const int32 lastIDX = (functionSignature.Len() - 1);
 
 			if (functionSignature.IsValidIndex(firstIDX) &&
 				functionSignature.IsValidIndex(lastIDX) && firstIDX < lastIDX)

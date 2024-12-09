@@ -25,7 +25,7 @@ public class CCGPlugin : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core",
+				"Core", "OnlineSubsystem",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -38,8 +38,8 @@ public class CCGPlugin : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-                "UMG",
-				// ... add private dependencies that you statically link with here ...	
+                "UMG", 
+                "MultiplayerSessions",
 			}
 			);
 		

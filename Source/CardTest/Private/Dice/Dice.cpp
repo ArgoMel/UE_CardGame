@@ -91,8 +91,7 @@ void ADice::Rolling_Implementation()
 		randRange[i] = FMath::FRandRange(-180.f, 180.f);
 	}
 	SetActorRotation(FRotator(randRange[0], randRange[1], randRange[2]));
-	FVector offset(0.,0.,700.);
-	FVector randLoc(GetRandomLocation());
+	const FVector offset(0.,0.,700.);
 	SetActorLocation(offset);
 	mDiceMesh->AddImpulse(FVector(randRange[0], randRange[1], randRange[2])*10.);
 	//mDiceMesh->AddImpulse(FVector(FMath::FRandRange(1000.f, 10000.f), 
