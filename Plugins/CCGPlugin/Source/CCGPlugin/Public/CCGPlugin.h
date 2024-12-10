@@ -4,7 +4,6 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "Common/CCGEnum.h"
-#include "Common/CCGStruct.h"
 #include "Common/CCGConstVar.h"
 #include "Modules/ModuleManager.h"
 

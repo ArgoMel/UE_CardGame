@@ -394,3 +394,74 @@ enum class ESortingTypeFilter : uint8
 	Max UMETA(Hidden)
 };
 #pragma endregion
+
+#pragma region AIEnum
+UENUM(BlueprintType)
+enum class EAIDifficulty : uint8
+{
+	Easy UMETA(DisplayName = "Easy"),
+	Normal UMETA(DisplayName = "Normal"),
+	Hard UMETA(DisplayName = "Hard"),
+	Max UMETA(Hidden)
+};
+
+UENUM(BlueprintType)
+enum class EAIPersonalityFocus : uint8
+{
+	None UMETA(DisplayName = "None"),
+	IncreasePlayerHealth UMETA(DisplayName = "Increase Player Health"),
+	DamageCards UMETA(DisplayName = "Damage Cards"),
+	DamageOpponentPlayer UMETA(DisplayName = "Damage Opponent Player"),
+	PlayingCards UMETA(DisplayName = "Playing Cards"),
+	PickingUpCards UMETA(DisplayName = "Picking Up Cards"),
+	OpponentHindrance UMETA(DisplayName = "Opponent Hindrance"),
+	Max UMETA(Hidden)
+};
+
+UENUM(BlueprintType)
+enum class EAIRisk : uint8
+{
+	LowRisk UMETA(DisplayName = "Low Risk"),
+	AverageRisk UMETA(DisplayName = "Average Risk"),
+	HighRisk UMETA(DisplayName = "High Risk"),
+	Max UMETA(Hidden)
+};
+
+UENUM(BlueprintType)
+enum class EAIState : uint8
+{
+	Initialization  UMETA(DisplayName = "Initialization"),
+	Execution  UMETA(DisplayName = "Execution"),
+	Termination UMETA(DisplayName = "Termination"),
+	Max UMETA(Hidden)
+};
+
+UENUM(BlueprintType)
+enum class EPlayType : uint8
+{
+	AttackCard UMETA(DisplayName = "Attack Card"),
+	AttackPlayer UMETA(DisplayName = "Attack Player"),
+	Max UMETA(Hidden)
+};
+#pragma endregion
+
+#pragma region CardLayoutEnum
+UENUM(BlueprintType)
+enum class EPositioningProfile : uint8
+{
+	Fanned UMETA(DisplayName = "Fanned"),
+	Horizontal UMETA(DisplayName = "Horizontal"),
+	Max UMETA(Hidden)
+};
+
+UENUM(BlueprintType)
+enum class EViewState: uint8
+{
+	Default UMETA(DisplayName = "Default"),
+	CardInPreview UMETA(DisplayName = "Card In Preview"),
+	ViewHand UMETA(DisplayName = "View Hand"),
+	HideHand UMETA(DisplayName = "Hide Hand"),
+	TestProfile UMETA(DisplayName = "Test Profile"),
+	Max UMETA(Hidden)
+};
+#pragma endregion

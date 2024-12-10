@@ -40,6 +40,7 @@ public class CCGPlugin : ModuleRules
 				"SlateCore",
                 "UMG", 
                 "MultiplayerSessions",
+                "AIModule",
 			}
 			);
 		
