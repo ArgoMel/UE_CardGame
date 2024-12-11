@@ -401,7 +401,7 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FCardPlacement
+struct FCardPlacementData
 {
 	GENERATED_BODY()
 public:
@@ -414,7 +414,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	int32 ManaCost;
 
-	FCardPlacement()
+	FCardPlacementData()
 	: Owner()
 	, ManaCost(1)
 	{
@@ -460,7 +460,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	FCardDescription Description;
 	UPROPERTY(EditAnywhere)
-	FCardPlacement PlacementSetting;
+	FCardPlacementData PlacementSetting;
 	UPROPERTY(EditAnywhere)
 	FCardSetting DeckSetting;
 	UPROPERTY(EditAnywhere)
@@ -593,3 +593,38 @@ public:
 	}
 };
 #pragma endregion
+
+USTRUCT(BlueprintType)
+struct FPlayerStat
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere)
+	int32 Health;
+	UPROPERTY(EditAnywhere)
+	int32 HealthMax;
+	UPROPERTY(EditAnywhere)
+	int32 Mana;
+	UPROPERTY(EditAnywhere)
+	int32 ManaMax;
+	UPROPERTY(EditAnywhere)
+	int32 CardsInHand;
+	UPROPERTY(EditAnywhere)
+	int32 CardsInDeck;
+	UPROPERTY(EditAnywhere)
+	int32 ActiveCard;
+	UPROPERTY(EditAnywhere)
+	int32 PlayerTurn;
+
+	FPlayerStat()
+	: Health(0)
+	, HealthMax(100)
+	, Mana(0)
+	, ManaMax(0)
+	, CardsInHand(0)
+	, CardsInDeck(0)
+	, ActiveCard(0)
+	, PlayerTurn(0)
+	{
+	}
+};

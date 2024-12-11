@@ -2,10 +2,15 @@
 
 #include "GameMode/CCGMode.h"
 
+#include "CCGPlugin.h"
+#include "AI/CCGAIController.h"
+#include "AI/CCGAIPawn.h"
 #include "BFL/ControllerBFL.h"
 #include "Common/CCGConstVar.h"
 #include "GameFramework/PlayerState.h"
+#include "Gameplay/BoardPlayer.h"
 #include "GameState/CCGState.h"
+#include "Kismet/GameplayStatics.h"
 #include "PlayerController/CCGPlayerController.h"
 #include "PlayerState/CCGPlayerState.h"
 
@@ -40,12 +45,10 @@ void ACCGMode::PostLogin(APlayerController* NewPlayer)
 	else
 	{
 		AController* controller= AddPlayerToArray(NewPlayer->PlayerState,NewPlayer);
-		SetCardGamePlayerId(NewPlayer->PlayerState,controller);
+		SetCardGamePlayerId(controller);
 		SetBoardPlayerReference();
 		SetBoardPlayerReferences(controller);
-		ACCGPlayerController* playerController;
-		ACCGPlayerState* nullPlayerState;
-		UControllerBFL::GetPlayerControllerReference(controller,playerController,nullPlayerState);
+		ACCGPlayerController* playerController=Cast<ACCGPlayerController>(controller);
 		if (playerController)
 		{
 			playerController->Client_PostLogin();
@@ -77,11 +80,49 @@ void ACCGMode::Tick(float DeltaTime)
 
 void ACCGMode::CollectGameResults(TArray<EEndGameResults>& PlayerResults)
 {
+	int32 victory=0;
+	int32 defeat=0;
+	for (int32 i=0;i<mMaxNumOfPlayers;++i)
+	{
+		if (CheckIsPlayerActive(i+1))
+		{
+			PlayerResults.Add(EEndGameResults::Victory);
+			++victory;
+		}
+		else
+		{
+			PlayerResults.Add(EEndGameResults::Defeat);
+			++defeat;
+		}
+	}
+	if (defeat==0||victory==0)
+	{
+		PlayerResults.Init(EEndGameResults::Draw,mMaxNumOfPlayers);
+	}
 }
 
-bool ACCGMode::CheckIsPlayerActive(int32 ControllerID)
+bool ACCGMode::CheckIsPlayerActive(int32 ControllerID) const
 {
-	return false;
+	FPlayerStat playerStat;
+	TArray<FName> deck;
+	TArray<FName> cardsInHands;
+	UControllerBFL::GetControllersStateProfile(this,ControllerID,playerStat,deck,cardsInHands);
+	return playerStat.Health>0&&
+		(playerStat.CardsInHand>0||playerStat.CardsInDeck>0||playerStat.ActiveCard>0);
+}
+
+void ACCGMode::CreateAIPawn()
+{
+	FActorSpawnParameters spawnParams;
+	const FVector spawnLocation=mBoardPlayersArray[mGameControllersArray.Num()]->GetActorLocation();
+	spawnParams.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	ACCGAIPawn* AIPawn=GetWorld()->SpawnActor<ACCGAIPawn>(ACCGAIPawn::StaticClass(),spawnLocation,FRotator::ZeroRotator,spawnParams);
+	IF_RET_VOID(AIPawn);
+
+	AddPlayerToArray(AIPawn,AIPawn->GetController());
+	SetBoardPlayerReferences(AIPawn->GetController());
+	AIPawn->mPlayerID=mGameControllersArray.Num();
+	AIPawn->mCardGameAiID=mAIControllersArray.Num();
 }
 
 void ACCGMode::FinishCountdown()
@@ -93,42 +134,96 @@ void ACCGMode::FinishCountdown()
 
 int32 ACCGMode::CalculateManaForTurn(int32 PlayerTurn)
 {
-	return 0;
+	return FMath::Clamp(PlayerTurn+mMana_Min,mMana_Min,mMana_Max);
 }
 
 int32 ACCGMode::GetTurnMana(AController* Controller)
 {
-	return 0;
+	const int32 id=UControllerBFL::GetControllerID(Controller);
+	FPlayerStat playerStat;
+	TArray<FName> deck;
+	TArray<FName> cardsInHands;
+	UControllerBFL::GetControllersStateProfile(this,id,playerStat,deck,cardsInHands);
+	return CalculateManaForTurn(playerStat.PlayerTurn);
 }
 
 void ACCGMode::SetBoardPlayerReference()
 {
+	mBoardPlayersArray.Empty();
+	TArray<AActor*> allBoard;
+	UGameplayStatics::GetAllActorsOfClass(this,ABoardPlayer::StaticClass(),allBoard);
+	mBoardPlayersArray.Init(nullptr,allBoard.Num());
+	for (const auto& board : allBoard)
+	{
+		ABoardPlayer* boardPlayer=Cast<ABoardPlayer>(board);
+		if (boardPlayer)
+		{
+			mBoardPlayersArray[boardPlayer->mPlayerIndex-1]=boardPlayer;
+		}
+	}
 }
 
-void ACCGMode::GetPlayerControllers(TArray<AController*>& Players)
+void ACCGMode::GetPlayerControllers(TArray<AController*>& Players) const
 {
+	Players=mGameControllersArray;
 }
 
-void ACCGMode::SetCardGamePlayerId(UObject* PlayerState, AController* Controller)
+void ACCGMode::SetCardGamePlayerId(AController* Controller)
 {
+	ACCGPlayerController* playerController;
+	ACCGPlayerState* playerState;
+	if (UControllerBFL::GetPlayerControllerReference(Controller,playerController,playerState))
+	{
+		playerState->mCardGamePlayerId=mGameControllersArray.Num();
+		playerState->mOwningPlayerController=playerController;
+	}
 }
 
 AController* ACCGMode::AddPlayerToArray(AActor* PlayerState, AController* PlayerController)
 {
-	return nullptr;
+	mPlayerAndAIStates.AddUnique(PlayerState);
+	mGameControllersArray.AddUnique(PlayerController);
+	mGameState->mPlayerAndAIStates=mPlayerAndAIStates;
+	return PlayerController;
 }
 
-void ACCGMode::SetBoardPlayerReferences(AController*& Controller)
+void ACCGMode::SetBoardPlayerReferences(AController* Controller)
 {
+	ABoardPlayer* boardPlayer=mBoardPlayersArray[mGameControllersArray.Find(Controller)];
+	ACCGPlayerController* playerController=Cast<ACCGPlayerController>(Controller);
+	if (playerController)
+	{
+		playerController->mBoardPlayer=boardPlayer;
+		boardPlayer->mOwningController=playerController;
+	}
+	else
+	{
+		ACCGAIController* AIController=Cast<ACCGAIController>(Controller);
+		if (AIController)
+		{
+			AIController->mBoardPlayer=boardPlayer;
+			boardPlayer->mOwningController=AIController;
+			mAIControllersArray.Add(AIController);
+		}
+	}
 }
 
 void ACCGMode::RemovePlayerFromGame(AController* Controller)
 {
+	mGameControllersArray.Remove(Controller);
 }
 
 void ACCGMode::CreateCardGameAIOpponent()
 {
-
+	if (mGameControllersArray.Num()>=mMaxNumOfPlayers)
+	{
+		return;
+	}
+	if (bSpectator)
+	{
+		CreateAIPawn();
+	}
+	CreateAIPawn();
 }
 
 void ACCGMode::CheckGamePreConditions_Implementation()

@@ -3,24 +3,33 @@
 
 #include "Gameplay/BoardPlayer.h"
 
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ABoardPlayer::ABoardPlayer()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-// Called when the game starts or when spawned
+void ABoardPlayer::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ThisClass,mPlayerHealth);
+	
+	DOREPLIFETIME(ThisClass,mPlayerIndex);
+	DOREPLIFETIME(ThisClass,mPlayerName);
+}
+
 void ABoardPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
-// Called every frame
 void ABoardPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
 
+void ABoardPlayer::OnRep_PlayerHealth()
+{
+}

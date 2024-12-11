@@ -7,6 +7,7 @@
 #include "GameFramework/GameMode.h"
 #include "CCGMode.generated.h"
 
+class AAIController;
 class ABoardPlayer;
 class ACCGState;
 
@@ -28,7 +29,7 @@ private:
 protected:
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, Category="System")
-	TArray<AActor*> mPlayerStateArray;
+	TArray<AActor*> mPlayerAndAIStates;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, Category="System")
 	TArray<ABoardPlayer*> mBoardPlayersArray;
@@ -69,18 +70,21 @@ protected:
 public:
 	UPROPERTY(BlueprintReadWrite, Category="System")
 	TArray<AController*> mGameControllersArray;
+	UPROPERTY(BlueprintReadWrite, Category="System")
+	TArray<AAIController*> mAIControllersArray;
 
 protected:
-	void CollectGameResults(TArray<EEndGameResults>& PlayerResults);
-	bool CheckIsPlayerActive(int32 ControllerID);
-
+	virtual void CollectGameResults(TArray<EEndGameResults>& PlayerResults);
+	bool CheckIsPlayerActive(int32 ControllerID) const;
+	void CreateAIPawn();
+	
 	UFUNCTION(Category="Delay")
 	void FinishCountdown();
 	
 public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure, Category="Gameplay")
-	int32 CalculateManaForTurn(int32 PlayerTurn);
+	virtual int32 CalculateManaForTurn(int32 PlayerTurn);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure, Category="Gameplay")
@@ -92,11 +96,11 @@ public:
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure, Category="System")
-	void GetPlayerControllers(TArray<AController*>& Players);
+	void GetPlayerControllers(TArray<AController*>& Players) const;
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="System")
-	void SetCardGamePlayerId(UObject* PlayerState, AController* Controller);
+	void SetCardGamePlayerId(AController* Controller);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="System")
@@ -104,7 +108,7 @@ public:
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="System")
-	void SetBoardPlayerReferences(UPARAM(ref) AController*& Controller);
+	void SetBoardPlayerReferences(AController* Controller);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="System")
@@ -128,4 +132,6 @@ public:
 
 	UFUNCTION(Blueprintable,BlueprintNativeEvent)
 	void EndGame();
+
+	FORCEINLINE int32 GetMaxNumOfPlayers() const { return mMaxNumOfPlayers; }
 };

@@ -3,26 +3,59 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Common/CCGStruct.h"
 #include "GameFramework/Pawn.h"
 #include "CCGAIPawn.generated.h"
+
+class ACCGMode;
 
 UCLASS()
 class CCGPLUGIN_API ACCGAIPawn : public APawn
 {
 	GENERATED_BODY()
-
 public:
-	// Sets default values for this pawn's properties
+	friend ACCGMode;
 	ACCGAIPawn();
+protected:
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="AIData")
+	FString mAIName;
+
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	TObjectPtr<ACCGMode> mGameMode;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	TObjectPtr<AController> mOwningController;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
+	int32 mPlayerID;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
+	int32 mCardGameAiID;
 
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="AIData", ReplicatedUsing="OnRep_AIStat")
+	FPlayerStat mAIStat;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+protected:
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable)
+	void OnRep_AIStat();
+	
+public:
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable)
+	void UpdateAIState(int32 CardsInHand, int32 CardsInDeck);
+
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable)
+	void InitAttributes();
+
+	FORCEINLINE FString GetAIName() const{return mAIName;}
+	FORCEINLINE int32 GetPlayerId() const { return mPlayerID; }
 };

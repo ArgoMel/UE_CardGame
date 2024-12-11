@@ -337,7 +337,7 @@ enum class EEndGameResults : uint8
 };
 
 UENUM(BlueprintType)
-enum class EErrors : uint8
+enum class ECardError : uint8
 {
 	ValidDrop UMETA(DisplayName = "ValidDrop"),
 	NotAValidPlacement UMETA(DisplayName = "NotAValidPlacement"),

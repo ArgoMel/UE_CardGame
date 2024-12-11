@@ -3,7 +3,19 @@
 
 #include "GameState/CCGState.h"
 
-void ACCGState::OnGameStart()
+#include "Net/UnrealNetwork.h"
+
+ACCGState::ACCGState()
+{
+}
+
+void ACCGState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ThisClass,mPlayerAndAIStates);
+}
+
+void ACCGState::OnGameStart_Implementation()
 {
 }
 

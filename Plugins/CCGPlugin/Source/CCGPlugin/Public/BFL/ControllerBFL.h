@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Common/CCGStruct.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "ControllerBFL.generated.h"
 
@@ -34,21 +35,17 @@ class CCGPLUGIN_API UControllerBFL : public UBlueprintFunctionLibrary
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure,DisplayName="Get Controllers State Profile(Server Only)")
-	static int32 GetControllersStateProfile(const UObject* WorldContextObject,int32 ControllerID);
+	static AActor* GetControllersStateProfile(const UObject* WorldContextObject,int32 ControllerID,FPlayerStat& PlayerStat,TArray<FName>& Deck,TArray<FName>& CardsInHand);
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure,DisplayName="GetControllerIDForBothPlayers(ServerOnly)")
-	static void GetControllerIDForBothPlayers(AController* Controller,TArray<int32>& Players);
+	static int32 GetControllerIDs(const UObject* WorldContextObject,AController* Controller,TArray<int32>& Players);
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure,DisplayName="GetControllerPlayerState(ServerOnly)")
-	static AActor* GetControllerPlayerState(int32 ControllerID);
+	static AActor* GetControllerPlayerState(const UObject* WorldContextObject,int32 ControllerID);
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
-	static bool GetReplicatedPlayerState(int32 PlayerID,int32& Temp);
-	
-	/** Please add a function description */
-	UFUNCTION(BlueprintPure,DisplayName="GetOpponentID(ServerOnly)")
-	static int32 GetOpponentID(int32 PlayerID);
+	static bool GetReplicatedPlayerState(const UWorld* World,int32 PlayerID,FString& PlayerName,FPlayerStat& PlayerStat);
 };
