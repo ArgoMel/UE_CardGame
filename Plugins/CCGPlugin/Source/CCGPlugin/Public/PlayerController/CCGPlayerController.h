@@ -301,10 +301,17 @@ public:
 	
 	UFUNCTION(BlueprintCallable,Server,Reliable,Category="Server")
 	void Server_SetupDeck();
+	UFUNCTION(BlueprintCallable,Server,Reliable,Category="Server")
+	void Server_SpawnAIOpponent();
 	
-	UFUNCTION(BlueprintCallable,Client,Reliable)
+	UFUNCTION(BlueprintCallable,Client,Reliable,Category="Cient")
 	void Client_PostLogin();
-	void SetCountdownTimer(int32 Time);
+	UFUNCTION(BlueprintCallable,Client,Reliable,Category="Cient")
+	void Client_SetCountdownTimer(int32 Time);
+	UFUNCTION(BlueprintCallable,Client,Reliable,Category="Cient")
+	void Client_EndMatchState(EEndGameResults Result);
+	UFUNCTION(BlueprintCallable,Client,Reliable,Category="Cient")
+	void Client_UpdateGameUI(bool ForceCleanUpdate=false);
 
 	FORCEINLINE TArray<FName> GetPlayerDeck(){return mPlayerDeck;}
 	FORCEINLINE TArray<FName> GetCardsInHand(){return mCardsInHand;}

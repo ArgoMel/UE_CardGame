@@ -21,6 +21,11 @@ namespace CCG_MatchType
 	const FString Default(TEXT("Default")); 
 }
 
+namespace CCG_SaveSlotName
+{
+	const FString CardGameSave(TEXT("CardGameSave"));
+}
+
 UCLASS()
 class CCGPLUGIN_API UCCGConstVar : public UObject
 {

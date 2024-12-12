@@ -133,5 +133,7 @@ public:
 	UFUNCTION(Blueprintable,BlueprintNativeEvent)
 	void EndGame();
 
+	FORCEINLINE bool IsGameActive() const { return bGameActive; }
+	FORCEINLINE int32 GetPlayerStartingHealth() const { return mPlayerStartingHealth; }
 	FORCEINLINE int32 GetMaxNumOfPlayers() const { return mMaxNumOfPlayers; }
 };

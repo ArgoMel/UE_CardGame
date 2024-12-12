@@ -4,14 +4,6 @@
 
 #include "Net/UnrealNetwork.h"
 
-void ACCGPlayerController::Server_SetupDeck_Implementation()
-{
-}
-
-void ACCGPlayerController::Client_PostLogin_Implementation()
-{
-}
-
 ACCGPlayerController::ACCGPlayerController()
 {
 }
@@ -57,6 +49,25 @@ void ACCGPlayerController::OnRep_TurnState()
 {
 }
 
-void ACCGPlayerController::SetCountdownTimer(int32 Time)
+void ACCGPlayerController::Server_SetupDeck_Implementation()
+{
+}
+void ACCGPlayerController::Server_SpawnAIOpponent_Implementation()
+{
+}
+
+void ACCGPlayerController::Client_PostLogin_Implementation()
+{
+}
+
+void ACCGPlayerController::Client_SetCountdownTimer_Implementation(int32 Time)
+{
+}
+
+void ACCGPlayerController::Client_EndMatchState_Implementation(EEndGameResults Result)
+{
+}
+
+void ACCGPlayerController::Client_UpdateGameUI_Implementation(bool ForceCleanUpdate)
 {
 }

@@ -6,7 +6,7 @@ public class MultiplayerSessions : ModuleRules
 {
 	public MultiplayerSessions(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		
 		PublicIncludePaths.AddRange(new string[] 
 		{
@@ -20,12 +20,12 @@ public class MultiplayerSessions : ModuleRules
 					
 		PublicDependencyModuleNames.AddRange(new string[]
 		{
-			"Core"
-			,"OnlineSubsystem"
-			,"OnlineSubsystemSteam"
-			,"UMG"
-			,"Slate"
-			,"SlateCore"
+			"Core",
+			"OnlineSubsystem",
+			"OnlineSubsystemSteam",
+			"UMG",
+			"Slate",
+			"SlateCore",
 		});
 		
 		PrivateDependencyModuleNames.AddRange(new string[]
@@ -33,7 +33,7 @@ public class MultiplayerSessions : ModuleRules
 			"CoreUObject"
 			,"Engine"
 			,"Slate"
-			,"SlateCore"
+			,"SlateCore",
 		});
 		
 		DynamicallyLoadedModuleNames.AddRange(new string[]

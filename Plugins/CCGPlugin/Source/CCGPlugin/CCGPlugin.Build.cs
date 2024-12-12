@@ -1,12 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 using UnrealBuildTool;
+// ReSharper disable All
 
 public class CCGPlugin : ModuleRules
 {
 	public CCGPlugin(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
@@ -25,8 +26,8 @@ public class CCGPlugin : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core", "OnlineSubsystem",
-				// ... add other public dependencies that you statically link with here ...
+				"Core",
+				"OnlineSubsystem",
 			}
 			);
 			

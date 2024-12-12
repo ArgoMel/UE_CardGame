@@ -174,8 +174,7 @@ void ACCGMode::SetCardGamePlayerId(AController* Controller)
 	ACCGPlayerState* playerState;
 	if (UControllerBFL::GetPlayerControllerReference(Controller,playerController,playerState))
 	{
-		playerState->mCardGamePlayerId=mGameControllersArray.Num();
-		playerState->mOwningPlayerController=playerController;
+		playerState->Init(mGameControllersArray.Num(),playerController,this);
 	}
 }
 
@@ -255,7 +254,7 @@ void ACCGMode::GameStartCountdown_Implementation()
 			ACCGPlayerController* playerController=Cast<ACCGPlayerController>(gameController);
 			if (playerController)
 			{
-				playerController->SetCountdownTimer(mCountdownTimer);
+				playerController->Client_SetCountdownTimer(mCountdownTimer);
 			}
 		}
 	}

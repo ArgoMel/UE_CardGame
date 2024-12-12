@@ -627,4 +627,12 @@ public:
 	, PlayerTurn(0)
 	{
 	}
+
+	/* 트루면 플레이 가능 상태 */
+	FORCEINLINE bool CheckCardState() const
+	{
+		return CardsInDeck>0&&
+			CardsInHand>0&&
+				ActiveCard>0;	
+	}
 };
