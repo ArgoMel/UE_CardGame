@@ -4,14 +4,14 @@
 #include <CCGPlugin.h>
 #include "Engine/GameInstance.h"
 #include "Interfaces/OnlineSessionInterface.h"
-#include "CardGameInstance.generated.h"
+#include "CCGameInstance.generated.h"
 
 UCLASS()
-class CCGPLUGIN_API UCardGameInstance : public UGameInstance
+class CCGPLUGIN_API UCCGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 public:
-	UCardGameInstance();
+	UCCGameInstance();
 protected:
 	virtual void Init() override;
 

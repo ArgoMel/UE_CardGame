@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "BoardPlayer.generated.h"
 
-class ACardGameCamera;
+class ACCGCamera;
 class UTimelineComponent;
 class UBoxComponent;
 class UArrowComponent;
@@ -104,7 +104,7 @@ public:
 	FText mPlayerName;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category="Player")
-	TObjectPtr<ACardGameCamera> mCardGameCamera;
+	TObjectPtr<ACCGCamera> mCardGameCamera;
 
 	/** Owning Contoller */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Settings")

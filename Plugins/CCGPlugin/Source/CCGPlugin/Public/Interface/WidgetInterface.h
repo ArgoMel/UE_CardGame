@@ -42,4 +42,7 @@ public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void ReturnDeckSelection(const FString& DeckSelection);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void DisplayMessage(const FString& Message, FLinearColor SpecifiedColor, double Duration);
 };

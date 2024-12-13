@@ -7,6 +7,10 @@
 #include "CCGStruct.generated.h"
 
 #pragma region AIStruct
+class AGraveyard;
+class ACard3D;
+class ACardPlacement;
+
 USTRUCT(BlueprintType)
 struct FAIPersonality
 {
@@ -445,7 +449,7 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FCard
+struct FCard : public FTableRowBase 
 {
 	GENERATED_BODY()
 public:
@@ -634,5 +638,25 @@ public:
 		return CardsInDeck>0&&
 			CardsInHand>0&&
 				ActiveCard>0;	
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FPlayerBoard
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere)
+	TArray<ACard3D*> ActiveCards;
+	UPROPERTY(EditAnywhere)
+	TArray<ACardPlacement*> CardPlacements;
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<AGraveyard> Graveyards;
+	UPROPERTY(EditAnywhere)
+	int32 TotalCardPlacementPositions;
+	
+	FPlayerBoard()
+	: TotalCardPlacementPositions(0)
+	{
 	}
 };

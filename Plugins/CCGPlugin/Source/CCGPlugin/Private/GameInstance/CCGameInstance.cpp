@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "GameInstance/CardGameInstance.h"
+#include "GameInstance/CCGameInstance.h"
 
 #include "MultiplayerSessionsSubsystem.h"
 #include "OnlineSessionSettings.h"
@@ -8,7 +8,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
 
-UCardGameInstance::UCardGameInstance()
+UCCGameInstance::UCCGameInstance()
 {
 	GetClassAsset(mMainMenuClass, UUserWidget,"");
 	GetClassAsset(mLoadingScreenClass, UUserWidget,"");
@@ -26,7 +26,7 @@ UCardGameInstance::UCardGameInstance()
 	mMatchType=CCG_MatchType::Default;
 }
 
-void UCardGameInstance::Init()
+void UCCGameInstance::Init()
 {
 	Super::Init();
 	const FString curPlatformName = UGameplayStatics::GetPlatformName();
@@ -41,7 +41,7 @@ void UCardGameInstance::Init()
 	}
 }
 
-void UCardGameInstance::OnCreateSession(bool bWasSuccessful)
+void UCCGameInstance::OnCreateSession(bool bWasSuccessful)
 {
 	if (bWasSuccessful)
 	{
@@ -60,7 +60,7 @@ void UCardGameInstance::OnCreateSession(bool bWasSuccessful)
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
-void UCardGameInstance::OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful)
+void UCCGameInstance::OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful)
 {
 	UMultiplayerSessionsSubsystem* subsystem=GetSubsystem<UMultiplayerSessionsSubsystem>();
 	if (!subsystem)
@@ -80,7 +80,7 @@ void UCardGameInstance::OnFindSessions(const TArray<FOnlineSessionSearchResult>&
 	}
 }
 
-void UCardGameInstance::OnJoinSession(EOnJoinSessionCompleteResult::Type Result)
+void UCCGameInstance::OnJoinSession(EOnJoinSessionCompleteResult::Type Result)
 {
 	switch (Result)
 	{
@@ -99,16 +99,16 @@ void UCardGameInstance::OnJoinSession(EOnJoinSessionCompleteResult::Type Result)
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
-void UCardGameInstance::OnDestroySession(bool bWasSuccessful)
+void UCCGameInstance::OnDestroySession(bool bWasSuccessful)
 {
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
-void UCardGameInstance::OnStartSession(bool bWasSuccessful)
+void UCCGameInstance::OnStartSession(bool bWasSuccessful)
 {
 }
 
-bool UCardGameInstance::MoveToGameState(EGameState InState)
+bool UCCGameInstance::MoveToGameState(EGameState InState)
 {
 	if(InState==mCurGameState)
 	{
@@ -142,7 +142,7 @@ bool UCardGameInstance::MoveToGameState(EGameState InState)
 	return true;
 }
 
-void UCardGameInstance::ShowMainMenuEvent_Implementation()
+void UCCGameInstance::ShowMainMenuEvent_Implementation()
 {
 	const UWorld* world = GetWorld();
 	IF_RET_VOID(world)
@@ -167,7 +167,7 @@ void UCardGameInstance::ShowMainMenuEvent_Implementation()
 	}
 }
 
-void UCardGameInstance::ShowLoadingScreen_Implementation()
+void UCCGameInstance::ShowLoadingScreen_Implementation()
 {
 	const UWorld* world = GetWorld();
 	IF_RET_VOID(world)
@@ -187,7 +187,7 @@ void UCardGameInstance::ShowLoadingScreen_Implementation()
 	}
 }
 
-void UCardGameInstance::HostGame_Implementation(EArenaList SelectedArena)
+void UCCGameInstance::HostGame_Implementation(EArenaList SelectedArena)
 {
 	ShowLoadingScreen();
 	UMultiplayerSessionsSubsystem* subsystem=GetSubsystem<UMultiplayerSessionsSubsystem>();
@@ -198,7 +198,7 @@ void UCardGameInstance::HostGame_Implementation(EArenaList SelectedArena)
 	}
 }
 
-void UCardGameInstance::JoinGameSession_Implementation()
+void UCCGameInstance::JoinGameSession_Implementation()
 {
 	ShowLoadingScreen();
 	UMultiplayerSessionsSubsystem* subsystem=GetSubsystem<UMultiplayerSessionsSubsystem>();
@@ -208,7 +208,7 @@ void UCardGameInstance::JoinGameSession_Implementation()
 	}
 }
 
-void UCardGameInstance::Setup(int32 NumberOfPublicConnections, FString TypeOfMatch, FString LobbyPath)
+void UCCGameInstance::Setup(int32 NumberOfPublicConnections, FString TypeOfMatch, FString LobbyPath)
 {
 	if (mCurGameState==EGameState::Startup)
 	{
@@ -228,13 +228,13 @@ void UCardGameInstance::Setup(int32 NumberOfPublicConnections, FString TypeOfMat
 	}
 }
 
-EPlatform UCardGameInstance::GetCurrentPlatform(bool& IsMobile) const
+EPlatform UCCGameInstance::GetCurrentPlatform(bool& IsMobile) const
 {
 	IsMobile=mPlatform==EPlatform::Android||mPlatform==EPlatform::Mac;
 	return mPlatform;
 }
 
-EGameState UCardGameInstance::GetGameState(EGameState InState, bool& IsSameState) const
+EGameState UCCGameInstance::GetGameState(EGameState InState, bool& IsSameState) const
 {
 	IsSameState=InState==mCurGameState;
 	return mCurGameState;

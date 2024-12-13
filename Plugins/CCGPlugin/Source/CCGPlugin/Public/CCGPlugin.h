@@ -21,6 +21,13 @@ if(!RETURN_POINTER)\
 UE_LOG(LogTemp, Warning, TEXT("%hs 유효하지 않음"), #RETURN_POINTER);\
 return false;\
 }
+
+#define IF_RET(RETURN_TYPE,RETURN_POINTER)\
+if(!RETURN_POINTER)\
+{\
+UE_LOG(LogTemp, Warning, TEXT("%hs 유효하지 않음"), #RETURN_POINTER);\
+return RETURN_TYPE();\
+}
 #pragma endregion
 
 #pragma region LoadAsset

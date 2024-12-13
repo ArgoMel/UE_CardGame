@@ -27,7 +27,8 @@ public class CCGPlugin : ModuleRules
 			new string[]
 			{
 				"Core",
-				"OnlineSubsystem",
+				"OnlineSubsystem", 
+				"UMG",
 			}
 			);
 			

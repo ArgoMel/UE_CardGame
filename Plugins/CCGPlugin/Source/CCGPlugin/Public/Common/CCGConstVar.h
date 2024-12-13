@@ -8,7 +8,8 @@
 
 namespace CCG_ZOrder
 {
-	constexpr float MainMenu=5.f;
+	constexpr int32 MainMenu=5;
+	constexpr int32 DisplayMessage=5;
 }
 
 namespace CCG_Level

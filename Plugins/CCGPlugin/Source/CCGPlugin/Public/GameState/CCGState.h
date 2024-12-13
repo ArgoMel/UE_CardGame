@@ -7,6 +7,9 @@
 #include "GameFramework/GameStateBase.h"
 #include "CCGState.generated.h"
 
+struct FPlayerBoard;
+class ACardPlacement;
+
 UCLASS()
 class CCGPLUGIN_API ACCGState : public AGameStateBase
 {
@@ -77,31 +80,11 @@ protected:
 // 	/** Seconds the timer will tick. 1 = 1 second. 0.1 = 10 times a second. */
 // 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="System")
 // 	double GameSeconds;
-//
-// 	/** Please add a variable description */
-// 	static_assert(false, "You will need to add DOREPLIFETIME(ABP_CardGameState, ActiveCards_Player1) to GetLifetimeReplicatedProps");
-// 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Board", Replicated)
-// 	TArray<A3DCard_C*> ActiveCards_Player1;
-//
-// 	/** Please add a variable description */
-// 	static_assert(false, "You will need to add DOREPLIFETIME(ABP_CardGameState, ActiveCards_Player2) to GetLifetimeReplicatedProps");
-// 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Board", Replicated)
-// 	TArray<A3DCard_C*> ActiveCards_Player2;
-//
-// 	/** Please add a variable description */
-// 	static_assert(false, "You will need to add DOREPLIFETIME(ABP_CardGameState, CardPlacements_Player1) to GetLifetimeReplicatedProps");
-// 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Board", Replicated)
-// 	TArray<ACardPlacement_C*> CardPlacements_Player1;
-//
-// 	/** Please add a variable description */
-// 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Board")
-// 	int32 TotalCardPlacementPositions_Player1;
-//
-// 	/** Please add a variable description */
-// 	static_assert(false, "You will need to add DOREPLIFETIME(ABP_CardGameState, CardPlacements_Player2) to GetLifetimeReplicatedProps");
-// 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Board", Replicated)
-// 	TArray<ACardPlacement_C*> CardPlacements_Player2;
-//
+
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Board", Replicated)
+	TArray<FPlayerBoard> mPlayerBoards;
+
 // 	/** Please add a variable description */
 // 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
 // 	TArray<AController*> PlayerTurn_Array;
@@ -117,20 +100,7 @@ protected:
 // 	/** Please add a variable description */
 // 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Recorded Game Data")
 // 	TArray<A3DCard_C*> CardReferenceArray;
-//
-// 	/** Please add a variable description */
-// 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Board")
-// 	int32 TotalCardPlacementPositions_Player2;
-//
-// 	/** Please add a variable description */
-// 	static_assert(false, "You will need to add DOREPLIFETIME(ABP_CardGameState, Graveyards_Player1) to GetLifetimeReplicatedProps");
-// 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Board", Replicated)
-// 	TObjectPtr<AGraveyard_C> Graveyards_Player1;
-//
-// 	/** Please add a variable description */
-// 	static_assert(false, "You will need to add DOREPLIFETIME(ABP_CardGameState, Graveyards_Player2) to GetLifetimeReplicatedProps");
-// 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Board", Replicated)
-// 	TObjectPtr<AGraveyard_C> Graveyards_Player2;
+	
 // 	/** Please add a variable description */
 // 	static_assert(false, "You will need to add DOREPLIFETIME(ABP_CardGameState, bGameActive) to GetLifetimeReplicatedProps");
 // 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
@@ -211,6 +181,8 @@ public:
 // 	/** Please add a function description */
 // 	UFUNCTION(BlueprintPure, Category="Board")
 // 	void GetGraveyardReference(int32 PlayerID, AGraveyard_C*& ReturnGraveyard);
+
+	void GetCardPlacements(int32 Index, TArray<ACardPlacement*>& CardPlacements);
 
 	UFUNCTION(Server, Unreliable)
 	void OnGameStart();
