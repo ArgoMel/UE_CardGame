@@ -7,6 +7,7 @@
 #include "Slate/WidgetTransform.h"
 #include "MiscBFL.generated.h"
 
+class ACCGCamera;
 class ACCGPlayerController;
 class ACard3D;
 
@@ -57,23 +58,23 @@ public:
 	UFUNCTION(BlueprintPure)
 	static FVector2D GetPositionInRange(UObject* WorldContextObject,double GlobalEdgeOffset, FVector2D EdgeOffset);
 	
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintPure)
-	// static void ModifyDPI Scaling(double Value, bool InvertDPI Scaling, UObject* __WorldContext, double& Return Value);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable)
-	// static void GetCardGamePlayerCamera(ABP_CardGamePlayerController_C* PlayerController, UObject* __WorldContext, ABP_CardGameCamera_C*& ChosenCamera);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintPure)
-	// static double CalculateFloatPrecision(double Float, UObject* __WorldContext);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintPure)
-	// static void GetWaitTimeWithRandomDeviation(double WaitTime, double RandomDeviation, UObject* __WorldContext, double& ReturnWaitTime);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintPure)
-	// static void ScreenPositionInWorldSpace(ABP_CardGamePlayerController_C* Player Controller, FVector2D Screen Position, double ForwardDistance, UObject* __WorldContext, FVector& Location, FTransform& Spawn Tranfrom);
+	/** Please add a function description */
+	UFUNCTION(BlueprintPure)
+	static float ModifyDPIScaling(UObject* WorldContextObject,double Value, bool InvertDPIScaling);
+	
+	/** 플레이어 스테이트가 들고있는게 나은듯 */
+	UFUNCTION(BlueprintCallable)
+	static ACCGCamera* GetCardGamePlayerCamera(ACCGPlayerController* PlayerController);
+	
+	/** 2.213= 2.2 */
+	UFUNCTION(BlueprintPure)
+	static float CalculateFloatPrecision(double Float);
+	
+	/** Please add a function description */
+	UFUNCTION(BlueprintPure)
+	static float GetWaitTimeWithRandomDeviation(double WaitTime, double RandomDeviation);
+	
+	/** Please add a function description */
+	UFUNCTION(BlueprintPure)
+	static void ScreenPositionInWorldSpace(ACCGPlayerController* PlayerController, FVector2D ScreenPosition, double ForwardDistance, FTransform& SpawnTransform);
 };

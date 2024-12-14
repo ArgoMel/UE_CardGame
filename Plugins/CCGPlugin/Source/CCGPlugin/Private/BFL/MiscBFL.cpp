@@ -7,12 +7,14 @@
 #include "BFL/ControllerBFL.h"
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
+#include "CameraActor/CCGCamera.h"
 #include "GameInstance/CCGameInstance.h"
 #include "Gameplay/Card3D.h"
 #include "Interface/WidgetInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "PlayerController/CCGPlayerController.h"
+#include "PlayerState/CCGPlayerState.h"
 
 TSubclassOf<UUserWidget> UMiscBFL::mDisplayWidgetClass;
 
@@ -160,5 +162,70 @@ FVector2D UMiscBFL::GetMousePositionInRange(UWorld* World, FVector2D SizeOffset,
 
 FVector2D UMiscBFL::GetPositionInRange(UObject* WorldContextObject, double GlobalEdgeOffset, FVector2D EdgeOffset)
 {
-	return FVector2D::ZeroVector;
+	const FVector2D viewportSize=UWidgetLayoutLibrary::GetViewportSize(WorldContextObject);
+	const FVector2D randSize(FMath::RandRange(0.,viewportSize.X),FMath::RandRange(0.,viewportSize.Y));
+	FVector2D returnValue;
+	returnValue.X=FMath::Clamp(randSize.X,GlobalEdgeOffset,viewportSize.X-GlobalEdgeOffset-EdgeOffset.X);
+	returnValue.Y=FMath::Clamp(randSize.Y,GlobalEdgeOffset+EdgeOffset.Y,viewportSize.Y-GlobalEdgeOffset-EdgeOffset.Y)-EdgeOffset.Y;
+	return returnValue;
+}
+
+float UMiscBFL::ModifyDPIScaling(UObject* WorldContextObject, double Value, bool InvertDPIScaling)
+{
+	const float viewportScale=UWidgetLayoutLibrary::GetViewportScale(WorldContextObject);
+	const float invertValue=2.f-viewportScale;
+	if (InvertDPIScaling)
+	{
+		return invertValue*Value;
+	}
+	return Value/invertValue;
+}
+
+ACCGCamera* UMiscBFL::GetCardGamePlayerCamera(ACCGPlayerController* PlayerController)
+{
+	IF_RET_NULL(PlayerController);
+	const ACCGPlayerState* playerState=PlayerController->GetPlayerState<ACCGPlayerState>();
+	IF_RET_NULL(playerState);
+	TArray<AActor*> allActors;
+	UGameplayStatics::GetAllActorsOfClass(PlayerController,ACCGCamera::StaticClass(),allActors);
+
+	for (const auto& actor : allActors)
+	{
+		ACCGCamera* camera=Cast<ACCGCamera>(actor);
+		if (camera&&
+			camera->GetAutoActivatePlayerIndex()+1==playerState->GetCardGamePlayerId())
+		{
+			return camera;	
+		}
+	}
+	return nullptr;	
+}
+
+float UMiscBFL::CalculateFloatPrecision(double Float)
+{
+	const int32 tempInt=static_cast<int32>(Float * 10);
+	return tempInt*0.1f;
+}
+
+float UMiscBFL::GetWaitTimeWithRandomDeviation(double WaitTime, double RandomDeviation)
+{
+	return  WaitTime+FMath::RandRange(-RandomDeviation,RandomDeviation);
+}
+
+void UMiscBFL::ScreenPositionInWorldSpace(ACCGPlayerController* PlayerController,
+	FVector2D ScreenPosition, double ForwardDistance, FTransform& SpawnTransform)
+{
+	IF_RET_VOID(PlayerController);
+	const UWorld* world=PlayerController->GetWorld();
+	IF_RET_VOID(world);
+	const float viewportScale=UWidgetLayoutLibrary::GetViewportScale(PlayerController);
+	FVector worldLoc;
+	FVector worldDir;
+	UGameplayStatics::DeprojectScreenToWorld(PlayerController,ScreenPosition*viewportScale,worldLoc,worldDir);
+	FRotator worldRot;
+	GetWorldRotationForPlayer(world,FRotator::ZeroRotator,worldRot);
+
+	SpawnTransform.SetLocation(worldLoc+worldDir*ForwardDistance);
+	SpawnTransform.SetRotation(worldRot.Quaternion());
+	SpawnTransform.SetScale3D(FVector(1.f));
 }
