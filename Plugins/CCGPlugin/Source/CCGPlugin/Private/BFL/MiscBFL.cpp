@@ -229,3 +229,14 @@ void UMiscBFL::ScreenPositionInWorldSpace(ACCGPlayerController* PlayerController
 	SpawnTransform.SetRotation(worldRot.Quaternion());
 	SpawnTransform.SetScale3D(FVector(1.f));
 }
+
+void UMiscBFL::AddMessageToLog(ACCGPlayerController* CallingPlayer, const FString& Message, FLinearColor SpecifiedColor, double Duration)
+{
+	IF_RET_VOID(CallingPlayer);
+	UUserWidget* playerGameUI=CallingPlayer->GetPlayerGameUI();
+	IF_RET_VOID(playerGameUI);
+	if (playerGameUI->Implements<UWidgetInterface>())
+	{
+		IWidgetInterface::Execute_DisplayMessage(playerGameUI,Message,SpecifiedColor,Duration);
+	}
+}

@@ -7,6 +7,17 @@
 #include "Common/CCGConstVar.h"
 #include "Modules/ModuleManager.h"
 
+#pragma region LOG_MESSAGE
+#define LOG_CLONE_CARD(CARDNAME,ABILITY_INT)\
+FString::printf(TEXT("%s cloned up to + %d times!"),*CARDNAME.ToString(),ABILITY_INT);
+
+#define LOG_PICKUP_CARD(ABILITY_INT)\
+FString::printf(TEXT("Player picked up + %d cards"),ABILITY_INT);
+
+#define LOG_INCREASE_ATTACK(CARDNAME,ABILITY_INT)\
+FString::printf(TEXT("%s gained + %d Attack"),*CARDNAME.ToString(),ABILITY_INT);
+#pragma endregion
+
 #pragma region NullCheck
 #define IF_RET_VOID(RETURN_POINTER)\
 if(!RETURN_POINTER)\

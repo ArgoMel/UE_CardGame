@@ -77,4 +77,8 @@ public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
 	static void ScreenPositionInWorldSpace(ACCGPlayerController* PlayerController, FVector2D ScreenPosition, double ForwardDistance, FTransform& SpawnTransform);
+	
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable)
+	static void AddMessageToLog(ACCGPlayerController* CallingPlayer,const FString& Message, FLinearColor SpecifiedColor, double Duration=5.);
 };

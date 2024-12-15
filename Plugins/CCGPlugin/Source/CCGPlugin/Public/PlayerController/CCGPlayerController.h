@@ -313,6 +313,7 @@ public:
 	UFUNCTION(BlueprintCallable,Client,Reliable,Category="Cient")
 	void Client_UpdateGameUI(bool ForceCleanUpdate=false);
 
+	FORCEINLINE UUserWidget* GetPlayerGameUI(){return mPlayerGameUI;}
 	FORCEINLINE TArray<FName> GetPlayerDeck(){return mPlayerDeck;}
 	FORCEINLINE TArray<FName> GetCardsInHand(){return mCardsInHand;}
 };
