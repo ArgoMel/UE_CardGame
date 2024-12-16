@@ -7,6 +7,7 @@
 #include "GameFramework/GameStateBase.h"
 #include "CCGState.generated.h"
 
+class ACard3D;
 struct FPlayerBoard;
 class ACardPlacement;
 
@@ -45,12 +46,10 @@ protected:
 // 	static_assert(false, "You will need to add DOREPLIFETIME(ABP_CardGameState, GameTime_Minutes) to GetLifetimeReplicatedProps");
 // 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Game Manager", Replicated)
 // 	int32 GameTime_Minutes;
-//
-// 	/** Please add a variable description */
-// 	static_assert(false, "You will need to add DOREPLIFETIME(ABP_CardGameState, GameTurnState) to GetLifetimeReplicatedProps");
-// 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Turn Manager", Replicated)
-// 	TEnumAsByte<GameTurn_Enum> GameTurnState;
-//
+	
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Turn Manager", Replicated)
+	EGameTurn mGameTurnState;
+
 // 	/** Please add a variable description */
 // 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Turn Manager")
 // 	FTimerHandle TurnTimer_Ref;
@@ -85,10 +84,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Board", Replicated)
 	TArray<FPlayerBoard> mPlayerBoards;
 
-// 	/** Please add a variable description */
-// 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
-// 	TArray<AController*> PlayerTurn_Array;
-//
+	/** 인덱스 0이 현재 플레이어 */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	TArray<AController*> mPlayerTurns;
+
 // 	/** Please add a variable description */
 // 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Recorded Game Data")
 // 	TArray<FGameStateSnapshot_Struct> GameSnapshot;
@@ -182,9 +181,12 @@ public:
 // 	UFUNCTION(BlueprintPure, Category="Board")
 // 	void GetGraveyardReference(int32 PlayerID, AGraveyard_C*& ReturnGraveyard);
 
+	void GetActivePlayerCards(int32 Index, TArray<ACard3D*>& Cards);
 	void GetCardPlacements(int32 Index, TArray<ACardPlacement*>& CardPlacements);
 
 	UFUNCTION(Server, Unreliable)
 	void OnGameStart();
 	void Server_NotifyEndGameState(TArray<EEndGameResults>& array);
+
+	FORCEINLINE AController* GetCurPlayerTurn() { return mPlayerTurns[0]; }
 };

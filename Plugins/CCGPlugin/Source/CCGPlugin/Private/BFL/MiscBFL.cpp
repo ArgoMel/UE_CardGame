@@ -110,11 +110,6 @@ void UMiscBFL::CreateScreenDisplayMessage(const UWorld* World, const FString& Me
 	displayMsg->AddToViewport(CCG_ZOrder::DisplayMessage);
 }
 
-int32 UMiscBFL::GetPlayerID(AController* Controller)
-{
-	return UControllerBFL::GetControllerID(Controller);
-}
-
 bool UMiscBFL::GetWorldRotationForPlayer(const UWorld* World, FRotator OverrideRotationAxis, FRotator& ReturnRotation)
 {
 	IF_RET_BOOL(World);

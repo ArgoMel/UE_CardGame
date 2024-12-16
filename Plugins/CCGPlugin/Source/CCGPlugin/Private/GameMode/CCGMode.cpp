@@ -170,12 +170,11 @@ void ACCGMode::GetPlayerControllers(TArray<AController*>& Players) const
 
 void ACCGMode::SetCardGamePlayerId(AController* Controller)
 {
-	ACCGPlayerController* playerController;
-	ACCGPlayerState* playerState;
-	if (UControllerBFL::GetPlayerControllerReference(Controller,playerController,playerState))
-	{
-		playerState->Init(mGameControllersArray.Num(),playerController,this);
-	}
+	ACCGPlayerController* playerController=Cast<ACCGPlayerController>(Controller);
+	IF_RET_VOID(playerController);
+	ACCGPlayerState* playerState=Controller->GetPlayerState<ACCGPlayerState>();
+	IF_RET_VOID(playerState);
+	playerState->Init(mGameControllersArray.Num(),playerController,this);
 }
 
 AController* ACCGMode::AddPlayerToArray(AActor* PlayerState, AController* PlayerController)

@@ -36,38 +36,6 @@ int32 UControllerBFL::GetControllerID(AController* Controller)
 	return -1;
 }
 
-bool UControllerBFL::GetPlayerControllerReference(AController* Controller, ACCGPlayerController*& CardGamePlayerController, ACCGPlayerState*& CardGamePlayerState)
-{
-	CardGamePlayerController=Cast<ACCGPlayerController>(Controller);
-	if (!CardGamePlayerController||
-		!Controller)
-	{
-		return false;
-	}
-	CardGamePlayerState=Cast<ACCGPlayerState>(Controller->PlayerState);
-	if (!CardGamePlayerState)
-	{
-		return false;
-	}
-	return true;
-}
-
-bool UControllerBFL::GetAiControllerReference(AController* Controller, ACCGAIController*& CardGameAIController, ACCGAIPawn*& CardGameAIPawn)
-{
-	CardGameAIController=Cast<ACCGAIController>(Controller);
-	if (!Controller||
-		!CardGameAIController)
-	{
-		return false;
-	}
-	CardGameAIPawn=Cast<ACCGAIPawn>(Controller->GetPawn());
-	if (!CardGameAIPawn)
-	{
-		return false;
-	}
-	return true;
-}
-
 AController* UControllerBFL::GetControllerReferenceFromID(const UObject* WorldContextObject,int32 ControllerID)
 {
 	if (!WorldContextObject)
@@ -98,18 +66,18 @@ AActor* UControllerBFL::GetControllersStateProfile(const UObject* WorldContextOb
 	{
 		return nullptr;
 	}
-	ACCGPlayerController* playerController;
-	ACCGPlayerState* playerState;
-	if (GetPlayerControllerReference(controller,playerController,playerState))
+	ACCGPlayerController* playerController=Cast<ACCGPlayerController>(controller);
+	ACCGPlayerState* playerState=controller->GetPlayerState<ACCGPlayerState>();
+	if (playerController&&playerState)
 	{
 		PlayerStat=playerState->mPlayerStat;
 		Deck=playerController->GetPlayerDeck();
 		CardsInHand=playerController->GetCardsInHand();
 		return playerState;
 	}
-	ACCGAIController* AIController;
-	ACCGAIPawn* AIPawn;
-	if (GetAiControllerReference(controller,AIController,AIPawn))
+	ACCGAIController* AIController=Cast<ACCGAIController>(controller);
+	ACCGAIPawn* AIPawn=controller->GetPawn<ACCGAIPawn>();
+	if (AIController&&AIPawn)
 	{
 		PlayerStat=AIPawn->mAIStat;
 		Deck=AIController->GetAIDeck();
@@ -158,19 +126,12 @@ AActor* UControllerBFL::GetControllerPlayerState(const UObject* WorldContextObje
 	{
 		return nullptr;
 	}
-	ACCGPlayerController* playerController;
-	ACCGPlayerState* playerState;
-	if (GetPlayerControllerReference(controller,playerController,playerState))
+	ACCGPlayerState* playerState=controller->GetPlayerState<ACCGPlayerState>();
+	if (playerState)
 	{
 		return playerState;
 	}
-	ACCGAIController* AIController;
-	ACCGAIPawn* AIPawn;
-	if (GetAiControllerReference(controller,AIController,AIPawn))
-	{
-		return AIPawn;
-	}
-	return nullptr;
+	return controller->GetPawn<ACCGAIPawn>();
 }
 
 bool UControllerBFL::GetReplicatedPlayerState(const UWorld* World,int32 PlayerID,FString& PlayerName,FPlayerStat& PlayerStat)

@@ -22,14 +22,6 @@ class CCGPLUGIN_API UControllerBFL : public UBlueprintFunctionLibrary
 	static int32 GetControllerID(AController* Controller);
 	
 	/** Please add a function description */
-	UFUNCTION(BlueprintPure,DisplayName="Get Player Controller Reference(Server Only)")
-	static bool GetPlayerControllerReference(AController* Controller,ACCGPlayerController*& CardGamePlayerController, ACCGPlayerState*& CardGamePlayerState);
-	
-	/** Please add a function description */
-	UFUNCTION(BlueprintPure,DisplayName="GetAiControllerReference(ServerOnly)")
-	static bool GetAiControllerReference(AController* Controller, ACCGAIController*& CardGameAIController, ACCGAIPawn*& CardGameAIPawn);
-	
-	/** Please add a function description */
 	UFUNCTION(BlueprintPure,DisplayName="GetControllerReferenceFromID(ServerOnly)")
 	static AController* GetControllerReferenceFromID(const UObject* WorldContextObject,int32 ControllerID);
 	

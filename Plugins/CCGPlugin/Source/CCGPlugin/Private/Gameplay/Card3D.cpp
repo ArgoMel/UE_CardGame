@@ -12,7 +12,10 @@ ACard3D::ACard3D()
 void ACard3D::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ThisClass,mCardData)
 	DOREPLIFETIME(ThisClass,mAttack)
+	DOREPLIFETIME(ThisClass,mTurnPoint)
+	DOREPLIFETIME(ThisClass,mType)
 }
 
 void ACard3D::BeginPlay()
@@ -42,5 +45,13 @@ void ACard3D::OnRep_bCardActive()
 }
 
 void ACard3D::OnRep_OwningPlayerID()
+{
+}
+
+void ACard3D::OnRep_ManaCostPlacement()
+{
+}
+
+void ACard3D::OnRep_CardType()
 {
 }

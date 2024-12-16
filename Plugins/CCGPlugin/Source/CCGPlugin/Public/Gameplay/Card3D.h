@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Common/CCGStruct.h"
 #include "GameFramework/Actor.h"
 #include "Card3D.generated.h"
 
@@ -97,12 +98,10 @@ protected:
 	// /** The maximum amount of characters that the 3D text renderer can hold per line. Note: This does not currently filter full words. Which may result in words being split between lines.  */
 	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
 	// int32 MaxDescriptionCharacterLineLength;
-	//
-	// /** Please add a variable description */
-	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, CardDataStruct) to GetLifetimeReplicatedProps");
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
-	// FCard_Struct CardDataStruct;
-	//
+	
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
+	FCard mCardData;
+	
 	// /** Please add a variable description */
 	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, CardDataTableName) to GetLifetimeReplicatedProps");
 	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
@@ -206,12 +205,11 @@ protected:
 	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, bInGraveyard) to GetLifetimeReplicatedProps");
 	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
 	// bool bInGraveyard;
-	//
-	// /** Please add a variable description */
-	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, TurnPoints) to GetLifetimeReplicatedProps");
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
-	// int32 TurnPoints;
-	//
+	
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
+	int32 mTurnPoint;
+	
 	// /** Please add a variable description */
 	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, LifeExpectancy) to GetLifetimeReplicatedProps");
 	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
@@ -221,12 +219,10 @@ protected:
 	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, TurnsAlive) to GetLifetimeReplicatedProps");
 	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", ReplicatedUsing="OnRep_TurnsAlive")
 	// int32 TurnsAlive;
-	//
-	// /** Please add a variable description */
-	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, Type) to GetLifetimeReplicatedProps");
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", ReplicatedUsing="OnRep_Type")
-	// TEnumAsByte<CardType_Enum> Type;
-	//
+	
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", ReplicatedUsing="OnRep_CardType")
+	ECardType mType;
+	
 	// /** Please add a variable description */
 	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, CardSet) to GetLifetimeReplicatedProps");
 	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
@@ -315,6 +311,14 @@ protected:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
 	void OnRep_OwningPlayerID();
+
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable)
+	void OnRep_ManaCostPlacement();
+	
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable)
+	void OnRep_CardType();
 	
 public:
 	// UFUNCTION(BlueprintCallable, Category="Gameplay")
@@ -339,11 +343,7 @@ public:
 	// /** Please add a function description */
 	// UFUNCTION(BlueprintCallable, Category="Card Data")
 	// void SetCardData(FName CardTableName, TEnumAsByte<CardSet_Enum> CardSet, FCard_Struct CardStruct, bool SetCardDataFromStruct);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable)
-	// void OnRep_Mana_Cost_Placement();
-	//
+
 	// /** Please add a function description */
 	// UFUNCTION(BlueprintCallable, Category="Card Data")
 	// void SetCardVisuals();
@@ -351,11 +351,7 @@ public:
 	// /** Please add a function description */
 	// UFUNCTION(BlueprintCallable, Category="Gameplay")
 	// void PlayMovementAnimation(TEnumAsByte<3DCardMovementState_Enum> CardMovementState, FVector ManualGoalDestination, FRotator ManualGoalRotation, AActor* OR_GoalActor, double Z Offset, double ErrorTolerance, double InterSpeed, AActor* NewLocalVar_0);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable)
-	// void OnRep_Card Type();
-	//
+
 	// /** Please add a function description */
 	// UFUNCTION(BlueprintCallable, Category="System")
 	// void LogDisplayMessage(FString Message, FLinearColor Specified Color);
@@ -364,5 +360,9 @@ public:
 	// UFUNCTION(BlueprintCallable, Category="Abilities")
 	// void RunCardAbility(int32 AbilityIndex, bool& Succesful, int32 AbilityIndex_Ref);
 
+	FORCEINLINE FCard GetCardData() const {return mCardData;}
 	FORCEINLINE int32 GetAttack() const {return mAttack;}
+	FORCEINLINE int32 GetCardID() const {return mCardID;}
+	FORCEINLINE int32 GetTurnPoint() const {return mTurnPoint;}
+	FORCEINLINE ECardType GetCardType() const {return mType;}
 };

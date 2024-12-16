@@ -43,10 +43,6 @@ public:
 	static void CreateScreenDisplayMessage(const UWorld* World,const FString& Message, FLinearColor SpecifiedColor, double Duration);
 	
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable,DisplayName="GetPlayerStateReference")
-	static int32 GetPlayerID(AController* Controller);
-	
-	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
 	static bool GetWorldRotationForPlayer(const UWorld* World,FRotator OverrideRotationAxis, FRotator& ReturnRotation);
 	

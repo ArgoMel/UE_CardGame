@@ -16,6 +16,15 @@ void ACCGState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ThisClass,mPlayerBoards);
 	DOREPLIFETIME(ThisClass,mPlayerAndAIStates);
+	
+	DOREPLIFETIME(ThisClass,mGameTurnState);
+}
+
+void ACCGState::GetActivePlayerCards(int32 Index, TArray<ACard3D*>& Cards)
+{
+	const bool isValidIndex=mPlayerBoards.Num()<=Index;
+	IF_RET_VOID(isValidIndex);
+	Cards= mPlayerBoards[Index].ActiveCards;
 }
 
 void ACCGState::GetCardPlacements(int32 Index, TArray<ACardPlacement*>& CardPlacements)

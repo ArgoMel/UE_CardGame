@@ -6,6 +6,73 @@
 #include "CCGEnum.h"
 #include "CCGStruct.generated.h"
 
+class AGraveyard;
+class ACardPlacement;
+class ACard3D;
+
+USTRUCT(BlueprintType)
+struct FPlayerStat
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere)
+	int32 Health;
+	UPROPERTY(EditAnywhere)
+	int32 HealthMax;
+	UPROPERTY(EditAnywhere)
+	int32 Mana;
+	UPROPERTY(EditAnywhere)
+	int32 ManaMax;
+	UPROPERTY(EditAnywhere)
+	int32 CardsInHand;
+	UPROPERTY(EditAnywhere)
+	int32 CardsInDeck;
+	UPROPERTY(EditAnywhere)
+	int32 ActiveCard;
+	UPROPERTY(EditAnywhere)
+	int32 PlayerTurn;
+
+	FPlayerStat()
+	: Health(0)
+	, HealthMax(100)
+	, Mana(0)
+	, ManaMax(0)
+	, CardsInHand(0)
+	, CardsInDeck(0)
+	, ActiveCard(0)
+	, PlayerTurn(0)
+	{
+	}
+
+	/* 트루면 플레이 가능 상태 */
+	FORCEINLINE bool CheckCardState() const
+	{
+		return CardsInDeck>0&&
+			CardsInHand>0&&
+				ActiveCard>0;	
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FPlayerBoard
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere)
+	TArray<ACard3D*> ActiveCards;
+	UPROPERTY(EditAnywhere)
+	TArray<ACardPlacement*> CardPlacements;
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<AGraveyard> Graveyards;
+	UPROPERTY(EditAnywhere)
+	int32 TotalCardPlacementPositions;
+	
+	FPlayerBoard()
+	: TotalCardPlacementPositions(0)
+	{
+	}
+};
+
 #pragma region AIStruct
 class AGraveyard;
 class ACard3D;
@@ -75,6 +142,12 @@ public:
 	FPlaySubStruct()
 	{
 	}
+
+	explicit FPlaySubStruct(TArray<FCardInteraction>& Array)
+		:CardPlayStructs(Array)
+	{
+		
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -87,6 +160,11 @@ public:
 
 	FPlayStruct()
 	{
+	}
+
+	explicit FPlayStruct(TArray<FCardInteraction>& Array)
+	{
+		CardInteractions.Add(FPlaySubStruct(Array));
 	}
 };
 
@@ -597,66 +675,3 @@ public:
 	}
 };
 #pragma endregion
-
-USTRUCT(BlueprintType)
-struct FPlayerStat
-{
-	GENERATED_BODY()
-public:
-	UPROPERTY(EditAnywhere)
-	int32 Health;
-	UPROPERTY(EditAnywhere)
-	int32 HealthMax;
-	UPROPERTY(EditAnywhere)
-	int32 Mana;
-	UPROPERTY(EditAnywhere)
-	int32 ManaMax;
-	UPROPERTY(EditAnywhere)
-	int32 CardsInHand;
-	UPROPERTY(EditAnywhere)
-	int32 CardsInDeck;
-	UPROPERTY(EditAnywhere)
-	int32 ActiveCard;
-	UPROPERTY(EditAnywhere)
-	int32 PlayerTurn;
-
-	FPlayerStat()
-	: Health(0)
-	, HealthMax(100)
-	, Mana(0)
-	, ManaMax(0)
-	, CardsInHand(0)
-	, CardsInDeck(0)
-	, ActiveCard(0)
-	, PlayerTurn(0)
-	{
-	}
-
-	/* 트루면 플레이 가능 상태 */
-	FORCEINLINE bool CheckCardState() const
-	{
-		return CardsInDeck>0&&
-			CardsInHand>0&&
-				ActiveCard>0;	
-	}
-};
-
-USTRUCT(BlueprintType)
-struct FPlayerBoard
-{
-	GENERATED_BODY()
-public:
-	UPROPERTY(EditAnywhere)
-	TArray<ACard3D*> ActiveCards;
-	UPROPERTY(EditAnywhere)
-	TArray<ACardPlacement*> CardPlacements;
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<AGraveyard> Graveyards;
-	UPROPERTY(EditAnywhere)
-	int32 TotalCardPlacementPositions;
-	
-	FPlayerBoard()
-	: TotalCardPlacementPositions(0)
-	{
-	}
-};
