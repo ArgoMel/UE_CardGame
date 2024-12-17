@@ -4,11 +4,15 @@
 
 #include "CCGPlugin.h"
 #include "AI/CCGAIController.h"
+#include "AI/EvaluationRuleBFL.h"
 #include "BFL/CCGBFL.h"
 #include "BFL/ControllerBFL.h"
 #include "GameMode/CCGMode.h"
 #include "Gameplay/Card3D.h"
 #include "GameState/CCGState.h"
+// ReSharper disable once CppUnusedIncludeDirective
+#include "Gameplay/BoardPlayer.h"
+#include "Gameplay/CardPlacement.h"
 
 void UGameSnapshotBFL::GetGameStateSnapshot(const UObject* WorldContextObject, FGameStateSnapshot& ReturnSnapshot)
 {
@@ -30,7 +34,7 @@ void UGameSnapshotBFL::GetGameStateSnapshot(const UObject* WorldContextObject, F
 		gameState->GetActivePlayerCards(id,playerCards);
 		for (const auto& playerCard:playerCards)
 		{
-			cards.Add(playerCard->GetCardData());
+			cards.Add(*playerCard->GetCardData());
 			cardIDs.Add(playerCard->GetCardID());
 		}
 		FPlayerStat playerStat;
@@ -97,7 +101,177 @@ void UGameSnapshotBFL::GenerateCardSnapshotSimulation(const UObject* WorldContex
 	const int32 randOpponentID=players[FMath::RandRange(0,players.Num()-1)];
 	TArray<ACard3D*> playerCards;
 	gameState->GetActivePlayerCards(ControllerID,playerCards);
+
+	//Simulate - Attack Cards
 	TArray<ACard3D*> opponentCards;
 	gameState->GetActivePlayerCards(randOpponentID,opponentCards);
 	UCCGBFL::ShuffleArray(opponentCards,FMath::Rand()%9999);
+	for (const auto& opponentCard:opponentCards)
+	{
+		FCardInteraction cardInteraction;
+		int32 index=0;
+		bool canSimulate=false;
+		for (const auto& interaction:ReturnInteractionArray)
+		{
+			canSimulate=SimulateAttackCards(ControllerID,Card,opponentCard,AIController->GetAIPointAllocation().Calculation.CardDamaged,AIController->GetAIPointAllocation().Calculation.CardRemovedFromPlay,
+				AIController->GetAIPointAllocation().Calculation.bIncludeAIPointPerCard,cardInteraction);
+			if (canSimulate&&
+				cardInteraction.Value>interaction.Value)
+			{
+				ReturnInteractionArray.Insert(cardInteraction,index);
+				break;
+			}
+			++index;
+		}
+		if (canSimulate&&
+			index>=ReturnInteractionArray.Num()-1)
+		{
+			ReturnInteractionArray.Add(cardInteraction);
+		}
+	}
+
+	//Simulate - Attack Opponent Player
+	FCardInteraction cardInteraction;
+	int32 index=0;
+	bool canSimulate=false;
+	for (const auto& interaction:ReturnInteractionArray)
+	{
+		canSimulate=SimulateAttackPlayer(ControllerID,Card,randOpponentID,AIController->GetAIPointAllocation().Calculation.PerDamagePointToPlayer,AIController->GetAIPointAllocation().Calculation.PlayerRemovedFromPlay,cardInteraction);
+		if (canSimulate&&
+			cardInteraction.Value>interaction.Value)
+		{
+			ReturnInteractionArray.Insert(cardInteraction,index);
+			break;
+		}
+		++index;
+	}
+	if (canSimulate&&
+		index>=ReturnInteractionArray.Num()-1)
+	{
+		ReturnInteractionArray.Add(cardInteraction);
+	}
+	
+	//Find valid own card which can receive attack
+	//Simulate - Attack Cards
+	for (const auto& playerCard:playerCards)
+	{
+		if (playerCard->GetPlacementOwner()->GetPlayerIndex()==ControllerID&&
+			playerCard!=Card&&
+			(playerCard->GetCardData()->CardSystemData.InteractionConditions.Contains(EInteractionConditions::CanReceiveSelfInteraction_AIOnly)||playerCard->GetCardData()->CardSystemData.InteractionConditions.Contains(EInteractionConditions::CanReceiveSelfInteractionIfDoesNotRemoveCardFromPlay_AIOnly)))
+		{
+			cardInteraction=FCardInteraction();
+			index=0;
+			canSimulate=false;
+			for (const auto& interaction:ReturnInteractionArray)
+			{
+				canSimulate=SimulateAttackOwnedCard(ControllerID,Card,playerCard,AIController->GetAIPointAllocation().Calculation.AttackOwnedCardWithValue,cardInteraction);
+				if (canSimulate&&
+					cardInteraction.Value>interaction.Value)
+				{
+					ReturnInteractionArray.Insert(cardInteraction,index);
+					break;
+				}
+				++index;
+			}
+			if (canSimulate&&
+				index>=ReturnInteractionArray.Num()-1)
+			{
+				ReturnInteractionArray.Add(cardInteraction);
+			}
+		}
+	}
+}
+
+bool UGameSnapshotBFL::SimulateAttackCards(int32 CallingPlayerID, ACard3D* CallingCard, ACard3D* ReceivingCard, int32 PtsForDamage, int32 PtsForRemovingCardFromPlay, bool IncludeCardValue, FCardInteraction& ReturnInteraction)
+{
+	IF_RET_BOOL(CallingCard);
+	IF_RET_BOOL(ReceivingCard);
+	FPlayerStat playerStat;
+	TArray<FName> deck;
+	TArray<FName> cardsInHand;
+	UControllerBFL::GetControllersStateProfile(CallingCard,CallingPlayerID,playerStat,deck,cardsInHand);
+	if (!CallingCard->GetCardData()->Attack.CanAttackCards||
+		ReceivingCard->GetCardData()->Attack.ManaCost>playerStat.Mana)
+	{
+		return false;
+	}
+
+	const int32 add=UEvaluationRuleBFL::RuleCalculateAdditionalAbilityPointOffset(CallingCard,ReceivingCard);
+	int32 ruleTotal=0;
+	const int32 total=UEvaluationRuleBFL::RuleCalculateAttackPoints(add,PtsForDamage,PtsForRemovingCardFromPlay,CallingCard->GetCardData()->Attack.Damage,ReceivingCard->GetCardData()->Health.Health,ReceivingCard->GetCardData()->CardSystemData.CardValue,IncludeCardValue,ruleTotal);
+
+	ReturnInteraction.OwningControllerID=CallingPlayerID;
+	ReturnInteraction.InteractionType=EPlayType::AttackCard;
+	ReturnInteraction.TalkingCard=CallingCard;
+	ReturnInteraction.ReceivingActor=ReceivingCard;
+	ReturnInteraction.Value=total;
+	return true;
+}
+
+bool UGameSnapshotBFL::SimulateAttackPlayer(int32 CallingPlayerID, ACard3D* CallingCard, int32 ReceivingPlayerID, int32 PtsForPlayerDamage, int32 PtsForRemovingPlayer, FCardInteraction& ReturnInteraction)
+{
+	IF_RET_BOOL(CallingCard);
+	if (!CallingCard->GetCardData()->Attack.CanAttackCards)
+	{
+		return false;
+	}
+	
+	FPlayerStat playerStat;
+	TArray<FName> deck;
+	TArray<FName> cardsInHand;
+	UControllerBFL::GetControllersStateProfile(CallingCard,CallingPlayerID,playerStat,deck,cardsInHand);
+	if (CallingCard->GetCardData()->Attack.ManaCost>playerStat.Mana)
+	{
+		return false;
+	}
+
+	const ACCGAIController* AIController= Cast<ACCGAIController>(UControllerBFL::GetControllerReferenceFromID(CallingCard,CallingPlayerID));
+	IF_RET_BOOL(AIController);
+	const int32 add=AIController->mPriorityFocusList.Contains(EAIPersonalityFocus::DamageOpponentPlayer);
+	UControllerBFL::GetControllersStateProfile(CallingCard,ReceivingPlayerID,playerStat,deck,cardsInHand);
+	int32 ruleTotal=0;
+	const int32 total=UEvaluationRuleBFL::RuleCalculateDamageToPlayerPoints(add,PtsForPlayerDamage,PtsForRemovingPlayer,CallingCard->GetCardData()->Attack.Damage,playerStat.Health,ruleTotal);
+
+	const UWorld* world=CallingCard->GetWorld();
+	IF_RET_BOOL(world);
+	ACCGMode* gameMode=Cast<ACCGMode>(world->GetAuthGameMode());
+	IF_RET_BOOL(gameMode);
+	ReturnInteraction.OwningControllerID=CallingPlayerID;
+	ReturnInteraction.InteractionType=EPlayType::AttackPlayer;
+	ReturnInteraction.TalkingCard=CallingCard;
+	ReturnInteraction.ReceivingActor=gameMode->mBoardPlayersArray[ReceivingPlayerID-1];
+	ReturnInteraction.Value=total;
+	return true;
+}
+
+bool UGameSnapshotBFL::SimulateAttackOwnedCard(int32 CallingPlayerID, ACard3D* CallingCard, ACard3D* ReceivingCard, int32 AttackOwnerCardDefaultValue, FCardInteraction& ReturnInteraction)
+{
+	IF_RET_BOOL(CallingCard);
+	IF_RET_BOOL(ReceivingCard);
+	if (!CallingCard->GetCardData()->Attack.CanAttackCards)
+	{
+		return false;
+	}
+
+	FPlayerStat playerStat;
+	TArray<FName> deck;
+	TArray<FName> cardsInHand;
+	UControllerBFL::GetControllersStateProfile(CallingCard,CallingPlayerID,playerStat,deck,cardsInHand);
+	if (ReceivingCard->GetCardData()->Attack.ManaCost>playerStat.Mana)
+	{
+		return false;
+	}
+
+	int32 point=0;
+	if (!UEvaluationRuleBFL::RuleCalculateOwnedCardAbilityPointOffset(CallingCard,ReceivingCard,point))
+	{
+		return false;
+	}
+
+	ReturnInteraction.OwningControllerID=CallingPlayerID;
+	ReturnInteraction.InteractionType=EPlayType::AttackCard;
+	ReturnInteraction.TalkingCard=CallingCard;
+	ReturnInteraction.ReceivingActor=ReceivingCard;
+	ReturnInteraction.Value=point+AttackOwnerCardDefaultValue;
+	return true;
 }

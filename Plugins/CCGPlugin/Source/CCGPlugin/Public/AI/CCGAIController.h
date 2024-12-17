@@ -246,6 +246,7 @@ public:
 	// UFUNCTION(BlueprintCallable, Category="Setup")
 	// void CreateAIDebugUI();
 
+	FORCEINLINE FPointAllocation GetAIPointAllocation() const {return mAIPointAllocation;}
 	FORCEINLINE TArray<FName> GetAIDeck(){return mAIDeck;}
 	FORCEINLINE TArray<FName> GetAICardsInHand(){return mAICardsInHand;}
 };

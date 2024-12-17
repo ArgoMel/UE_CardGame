@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Common/CCGStruct.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "EvaluationRuleBFL.generated.h"
 
@@ -12,6 +13,13 @@ UCLASS()
 class CCGPLUGIN_API UEvaluationRuleBFL : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
+private:
+	static int32 AdditionalIncreaseAttack(EAbilityTrigger Type,int32 Point,int32 AbilityInt);
+	static int32 AdditionalDamageAllCardsOnBoard(EAbilityTrigger Type,int32 Point,int32 AbilityInt);
+
+	static int32 OwnedCardIncreaseAttack(int32 Point,FCard* TalkingCard,FCard* ReceivingCard, FCardAbility* Ability);
+	static int32 OwnedCardDamageAllCardsOnBoard(int32 Point,FCard* TalkingCard,FCard* ReceivingCard, FCardAbility* Ability);
+	
 public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
@@ -27,11 +35,11 @@ public:
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
-	static bool RuleCalculateAttackPoints(int32 Add, int32 PtsForDamage, int32 PtsForRemovingCardFromPlay, int32 Attack, int32 Health, int32 CardValue, bool IncludeCardValue, int32& Total, int32& RuleTotal);
+	static int32 RuleCalculateAttackPoints(int32 Add, int32 PtsForDamage, int32 PtsForRemovingCardFromPlay, int32 Attack, int32 Health, int32 CardValue, bool IncludeCardValue, int32& RuleTotal);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
-	static bool RuleCalculateDamageToPlayerPoints(int32 Add, int32 PtsForPlayerDamage, int32 PtsForRemovingPlayer, int32 CardAttack, int32 PlayerHealth, int32& Total, int32& RuleTotal);
+	static int32 RuleCalculateDamageToPlayerPoints(int32 Add, int32 PtsForPlayerDamage, int32 PtsForRemovingPlayer, int32 CardAttack, int32 PlayerHealth, int32& RuleTotal);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)

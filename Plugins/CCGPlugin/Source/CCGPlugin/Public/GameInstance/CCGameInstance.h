@@ -37,7 +37,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "디폴트")
 	FString mSelectedCardSet;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "디폴트")
-	EGameState mCurGameState;
+	ECardGameState mCurGameState;
 	/** Holds an enum reference to the chosen deck */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "디폴트")
 	ECardSet mChosenCardSet;
@@ -68,7 +68,7 @@ protected:
 
 	/** 같은 상태면 false를 반환 */
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool MoveToGameState(EGameState InState);
+	bool MoveToGameState(ECardGameState InState);
 
 public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
@@ -94,5 +94,5 @@ public:
 
 	/** 현재 스테이트 반환 */
 	UFUNCTION(BlueprintPure)
-	EGameState GetGameState(EGameState InState, bool& IsSameState) const;
+	ECardGameState GetGameState(ECardGameState InState, bool& IsSameState) const;
 };

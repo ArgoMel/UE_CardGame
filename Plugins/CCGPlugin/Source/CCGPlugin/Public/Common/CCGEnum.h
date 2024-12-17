@@ -162,7 +162,7 @@ enum class ECostType : uint8
 };
 
 UENUM(BlueprintType)
-enum class EDamageType : uint8
+enum class ECardDamageType : uint8
 {
 	Basic UMETA(DisplayName = "Basic"),
 	Poison UMETA(DisplayName = "Poison"),
@@ -171,7 +171,7 @@ enum class EDamageType : uint8
 };
 
 UENUM(BlueprintType)
-enum class EGameState : uint8
+enum class ECardGameState : uint8
 {
 	Startup UMETA(DisplayName = "Startup"),
 	MainMenu UMETA(DisplayName = "MainMenu"),
@@ -428,7 +428,7 @@ enum class EAIRisk : uint8
 };
 
 UENUM(BlueprintType)
-enum class EAIState : uint8
+enum class ECardAIState : uint8
 {
 	Initialization  UMETA(DisplayName = "Initialization"),
 	Execution  UMETA(DisplayName = "Execution"),

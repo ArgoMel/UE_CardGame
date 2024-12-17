@@ -173,12 +173,11 @@ protected:
 	// /** Please add a variable description */
 	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
 	// TEnumAsByte<TurnState_Enum> CardGameState;
-	//
-	// /** Please add a variable description */
-	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, PlacementOwner) to GetLifetimeReplicatedProps");
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
-	// TObjectPtr<ACardPlacement_C> PlacementOwner;
-	//
+	
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
+	TObjectPtr<ACardPlacement> mPlacementOwner;
+	
 	// /** Please add a variable description */
 	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
 	// TObjectPtr<A3DCard_C> DamageDealingCard_Ref;
@@ -358,9 +357,10 @@ public:
 	//
 	// /** Run the Cards ability */
 	// UFUNCTION(BlueprintCallable, Category="Abilities")
-	// void RunCardAbility(int32 AbilityIndex, bool& Succesful, int32 AbilityIndex_Ref);
+	// void RunCardAbility(int32 AbilityIndex, bool& Successful, int32 AbilityIndex_Ref);
 
-	FORCEINLINE FCard GetCardData() const {return mCardData;}
+	FORCEINLINE ACardPlacement* GetPlacementOwner()  {return mPlacementOwner;}
+	FORCEINLINE FCard* GetCardData()  {return &mCardData;}
 	FORCEINLINE int32 GetAttack() const {return mAttack;}
 	FORCEINLINE int32 GetCardID() const {return mCardID;}
 	FORCEINLINE int32 GetTurnPoint() const {return mTurnPoint;}

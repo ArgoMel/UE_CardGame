@@ -77,7 +77,7 @@ protected:
 	TObjectPtr<UTimelineComponent> mScaleHealthIcon;
 
 	/** Player Health  */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Settings", ReplicatedUsing="OnRep_PlayerHealth")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Settings", ReplicatedUsing="OnRep_Health")
 	int32 mPlayerHealth;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Settings")
@@ -113,5 +113,5 @@ public:
 public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
-	void OnRep_PlayerHealth();
+	void OnRep_Health();
 };

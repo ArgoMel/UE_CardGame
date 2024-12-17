@@ -10,12 +10,12 @@
 
 UCCGameInstance::UCCGameInstance()
 {
-	GetClassAsset(mMainMenuClass, UUserWidget,"");
-	GetClassAsset(mLoadingScreenClass, UUserWidget,"");
-	GetClassAsset(mDeckBuilderClass, UUserWidget,"");
+	// GetClassAsset(mMainMenuClass, UUserWidget,"");
+	// GetClassAsset(mLoadingScreenClass, UUserWidget,"");
+	// GetClassAsset(mDeckBuilderClass, UUserWidget,"");
 
 	mSelectedCardSet = TEXT("Creature Reborn");
-	mCurGameState = EGameState::Startup;
+	mCurGameState = ECardGameState::Startup;
 	mChosenCardSet = ECardSet::BasicSet;
 	mArena = EArenaList::ArenaClassic;
 	mPlatform = EPlatform::Windows;
@@ -45,7 +45,7 @@ void UCCGameInstance::OnCreateSession(bool bWasSuccessful)
 {
 	if (bWasSuccessful)
 	{
-		MoveToGameState(EGameState::Playing);
+		MoveToGameState(ECardGameState::Playing);
 		UWorld* world = GetWorld();
 		if (world)
 		{
@@ -85,7 +85,7 @@ void UCCGameInstance::OnJoinSession(EOnJoinSessionCompleteResult::Type Result)
 	switch (Result)
 	{
 	case EOnJoinSessionCompleteResult::Success:
-		MoveToGameState(EGameState::Playing);
+		MoveToGameState(ECardGameState::Playing);
 		break;
 	case EOnJoinSessionCompleteResult::SessionIsFull:
 	case EOnJoinSessionCompleteResult::SessionDoesNotExist:
@@ -108,7 +108,7 @@ void UCCGameInstance::OnStartSession(bool bWasSuccessful)
 {
 }
 
-bool UCCGameInstance::MoveToGameState(EGameState InState)
+bool UCCGameInstance::MoveToGameState(ECardGameState InState)
 {
 	if(InState==mCurGameState)
 	{
@@ -120,19 +120,19 @@ bool UCCGameInstance::MoveToGameState(EGameState InState)
 	{
 		switch (mCurGameState)
 		{
-		case EGameState::Startup:
+		case ECardGameState::Startup:
 			break;
-		case EGameState::MainMenu:
+		case ECardGameState::MainMenu:
 			mMainMenu->RemoveFromParent();
 			break;
-		case EGameState::LoadingScreen:
+		case ECardGameState::LoadingScreen:
 			mLoadingScreen->RemoveFromParent();
 			break;
-		case EGameState::Playing:
+		case ECardGameState::Playing:
 			break;
-		case EGameState::Store:
+		case ECardGameState::Store:
 			break;
-		case EGameState::DeckBuildingMenu:
+		case ECardGameState::DeckBuildingMenu:
 			mDeckBuilder->RemoveFromParent();
 			break;
 		default: ;
@@ -147,11 +147,11 @@ void UCCGameInstance::ShowMainMenuEvent_Implementation()
 	const UWorld* world = GetWorld();
 	IF_RET_VOID(world)
 	
-	if(mCurGameState==EGameState::Playing)
+	if(mCurGameState==ECardGameState::Playing)
 	{
 		UGameplayStatics::OpenLevel(world, CCG_Level::MainMenu);
 	}
-	MoveToGameState(EGameState::MainMenu);
+	MoveToGameState(ECardGameState::MainMenu);
 	if(UCCGBFL::CanExecuteCosmeticEvents(this))
 	{
 		if(!mMainMenu)
@@ -172,7 +172,7 @@ void UCCGameInstance::ShowLoadingScreen_Implementation()
 	const UWorld* world = GetWorld();
 	IF_RET_VOID(world)
 	
-	if (!MoveToGameState(EGameState::LoadingScreen))
+	if (!MoveToGameState(ECardGameState::LoadingScreen))
 	{
 		return;	
 	}
@@ -210,7 +210,7 @@ void UCCGameInstance::JoinGameSession_Implementation()
 
 void UCCGameInstance::Setup(int32 NumberOfPublicConnections, FString TypeOfMatch, FString LobbyPath)
 {
-	if (mCurGameState==EGameState::Startup)
+	if (mCurGameState==ECardGameState::Startup)
 	{
 		mPathToLobby = FString::Printf(TEXT("%s?listen"), *LobbyPath);
 		mNumPublicConnections = NumberOfPublicConnections;
@@ -234,7 +234,7 @@ EPlatform UCCGameInstance::GetCurrentPlatform(bool& IsMobile) const
 	return mPlatform;
 }
 
-EGameState UCCGameInstance::GetGameState(EGameState InState, bool& IsSameState) const
+ECardGameState UCCGameInstance::GetGameState(ECardGameState InState, bool& IsSameState) const
 {
 	IsSameState=InState==mCurGameState;
 	return mCurGameState;

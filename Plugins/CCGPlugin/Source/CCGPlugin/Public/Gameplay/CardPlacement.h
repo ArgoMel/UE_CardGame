@@ -159,4 +159,5 @@ public:
 	FORCEINLINE bool IsFull() const { return bIsFull; }
 	FORCEINLINE ACardPlacement* GetPlacementLeft() const { return mPlacementLeft; }
 	FORCEINLINE ACardPlacement* GetPlacementRight() const { return mPlacementRight; }
+	FORCEINLINE int32 GetPlayerIndex() const { return mPlayerIndex; }
 };

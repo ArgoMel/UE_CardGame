@@ -32,9 +32,6 @@ protected:
 	TArray<AActor*> mPlayerAndAIStates;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, Category="System")
-	TArray<ABoardPlayer*> mBoardPlayersArray;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, Category="System")
 	TObjectPtr<ACCGState> mGameState;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
@@ -72,6 +69,9 @@ public:
 	TArray<AController*> mGameControllersArray;
 	UPROPERTY(BlueprintReadWrite, Category="System")
 	TArray<AAIController*> mAIControllersArray;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, Category="System")
+	TArray<ABoardPlayer*> mBoardPlayersArray;
 
 protected:
 	virtual void CollectGameResults(TArray<EEndGameResults>& PlayerResults);

@@ -73,6 +73,53 @@ public:
 	}
 };
 
+USTRUCT(BlueprintType)
+struct FCardLayoutCalculate
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere)
+	FVector2D CardSpacing;
+	UPROPERTY(EditAnywhere)
+	FVector2D ScreenOffset;
+	UPROPERTY(EditAnywhere)
+	int32 CardLoopIndex; 
+	UPROPERTY(EditAnywhere)
+	int32 CardsInHand;
+	UPROPERTY(EditAnywhere)
+	int32 MaxCardInHand;
+	UPROPERTY(EditAnywhere)
+	double RadiusOffset;
+	UPROPERTY(EditAnywhere)
+	double RotationDistanceScaleFactor;
+	UPROPERTY(EditAnywhere)
+	double CardScale;
+	UPROPERTY(EditAnywhere)
+	double CardOffset;
+	UPROPERTY(EditAnywhere)
+	bool FlyInDirection;
+	UPROPERTY(EditAnywhere)
+	bool RotateCardsToOffset;
+	UPROPERTY(EditAnywhere)
+	bool DynamicSpacing;
+
+	FCardLayoutCalculate()
+	: CardSpacing()
+	, ScreenOffset()
+	, CardLoopIndex(0)
+	, CardsInHand(0)
+	, MaxCardInHand(0)
+	, RadiusOffset(0)
+	, RotationDistanceScaleFactor(0)
+	, CardScale(0)
+	, CardOffset(0)
+	, FlyInDirection(false)
+	, RotateCardsToOffset(false)
+	, DynamicSpacing(false)
+	{
+	}
+};
+
 #pragma region AIStruct
 class AGraveyard;
 class ACard3D;
@@ -381,7 +428,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USoundCue> SoundCue;
 	UPROPERTY(EditAnywhere)
-	EDamageType DamageType;
+	ECardDamageType DamageType;
 	UPROPERTY(EditAnywhere)
 	int32 Damage;
 	UPROPERTY(EditAnywhere)
@@ -392,7 +439,7 @@ public:
 	bool CanAttackCards;
 
 	FCardAttack()
-	: DamageType(EDamageType::Basic)
+	: DamageType(ECardDamageType::Basic)
 	, Damage(1)
 	, ManaCost(0)
 	, CanAttackPlayer(true)

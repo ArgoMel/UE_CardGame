@@ -30,6 +30,6 @@ void ABoardPlayer::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ABoardPlayer::OnRep_PlayerHealth()
+void ABoardPlayer::OnRep_Health()
 {
 }
