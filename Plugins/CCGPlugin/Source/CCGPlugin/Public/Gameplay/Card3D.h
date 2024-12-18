@@ -280,11 +280,10 @@ protected:
 	// /** Please add a variable description */
 	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
 	// TObjectPtr<ABP_CardGameState_C> GameState_Ref;
-	//
-	// /** Please add a variable description */
-	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, OwningPlayerID) to GetLifetimeReplicatedProps");
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", ReplicatedUsing="OnRep_OwningPlayerID")
-	// int32 OwningPlayerID;
+	
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", ReplicatedUsing="OnRep_OwningPlayerID")
+	int32 mOwningPlayerID;
 
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
@@ -364,5 +363,6 @@ public:
 	FORCEINLINE int32 GetAttack() const {return mAttack;}
 	FORCEINLINE int32 GetCardID() const {return mCardID;}
 	FORCEINLINE int32 GetTurnPoint() const {return mTurnPoint;}
+	FORCEINLINE int32 GetOwningPlayerID() const {return mOwningPlayerID;}
 	FORCEINLINE ECardType GetCardType() const {return mType;}
 };

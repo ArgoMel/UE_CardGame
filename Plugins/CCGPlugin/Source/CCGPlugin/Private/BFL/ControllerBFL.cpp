@@ -2,6 +2,7 @@
 
 #include "BFL/ControllerBFL.h"
 
+#include "CCGPlugin.h"
 #include "AI/CCGAIController.h"
 #include "AI/CCGAIPawn.h"
 #include "PlayerController/CCGPlayerController.h"
@@ -87,13 +88,30 @@ AActor* UControllerBFL::GetControllersStateProfile(const UObject* WorldContextOb
 	return nullptr;
 }
 
-int32 UControllerBFL::GetControllerIDs(const UObject* WorldContextObject,AController* Controller, TArray<int32>& Players)
+void UControllerBFL::GetControllersStateStat(const UObject* WorldContextObject, int32 ControllerID, FPlayerStat& PlayerStat)
 {
-	if (!WorldContextObject)
+	IF_RET_VOID(WorldContextObject);
+	const AController* controller= GetControllerReferenceFromID(WorldContextObject,ControllerID);
+	IF_RET_VOID(controller);
+	const ACCGPlayerState* playerState=controller->GetPlayerState<ACCGPlayerState>();
+	if (playerState)
+	{
+		PlayerStat=playerState->mPlayerStat;
+	}
+	const ACCGAIPawn* AIPawn=controller->GetPawn<ACCGAIPawn>();
+	if (AIPawn)
+	{
+		PlayerStat=AIPawn->mAIStat;
+	}
+}
+
+int32 UControllerBFL::GetControllerIDs(AController* Controller, TArray<int32>& Players)
+{
+	if (!Controller)
 	{
 		return -1;
 	}
-	const UWorld* world= WorldContextObject->GetWorld();
+	const UWorld* world= Controller->GetWorld();
 	if (!world)
 	{
 		return -1;

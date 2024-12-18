@@ -28,10 +28,14 @@ class CCGPLUGIN_API UControllerBFL : public UBlueprintFunctionLibrary
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure,DisplayName="Get Controllers State Profile(Server Only)")
 	static AActor* GetControllersStateProfile(const UObject* WorldContextObject,int32 ControllerID,FPlayerStat& PlayerStat,TArray<FName>& Deck,TArray<FName>& CardsInHand);
+
+	/** Please add a function description */
+	UFUNCTION(BlueprintPure)
+	static void GetControllersStateStat(const UObject* WorldContextObject,int32 ControllerID,FPlayerStat& PlayerStat);
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure,DisplayName="GetControllerIDForBothPlayers(ServerOnly)")
-	static int32 GetControllerIDs(const UObject* WorldContextObject,AController* Controller,TArray<int32>& Players);
+	static int32 GetControllerIDs(AController* Controller,TArray<int32>& Players);
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure,DisplayName="GetControllerPlayerState(ServerOnly)")

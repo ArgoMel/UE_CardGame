@@ -17,6 +17,7 @@ void ACard3D::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLif
 	DOREPLIFETIME(ThisClass,mTurnPoint)
 	DOREPLIFETIME(ThisClass,mType)
 	DOREPLIFETIME(ThisClass,mPlacementOwner)
+	DOREPLIFETIME(ThisClass,mOwningPlayerID)
 }
 
 void ACard3D::BeginPlay()

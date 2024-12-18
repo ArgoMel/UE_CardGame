@@ -27,6 +27,12 @@ namespace CCG_SaveSlotName
 	const FString CardGameSave(TEXT("CardGameSave"));
 }
 
+namespace CCG_BB
+{
+	const FName Loop(TEXT("Loop"));
+	const FName FinalLoop(TEXT("bFinalLoop"));
+}
+
 UCLASS()
 class CCGPLUGIN_API UCCGConstVar : public UObject
 {

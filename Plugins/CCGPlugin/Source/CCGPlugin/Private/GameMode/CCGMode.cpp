@@ -104,9 +104,7 @@ void ACCGMode::CollectGameResults(TArray<EEndGameResults>& PlayerResults)
 bool ACCGMode::CheckIsPlayerActive(int32 ControllerID) const
 {
 	FPlayerStat playerStat;
-	TArray<FName> deck;
-	TArray<FName> cardsInHands;
-	UControllerBFL::GetControllersStateProfile(this,ControllerID,playerStat,deck,cardsInHands);
+	UControllerBFL::GetControllersStateStat(this,ControllerID,playerStat);
 	return playerStat.Health>0&&
 		(playerStat.CardsInHand>0||playerStat.CardsInDeck>0||playerStat.ActiveCard>0);
 }
@@ -141,9 +139,7 @@ int32 ACCGMode::GetTurnMana(AController* Controller)
 {
 	const int32 id=UControllerBFL::GetControllerID(Controller);
 	FPlayerStat playerStat;
-	TArray<FName> deck;
-	TArray<FName> cardsInHands;
-	UControllerBFL::GetControllersStateProfile(this,id,playerStat,deck,cardsInHands);
+	UControllerBFL::GetControllersStateStat(this,id,playerStat);
 	return CalculateManaForTurn(playerStat.PlayerTurn);
 }
 

@@ -96,7 +96,7 @@ void UGameSnapshotBFL::GenerateCardSnapshotSimulation(const UObject* WorldContex
 	IF_RET_VOID(gameState);
 	
 	TArray<int32> players;
-	UControllerBFL::GetControllerIDs(WorldContextObject,controller,players);
+	UControllerBFL::GetControllerIDs(controller,players);
 	players.Remove(ControllerID);
 	const int32 randOpponentID=players[FMath::RandRange(0,players.Num()-1)];
 	TArray<ACard3D*> playerCards;
@@ -187,9 +187,7 @@ bool UGameSnapshotBFL::SimulateAttackCards(int32 CallingPlayerID, ACard3D* Calli
 	IF_RET_BOOL(CallingCard);
 	IF_RET_BOOL(ReceivingCard);
 	FPlayerStat playerStat;
-	TArray<FName> deck;
-	TArray<FName> cardsInHand;
-	UControllerBFL::GetControllersStateProfile(CallingCard,CallingPlayerID,playerStat,deck,cardsInHand);
+	UControllerBFL::GetControllersStateStat(CallingCard,CallingPlayerID,playerStat);
 	if (!CallingCard->GetCardData()->Attack.CanAttackCards||
 		ReceivingCard->GetCardData()->Attack.ManaCost>playerStat.Mana)
 	{
@@ -217,9 +215,7 @@ bool UGameSnapshotBFL::SimulateAttackPlayer(int32 CallingPlayerID, ACard3D* Call
 	}
 	
 	FPlayerStat playerStat;
-	TArray<FName> deck;
-	TArray<FName> cardsInHand;
-	UControllerBFL::GetControllersStateProfile(CallingCard,CallingPlayerID,playerStat,deck,cardsInHand);
+	UControllerBFL::GetControllersStateStat(CallingCard,CallingPlayerID,playerStat);
 	if (CallingCard->GetCardData()->Attack.ManaCost>playerStat.Mana)
 	{
 		return false;
@@ -228,7 +224,7 @@ bool UGameSnapshotBFL::SimulateAttackPlayer(int32 CallingPlayerID, ACard3D* Call
 	const ACCGAIController* AIController= Cast<ACCGAIController>(UControllerBFL::GetControllerReferenceFromID(CallingCard,CallingPlayerID));
 	IF_RET_BOOL(AIController);
 	const int32 add=AIController->mPriorityFocusList.Contains(EAIPersonalityFocus::DamageOpponentPlayer);
-	UControllerBFL::GetControllersStateProfile(CallingCard,ReceivingPlayerID,playerStat,deck,cardsInHand);
+	UControllerBFL::GetControllersStateStat(CallingCard,ReceivingPlayerID,playerStat);
 	int32 ruleTotal=0;
 	const int32 total=UEvaluationRuleBFL::RuleCalculateDamageToPlayerPoints(add,PtsForPlayerDamage,PtsForRemovingPlayer,CallingCard->GetCardData()->Attack.Damage,playerStat.Health,ruleTotal);
 
@@ -254,9 +250,7 @@ bool UGameSnapshotBFL::SimulateAttackOwnedCard(int32 CallingPlayerID, ACard3D* C
 	}
 
 	FPlayerStat playerStat;
-	TArray<FName> deck;
-	TArray<FName> cardsInHand;
-	UControllerBFL::GetControllersStateProfile(CallingCard,CallingPlayerID,playerStat,deck,cardsInHand);
+	UControllerBFL::GetControllersStateStat(CallingCard,CallingPlayerID,playerStat);
 	if (ReceivingCard->GetCardData()->Attack.ManaCost>playerStat.Mana)
 	{
 		return false;

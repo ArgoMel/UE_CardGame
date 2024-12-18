@@ -89,13 +89,13 @@ public:
 	UPROPERTY(EditAnywhere)
 	int32 MaxCardInHand;
 	UPROPERTY(EditAnywhere)
-	double RadiusOffset;
+	double CardOffset;
 	UPROPERTY(EditAnywhere)
 	double RotationDistanceScaleFactor;
 	UPROPERTY(EditAnywhere)
-	double CardScale;
+	double RadiusOffset;
 	UPROPERTY(EditAnywhere)
-	double CardOffset;
+	double CardScale;
 	UPROPERTY(EditAnywhere)
 	bool FlyInDirection;
 	UPROPERTY(EditAnywhere)
@@ -104,18 +104,18 @@ public:
 	bool DynamicSpacing;
 
 	FCardLayoutCalculate()
-	: CardSpacing()
-	, ScreenOffset()
-	, CardLoopIndex(0)
-	, CardsInHand(0)
-	, MaxCardInHand(0)
-	, RadiusOffset(0)
-	, RotationDistanceScaleFactor(0)
-	, CardScale(0)
-	, CardOffset(0)
-	, FlyInDirection(false)
-	, RotateCardsToOffset(false)
-	, DynamicSpacing(false)
+		: CardSpacing()
+		, ScreenOffset()
+		, CardLoopIndex(0)
+		, CardsInHand(0)
+		, MaxCardInHand(0)
+		, CardOffset(0)
+		, RotationDistanceScaleFactor(0)
+		, RadiusOffset(0)
+		, CardScale(0)
+		, FlyInDirection(false)
+		, RotateCardsToOffset(false)
+		, DynamicSpacing(false)
 	{
 	}
 };

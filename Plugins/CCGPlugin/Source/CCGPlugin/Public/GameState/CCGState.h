@@ -7,6 +7,7 @@
 #include "GameFramework/GameStateBase.h"
 #include "CCGState.generated.h"
 
+class AGraveyard;
 class ACard3D;
 struct FPlayerBoard;
 class ACardPlacement;
@@ -176,10 +177,10 @@ public:
 // 	/** Please add a function description */
 // 	UFUNCTION(BlueprintCallable, Category="Board")
 // 	void GetGraveyardReferencesPerPlayer();
-//
-// 	/** Please add a function description */
-// 	UFUNCTION(BlueprintPure, Category="Board")
-// 	void GetGraveyardReference(int32 PlayerID, AGraveyard_C*& ReturnGraveyard);
+
+	/** Please add a function description */
+	UFUNCTION(BlueprintPure, Category="Board")
+	AGraveyard* GetGraveyardReference(int32 PlayerID);
 
 	void GetActivePlayerCards(int32 Index, TArray<ACard3D*>& Cards);
 	void GetCardPlacements(int32 Index, TArray<ACardPlacement*>& CardPlacements);

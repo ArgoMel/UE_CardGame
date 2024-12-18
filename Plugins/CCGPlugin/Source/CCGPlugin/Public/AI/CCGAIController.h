@@ -18,13 +18,14 @@ class CCGPLUGIN_API ACCGAIController : public AAIController
 {
 	GENERATED_BODY()
 public:
+	friend ACCGMode;
 	ACCGAIController();
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
-public:
+protected:
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="AIPersonality")
 	TArray<EAIPersonalityFocus> mPersonalityFocuses;
@@ -108,9 +109,6 @@ public:
 	TArray<FName> mAIDeck;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="AIPlayer")
-	TArray<FName> mAIPlayableDecks;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="AIPlayer")
 	TArray<FName> mTempDeck;
 
 	/** Please add a variable description */
@@ -136,9 +134,6 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Play Data")
 	TArray<EAIPersonalityFocus> tAIFocusPriorities;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Play Data")
-	TArray<ECardType> mValidInteractionTypes;
-	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Play Data")
 	FEvaluationState mEvaluationStateTotal;
 	/** Please add a variable description */
@@ -151,9 +146,6 @@ public:
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Priority | Arrays")
 	TArray<EAIPersonalityFocus> mActivePriorityFocusList;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Priority |Arrays")
-	TArray<EAIPersonalityFocus> mPriorityFocusList;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Priority |Arrays")
 	TArray<EPriority> mPriorityList;
@@ -195,6 +187,19 @@ public:
 	// /** Please add a variable description */
 	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Black Board Keys")
 	// FName TurnActive;
+
+public:
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="AIPlayer")
+	TArray<FName> mAIPlayableDecks;
+	
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Play Data")
+	TArray<ECardType> mValidInteractionTypes;
+
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Priority |Arrays")
+	TArray<EAIPersonalityFocus> mPriorityFocusList;
 
 protected:
 	/** Please add a function description */
@@ -246,6 +251,7 @@ public:
 	// UFUNCTION(BlueprintCallable, Category="Setup")
 	// void CreateAIDebugUI();
 
+	FORCEINLINE ABoardPlayer* GetBoardPlayer() const {return mBoardPlayer;};
 	FORCEINLINE FPointAllocation GetAIPointAllocation() const {return mAIPointAllocation;}
 	FORCEINLINE TArray<FName> GetAIDeck(){return mAIDeck;}
 	FORCEINLINE TArray<FName> GetAICardsInHand(){return mAICardsInHand;}

@@ -20,6 +20,11 @@ void ACCGState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 	DOREPLIFETIME(ThisClass,mGameTurnState);
 }
 
+AGraveyard* ACCGState::GetGraveyardReference(int32 PlayerID)
+{
+	return nullptr;
+}
+
 void ACCGState::GetActivePlayerCards(int32 Index, TArray<ACard3D*>& Cards)
 {
 	const bool isValidIndex=mPlayerBoards.Num()<=Index;
