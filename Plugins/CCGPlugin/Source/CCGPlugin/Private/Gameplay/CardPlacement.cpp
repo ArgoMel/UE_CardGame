@@ -37,3 +37,7 @@ void ACardPlacement::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void ACardPlacement::Server_AddCardToBoardPlacement_Implementation(ACard3D* CardToAdd)
+{
+}
+

@@ -88,21 +88,24 @@ AActor* UControllerBFL::GetControllersStateProfile(const UObject* WorldContextOb
 	return nullptr;
 }
 
-void UControllerBFL::GetControllersStateStat(const UObject* WorldContextObject, int32 ControllerID, FPlayerStat& PlayerStat)
+AActor* UControllerBFL::GetControllersStateStat(const UObject* WorldContextObject, int32 ControllerID, FPlayerStat& PlayerStat)
 {
-	IF_RET_VOID(WorldContextObject);
+	IF_RET_NULL(WorldContextObject);
 	const AController* controller= GetControllerReferenceFromID(WorldContextObject,ControllerID);
-	IF_RET_VOID(controller);
-	const ACCGPlayerState* playerState=controller->GetPlayerState<ACCGPlayerState>();
+	IF_RET_NULL(controller);
+	ACCGPlayerState* playerState=controller->GetPlayerState<ACCGPlayerState>();
 	if (playerState)
 	{
 		PlayerStat=playerState->mPlayerStat;
+		return playerState;
 	}
-	const ACCGAIPawn* AIPawn=controller->GetPawn<ACCGAIPawn>();
+	ACCGAIPawn* AIPawn=controller->GetPawn<ACCGAIPawn>();
 	if (AIPawn)
 	{
 		PlayerStat=AIPawn->mAIStat;
+		return AIPawn;
 	}
+	return nullptr;
 }
 
 int32 UControllerBFL::GetControllerIDs(AController* Controller, TArray<int32>& Players)

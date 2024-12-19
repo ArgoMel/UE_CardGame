@@ -31,7 +31,7 @@ class CCGPLUGIN_API UControllerBFL : public UBlueprintFunctionLibrary
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
-	static void GetControllersStateStat(const UObject* WorldContextObject,int32 ControllerID,FPlayerStat& PlayerStat);
+	static AActor* GetControllersStateStat(const UObject* WorldContextObject,int32 ControllerID,FPlayerStat& PlayerStat);
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure,DisplayName="GetControllerIDForBothPlayers(ServerOnly)")

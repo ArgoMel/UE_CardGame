@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Common/CCGEnum.h"
+#include "Common/CCGStruct.h"
 #include "GameFramework/GameStateBase.h"
 #include "CCGState.generated.h"
 
@@ -96,10 +97,6 @@ protected:
 // 	/** Please add a variable description */
 // 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Recorded Game Data")
 // 	TArray<FBattleHistory_Struct> BattleHistory;
-//
-// 	/** Please add a variable description */
-// 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Recorded Game Data")
-// 	TArray<A3DCard_C*> CardReferenceArray;
 	
 // 	/** Please add a variable description */
 // 	static_assert(false, "You will need to add DOREPLIFETIME(ABP_CardGameState, bGameActive) to GetLifetimeReplicatedProps");
@@ -113,6 +110,10 @@ protected:
 public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
 	TArray<AActor*> mPlayerAndAIStates;
+	
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Recorded Game Data")
+	TArray<ACard3D*> mCardReferenceArray;
 	
 public:
 // 	UFUNCTION(BlueprintCallable, Category="System")
@@ -133,11 +134,11 @@ public:
 // 	/** Please add a function description */
 // 	UFUNCTION(BlueprintPure, Category="System")
 // 	void RequestChangeTurnState(AController* Controller, bool& ChangeRequestValid);
-//
-// 	/** Please add a function description */
-// 	UFUNCTION(BlueprintCallable, Category="Board")
-// 	void AddCardToBoard(A3DCard_C* CardReference, int32 PlayerID);
-//
+
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Board")
+	void AddCardToBoard(ACard3D* CardReference, int32 PlayerID);
+
 // 	/** Please add a function description */
 // 	UFUNCTION(BlueprintCallable, Category="Board")
 // 	void RemoveCardOnBoard(A3DCard_C* CardReference, int32 PlayerID);
@@ -170,10 +171,10 @@ public:
 // 	UFUNCTION(BlueprintCallable, Category="Recorded Game Data")
 // 	void RecordGameStateSnapshot();
 //
-// 	/** Please add a function description */
-// 	UFUNCTION(BlueprintCallable, Category="Recorded Game Data")
-// 	void RecordBattleHistory(FBattleHistory_Struct BattleHistoryStruct);
-//
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Recorded Game Data")
+	void RecordBattleHistory(FBattleHistory BattleHistoryStruct);
+
 // 	/** Please add a function description */
 // 	UFUNCTION(BlueprintCallable, Category="Board")
 // 	void GetGraveyardReferencesPerPlayer();
@@ -182,6 +183,7 @@ public:
 	UFUNCTION(BlueprintPure, Category="Board")
 	AGraveyard* GetGraveyardReference(int32 PlayerID);
 
+	void GetAllPlayerCards(TArray<ACard3D*>& Cards);
 	void GetActivePlayerCards(int32 Index, TArray<ACard3D*>& Cards);
 	void GetCardPlacements(int32 Index, TArray<ACardPlacement*>& CardPlacements);
 

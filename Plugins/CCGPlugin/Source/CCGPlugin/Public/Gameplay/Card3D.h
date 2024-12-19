@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BoardPlayer.h"
 #include "Common/CCGStruct.h"
 #include "GameFramework/Actor.h"
 #include "Card3D.generated.h"
@@ -102,11 +103,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
 	FCard mCardData;
 	
-	// /** Please add a variable description */
-	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, CardDataTableName) to GetLifetimeReplicatedProps");
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
-	// FName CardDataTableName;
-	//
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
+	FName mCardDataTableName;
+	
 	// /** Please add a variable description */
 	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, Name) to GetLifetimeReplicatedProps");
 	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
@@ -115,14 +115,13 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", ReplicatedUsing="OnRep_Attack")
 	int32 mAttack;
 
-	// /** Please add a variable description */
-	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, Health) to GetLifetimeReplicatedProps");
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", ReplicatedUsing="OnRep_Health")
-	// int32 Health;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", ReplicatedUsing="OnRep_Health")
+	int32 mHealth;
 
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Preview")
-	bool PreviewEnabled;
+	bool bPreviewEnabled;
 
 	/** This is an extra layer around the card which can be set to display anything like an outline or a shadow without needing any complex material setup. Mostly used for optimisation purposes.   */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Visual")
@@ -178,20 +177,15 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
 	TObjectPtr<ACardPlacement> mPlacementOwner;
 	
-	// /** Please add a variable description */
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
-	// TObjectPtr<A3DCard_C> DamageDealingCard_Ref;
-	//
-	// /** Please add a variable description */
+	/** Please add a variable description */
 	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, OwningPlayer) to GetLifetimeReplicatedProps");
 	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
 	// TObjectPtr<ABP_CardGamePlayerController_C> OwningPlayer;
-	//
-	// /** Has the card been placed on the board? */
-	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, bIsPlaced) to GetLifetimeReplicatedProps");
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
-	// bool bIsPlaced;
-	//
+	
+	/** Has the card been placed on the board? */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
+	bool bIsPlaced;
+	
 	// /** Is the card selected by the player */
 	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
 	// bool bIsSelected;
@@ -199,11 +193,10 @@ protected:
 	// /** Whether the card is currrently attacking */
 	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
 	// bool bIsAttacking;
-	//
-	// /** Has the card been moved to the player graveyard */
-	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, bInGraveyard) to GetLifetimeReplicatedProps");
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
-	// bool bInGraveyard;
+	
+	/** Has the card been moved to the player graveyard */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
+	bool bInGraveyard;
 	
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
@@ -222,11 +215,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", ReplicatedUsing="OnRep_CardType")
 	ECardType mType;
 	
-	// /** Please add a variable description */
-	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, CardSet) to GetLifetimeReplicatedProps");
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
-	// TEnumAsByte<CardSet_Enum> CardSet;
-	//
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
+	ECardSet mCardSet;
+	
 	// /** Please add a variable description */
 	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, Description) to GetLifetimeReplicatedProps");
 	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
@@ -236,15 +228,11 @@ protected:
 	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, AbilityType(s)) to GetLifetimeReplicatedProps");
 	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Abilities", Replicated)
 	// TArray<TEnumAsByte<AbilityType_Enum> > AbilityType(s);
-	//
-	// /** Please add a variable description */
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Abilities")
-	// TArray<FAbility_Struct> Ability_Struct_Refs;
-	//
-	// /** T */
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Abilities")
-	// bool IsAbilityActive;
-	//
+	
+	/** T */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Abilities")
+	bool bIsAbilityActive;
+	
 	// /** Please add a variable description */
 	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, CanAttackPlayer) to GetLifetimeReplicatedProps");
 	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
@@ -289,6 +277,15 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
 	int32 mCardID;
 
+public:
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Abilities")
+	TArray<FCardAbility> mAbilities;
+
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	TObjectPtr<ACard3D> mDamageDealingCard;
+
 protected:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
@@ -320,7 +317,7 @@ protected:
 	
 public:
 	// UFUNCTION(BlueprintCallable, Category="Gameplay")
-	// void MoveCardToGravyard();
+	// void MoveCardToGraveyard();
 	//
 	// /** Please add a function description */
 	// UFUNCTION(BlueprintCallable, Category="Description Generator")
@@ -358,11 +355,34 @@ public:
 	// UFUNCTION(BlueprintCallable, Category="Abilities")
 	// void RunCardAbility(int32 AbilityIndex, bool& Successful, int32 AbilityIndex_Ref);
 
+	UFUNCTION(Server,Reliable)
+	void Server_SetCardData(const FName& CardTableName,ECardSet CardRace,FCard CardStruct,bool SetCardDataFromStruct);
+	
+	UFUNCTION(NetMulticast,Reliable)
+	void MultiCast_Attacking(AActor* board_player);
+
+	UFUNCTION(NetMulticast,Reliable)
+	void MultiCast_UpdateCardVisual(bool IsVisual);
+	
+	UFUNCTION(NetMulticast,Reliable)
+	void MultiCast_UpdateVisualStats();
+
 	FORCEINLINE ACardPlacement* GetPlacementOwner()  {return mPlacementOwner;}
 	FORCEINLINE FCard* GetCardData()  {return &mCardData;}
+	FORCEINLINE FName GetCardDataTableName() const {return mCardDataTableName;}
+	FORCEINLINE int32 GetHealth() const {return mHealth;}
 	FORCEINLINE int32 GetAttack() const {return mAttack;}
 	FORCEINLINE int32 GetCardID() const {return mCardID;}
 	FORCEINLINE int32 GetTurnPoint() const {return mTurnPoint;}
 	FORCEINLINE int32 GetOwningPlayerID() const {return mOwningPlayerID;}
+	FORCEINLINE ECardSet GetCardSet() const {return mCardSet;}
 	FORCEINLINE ECardType GetCardType() const {return mType;}
+	FORCEINLINE bool IsInGraveyard() const {return bInGraveyard;}
+	FORCEINLINE bool IsPlaced() const {return bIsPlaced;}
+
+	FORCEINLINE void SetPlacementOwner(ACardPlacement* PlacementOwner) {mPlacementOwner=PlacementOwner;}
+	FORCEINLINE void SetAttack(int32 Attack) {mAttack=Attack;}
+	FORCEINLINE void SetTurnPoint(int32 Point) {mTurnPoint=Point;}
+	FORCEINLINE void SetOwningPlayerID(int32 ID) {mOwningPlayerID=ID;}
+	FORCEINLINE void SetIsAbilityActive(bool AbilityActive){bIsAbilityActive=AbilityActive;}
 };

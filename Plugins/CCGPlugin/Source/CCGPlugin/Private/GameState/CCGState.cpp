@@ -11,6 +11,14 @@ ACCGState::ACCGState()
 {
 }
 
+void ACCGState::AddCardToBoard(ACard3D* CardReference, int32 PlayerID)
+{
+}
+
+void ACCGState::RecordBattleHistory(FBattleHistory BattleHistoryStruct)
+{
+}
+
 void ACCGState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -23,6 +31,15 @@ void ACCGState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 AGraveyard* ACCGState::GetGraveyardReference(int32 PlayerID)
 {
 	return nullptr;
+}
+
+void ACCGState::GetAllPlayerCards(TArray<ACard3D*>& Cards)
+{
+	Cards.Empty();
+	for (auto& playerBoard : mPlayerBoards)
+	{
+		Cards.Append(playerBoard.ActiveCards);
+	}
 }
 
 void ACCGState::GetActivePlayerCards(int32 Index, TArray<ACard3D*>& Cards)

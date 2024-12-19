@@ -198,7 +198,7 @@ enum class EInteractionConditions : uint8
 	CardCanOnlyReceiveInteractionOnOwnedPlacement UMETA(DisplayName = "CardCanOnlyRecieveInteractionOnOwnedPlacement"),
 	CardCanOnlyReceiveInteractionOnAnOpponentsPlacement UMETA(DisplayName = "CardCanOnlyRecieveInteractionOnAnOppenentsPlacement"),
 	CanOnlyAttackCreatures UMETA(DisplayName = "CanOnlyAttackCreatures"),
-	CannotAttackIfPlayerOwnsCard UMETA(DisplayName = "CannotAttackIfPlayerOwnsCard"),
+	CannotAttackIfPlayerOwnerCard UMETA(DisplayName = "CannotAttackIfPlayerOwnsCard"),
 	CanReceiveSelfInteraction_AIOnly UMETA(DisplayName = "CanRecieveSelfInteraction(AIOnly)"),
 	CanReceiveSelfInteractionIfDoesNotRemoveCardFromPlay_AIOnly UMETA(DisplayName = "CanRecieveSelfInteractionIfDoesNotRemoveCardFromPlay_AIOnly(AIOnly)"),
 	Max UMETA(Hidden)

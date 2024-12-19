@@ -36,7 +36,7 @@ public:
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
-	static bool ConditionIfPlacedOnOwnedPlacement(int32 PlayerID, ACard3D* ReceivingCard, bool Opponent);
+	static bool ConditionIfPlacedOnOwnedPlacement(int32 PlayerID, ACard3D* ReceivingCard, bool Opponent=false);
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)

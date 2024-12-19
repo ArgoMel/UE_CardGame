@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "BoardPlayer.generated.h"
 
+class ACCGMode;
 class ACCGCamera;
 class UTimelineComponent;
 class UBoxComponent;
@@ -18,6 +19,7 @@ class CCGPLUGIN_API ABoardPlayer : public AActor
 {
 	GENERATED_BODY()
 public:
+	friend ACCGMode;
 	ABoardPlayer();
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
@@ -73,9 +75,15 @@ protected:
 	TObjectPtr<UMaterialInstanceDynamic> mMaterialInstance;
 
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="BoardPlayer")
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Player")
 	TObjectPtr<UTimelineComponent> mScaleHealthIcon;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category="Player")
+	TObjectPtr<ACCGCamera> mCardGameCamera;
 
+	/** Owning Controller */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Settings")
+	TObjectPtr<AController> mOwningController;
 	/** Player Health  */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Settings", ReplicatedUsing="OnRep_Health")
 	int32 mPlayerHealth;
@@ -96,19 +104,12 @@ protected:
 	FLinearColor mHealthIncreaseColour;
 
 public:
-	/** The Player Index  */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Player", Replicated)
-	int32 mPlayerIndex;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Player", Replicated)
 	FText mPlayerName;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category="Player")
-	TObjectPtr<ACCGCamera> mCardGameCamera;
-
-	/** Owning Contoller */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Settings")
-	TObjectPtr<AController> mOwningController;
+	/** The Player Index  */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Player", Replicated)
+	int32 mPlayerIndex;
 
 public:
 	/** Please add a function description */
