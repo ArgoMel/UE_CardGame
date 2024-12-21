@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Card3D.h"
 #include "GameFramework/Actor.h"
 #include "Graveyard.generated.h"
 
@@ -20,7 +21,7 @@ protected:
 protected:
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<UStaticMeshComponent> Outline;
+	TObjectPtr<UStaticMeshComponent> mOutline;
 
 	/** Please add a variable description */
 // 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
@@ -57,16 +58,16 @@ protected:
 
 // 	/** Please add a variable description */
 // 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="디폴트")
-// 	TArray<FCard_Struct> GraveyardStructList;
-//
-// 	/** Please add a variable description */
-// 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="디폴트")
 // 	int32 RemoveIndex;
 
 public:
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="디폴트", Replicated)
 	TArray<FName> mGraveyardList;
+
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="디폴트")
+	TArray<FCard> mGraveyardStructList;
 	
 public:
 // 	/** Please add a function description */
@@ -76,11 +77,11 @@ public:
 // 	/** Please add a function description */
 // 	UFUNCTION(BlueprintCallable)
 // 	void HideUnseenCardsInGraveyard();
-//
-// 	/** Please add a function description */
-// 	UFUNCTION(BlueprintPure)
-// 	FVector GetCardInGraveyardLocation(int32 add);
-//
+
+	/** Please add a function description */
+	UFUNCTION(BlueprintPure)
+	FVector GetCardInGraveyardLoc(int32 Add=0);
+
 // 	/** Please add a function description */
 // 	UFUNCTION(BlueprintCallable)
 // 	void RecreateTopGraveyardCardActor();
@@ -88,4 +89,10 @@ public:
 // 	/** Please add a function description */
 // 	UFUNCTION(BlueprintCallable)
 // 	void RemoveCardFromGraveyard(FName CardName, int32 Index);
+
+	UFUNCTION(Server,Reliable)
+	void Server_AddToGraveyard(ACard3D* Card,FName Name=FName());
+
+	UFUNCTION(Server,Reliable)
+	void Server_RemoveCardFromGraveyard(FName Card, int32 Index);
 };

@@ -139,10 +139,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Board")
 	void AddCardToBoard(ACard3D* CardReference, int32 PlayerID);
 
-// 	/** Please add a function description */
-// 	UFUNCTION(BlueprintCallable, Category="Board")
-// 	void RemoveCardOnBoard(A3DCard_C* CardReference, int32 PlayerID);
-//
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Board")
+	void RemoveCardOnBoard(ACard3D* CardReference, int32 PlayerID);
+
 // 	/** Please add a function description */
 // 	UFUNCTION(BlueprintPure, Category="Board")
 // 	void GetBoardState(int32 PlayerID, TArray<A3DCard_C*>& PlayerCards, TArray<A3DCard_C*>& OppenedCards);

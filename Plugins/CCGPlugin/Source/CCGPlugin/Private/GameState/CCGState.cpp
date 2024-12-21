@@ -15,6 +15,10 @@ void ACCGState::AddCardToBoard(ACard3D* CardReference, int32 PlayerID)
 {
 }
 
+void ACCGState::RemoveCardOnBoard(ACard3D* CardReference, int32 PlayerID)
+{
+}
+
 void ACCGState::RecordBattleHistory(FBattleHistory BattleHistoryStruct)
 {
 }

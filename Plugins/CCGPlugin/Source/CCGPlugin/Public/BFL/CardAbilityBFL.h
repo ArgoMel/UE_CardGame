@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Common/CCGEnum.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "CardAbilityBFL.generated.h"
 
@@ -53,15 +54,15 @@ public:
 	UFUNCTION(BlueprintCallable,DisplayName="Ability - Discard Random Card(s) From Hand")
 	static void DiscardRandomCardFromHand(ACard3D* CallingCard, int32 AbilityIndex);
 	
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable,DisplayName="Ability - Increase Player Health")
-	// static void Ability - Pickup Cards from graveyard(A3DCard_C* CallingCard, int32 AbilityIndex, bool AddDirectlyToBoard, TEnumAsByte<CardType_Enum> CardType, UObject* __WorldContext, AGraveyard_C* Graveyard, int32 Index, FName CardName, int32 PlayerIndex, ACardPlacement_C* GoalPlacement, A3DCard_C* Card_Ref);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable,DisplayName="Ability - Increase Player Health")
-	// static void Ability - Change Played Card Owner(A3DCard_C* CallingCard, int32 AbilityIndex, UObject* __WorldContext, A3DCard_C* Card_Ref, ACardPlacement_C* GoalPlacement_Ref, TArray<A3DCard_C*> Temp_CardArray_Ref, TArray<A3DCard_C*> Temp_IgnoreCardArray_Ref_0);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable,DisplayName="Ability - Increase Player Health")
-	// static void Ability - Change In-Hand Card Owner(A3DCard_C* CallingCard, int32 AbilityIndex, UObject* __WorldContext, TArray<FName> CardsInHand_1, TArray<FName> CardsInHand_2);
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable,DisplayName="Ability - Pickup Cards from graveyard")
+	static void PickupCardFromGraveyard(ACard3D* CallingCard, int32 AbilityIndex, bool AddDirectlyToBoard, ECardType CardType);
+	
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable,DisplayName="Ability - Change Played Card Owner")
+	static void ChangePlayedCardOwner(ACard3D* CallingCard, int32 AbilityIndex);
+	
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable,DisplayName="Ability - Change In-Hand Card Owner")
+	static void ChangeInHandCardOwner(ACard3D* CallingCard, int32 AbilityIndex);
 };

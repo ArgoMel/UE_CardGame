@@ -157,6 +157,8 @@ public:
 	// double CalculateSpacingLocation(int32 Index, int32 MaxCardsInPlacement, int32 CardInPlacement, double Spacing);
 
 	UFUNCTION(Server,Reliable)
+	void Server_RemoveCardFromPlacement(ACard3D* CardToClear);
+	UFUNCTION(Server,Reliable)
 	void Server_AddCardToBoardPlacement(ACard3D* CardToAdd);
 
 	FORCEINLINE bool IsFull() const { return bIsFull; }

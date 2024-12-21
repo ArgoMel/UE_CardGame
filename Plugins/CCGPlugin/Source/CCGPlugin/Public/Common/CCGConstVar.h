@@ -6,6 +6,11 @@
 #include "UObject/Object.h"
 #include "CCGConstVar.generated.h"
 
+namespace CCG
+{
+	constexpr int32 MaxManaCost=10;
+}
+
 namespace CCG_ZOrder
 {
 	constexpr int32 MainMenu=5;

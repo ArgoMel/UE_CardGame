@@ -58,15 +58,9 @@ AController* UControllerBFL::GetControllerReferenceFromID(const UObject* WorldCo
 
 AActor* UControllerBFL::GetControllersStateProfile(const UObject* WorldContextObject,int32 ControllerID,FPlayerStat& PlayerStat,TArray<FName>& Deck,TArray<FName>& CardsInHand)
 {
-	if (!WorldContextObject)
-	{
-		return nullptr;
-	}
+	IF_RET_NULL(WorldContextObject);
 	AController* controller= GetControllerReferenceFromID(WorldContextObject,ControllerID);
-	if (!controller)
-	{
-		return nullptr;
-	}
+	IF_RET_NULL(controller);
 	ACCGPlayerController* playerController=Cast<ACCGPlayerController>(controller);
 	ACCGPlayerState* playerState=controller->GetPlayerState<ACCGPlayerState>();
 	if (playerController&&playerState)
@@ -104,6 +98,46 @@ AActor* UControllerBFL::GetControllersStateStat(const UObject* WorldContextObjec
 	{
 		PlayerStat=AIPawn->mAIStat;
 		return AIPawn;
+	}
+	return nullptr;
+}
+
+AActor* UControllerBFL::GetControllersStateDeck(const UObject* WorldContextObject, int32 ControllerID, TArray<FName>& Deck)
+{
+	IF_RET_NULL(WorldContextObject);
+	AController* controller= GetControllerReferenceFromID(WorldContextObject,ControllerID);
+	IF_RET_NULL(controller);
+	ACCGPlayerController* playerController=Cast<ACCGPlayerController>(controller);
+	if (playerController)
+	{
+		Deck=playerController->GetPlayerDeck();
+		return playerController->PlayerState;
+	}
+	ACCGAIController* AIController=Cast<ACCGAIController>(controller);
+	if (AIController)
+	{
+		Deck=AIController->GetAIDeck();
+		return AIController->GetPawn();
+	}
+	return nullptr;
+}
+
+AActor* UControllerBFL::GetControllersStateCardsInHand(const UObject* WorldContextObject, int32 ControllerID, TArray<FName>& CardsInHand)
+{
+	IF_RET_NULL(WorldContextObject);
+	AController* controller= GetControllerReferenceFromID(WorldContextObject,ControllerID);
+	IF_RET_NULL(controller);
+	ACCGPlayerController* playerController=Cast<ACCGPlayerController>(controller);
+	if (playerController)
+	{
+		CardsInHand=playerController->GetCardsInHand();
+		return playerController->PlayerState;
+	}
+	ACCGAIController* AIController=Cast<ACCGAIController>(controller);
+	if (AIController)
+	{
+		CardsInHand=AIController->GetAICardsInHand();
+		return AIController->GetPawn();
 	}
 	return nullptr;
 }

@@ -367,6 +367,9 @@ public:
 	UFUNCTION(NetMulticast,Reliable)
 	void MultiCast_UpdateVisualStats();
 
+	UFUNCTION(NetMulticast,Reliable)
+	void ForceMoveCardDirectlyToGraveyard(AGraveyard* graveyard);
+
 	FORCEINLINE ACardPlacement* GetPlacementOwner()  {return mPlacementOwner;}
 	FORCEINLINE FCard* GetCardData()  {return &mCardData;}
 	FORCEINLINE FName GetCardDataTableName() const {return mCardDataTableName;}

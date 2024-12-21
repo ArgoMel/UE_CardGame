@@ -63,6 +63,10 @@ void ACard3D::OnRep_CardType()
 {
 }
 
+void ACard3D::ForceMoveCardDirectlyToGraveyard_Implementation(AGraveyard* graveyard)
+{
+}
+
 void ACard3D::MultiCast_UpdateCardVisual_Implementation(bool IsVisual)
 {
 }

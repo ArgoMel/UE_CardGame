@@ -32,3 +32,15 @@ void AGraveyard::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+FVector AGraveyard::GetCardInGraveyardLoc(int32 Add)
+{
+	return FVector::ZeroVector;
+}
+
+void AGraveyard::Server_AddToGraveyard_Implementation(ACard3D* Card, FName Name)
+{
+}
+
+void AGraveyard::Server_RemoveCardFromGraveyard_Implementation(FName Card, int32 Index)
+{
+}
