@@ -127,7 +127,7 @@ void ACCGMode::FinishCountdown()
 {
 	GetWorldTimerManager().ClearTimer(mCountdownTH);
 	bGameActive=true;
-	mGameState->OnGameStart();
+	mGameState->Server_OnGameStart();
 }
 
 int32 ACCGMode::CalculateManaForTurn(int32 PlayerTurn)

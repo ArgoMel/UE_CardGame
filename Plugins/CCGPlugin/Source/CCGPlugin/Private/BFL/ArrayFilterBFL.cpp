@@ -169,7 +169,122 @@ float UArrayFilterBFL::GetManaInDeck(TArray<FName>& Array, TArray<int32>& Return
 	return UMiscBFL::CalculateFloatPrecision(average/ReturnArray.Num());
 }
 
+int32 UArrayFilterBFL::CalculateDeckStatMana(TArray<FName>& FilterArray, TArray<int32>& ManaStats)
+{
+	int32 cardAbility=0;
+	if (FilterArray.IsEmpty())
+	{
+		return cardAbility;
+	}
+	ManaStats.Init(0,CCG::MaxManaCost+1);
+
+	for (const auto& name : FilterArray)
+	{
+		FCard card=UDeckBFL::GetCardData(name, ECardSet::Empty);
+		++ManaStats[card.PlacementSetting.ManaCost];
+
+		if (!card.Abilities.IsEmpty()
+			&&card.Abilities[0].Type!=EAbilityType::None)
+		{
+			++cardAbility;
+		}
+	}
+	return cardAbility;
+}
+
+int32 UArrayFilterBFL::CalculateDeckStatUnlockedCard(TArray<FName>& FilterArray, TArray<FName>& UnlockedCards)
+{
+	int32 cardAbility=0;
+	if (FilterArray.IsEmpty())
+	{
+		return cardAbility;
+	}
+	UnlockedCards.Empty();
+
+	for (const auto& name : FilterArray)
+	{
+		FCard card=UDeckBFL::GetCardData(name, ECardSet::Empty);
+		if (card.DeckSetting.Unlocked)
+		{
+			UnlockedCards.Add(name);
+		}
+
+		if (!card.Abilities.IsEmpty()
+			&&card.Abilities[0].Type!=EAbilityType::None)
+		{
+			++cardAbility;
+		}
+	}
+	return cardAbility;
+}
+
 int32 UArrayFilterBFL::CalculateDeckStatRarity(TArray<FName>& FilterArray, TArray<int32>& Rarity)
 {
-	return 0;
+	int32 cardAbility=0;
+	if (FilterArray.IsEmpty())
+	{
+		return cardAbility;
+	}
+	Rarity.Init(0,static_cast<int32>(ECardRarity::Max));
+
+	for (const auto& name : FilterArray)
+	{
+		FCard card=UDeckBFL::GetCardData(name, ECardSet::Empty);
+		++Rarity[static_cast<int32>(card.Rarity)];
+
+		if (!card.Abilities.IsEmpty()
+			&&card.Abilities[0].Type!=EAbilityType::None)
+		{
+			++cardAbility;
+		}
+	}
+	return cardAbility;
+}
+
+void UArrayFilterBFL::FilterCardTypes(TArray<FName>& FilterArray, ECardType FilterFor)
+{
+	TArray<FName> returnArray;
+
+	for (auto& name : FilterArray)
+	{
+		const FCard card=UDeckBFL::GetCardData(name, ECardSet::Empty);
+		if (card.Type==FilterFor)
+		{
+			returnArray.Add(name);
+		}
+	}
+
+	FilterArray=returnArray;
+}
+
+void UArrayFilterBFL::FilterCardClass(TArray<FName>& FilterArray, ECardClass FilterFor)
+{
+	TArray<FName> returnArray;
+
+	for (auto& name : FilterArray)
+	{
+		const FCard card=UDeckBFL::GetCardData(name, ECardSet::Empty);
+		if (card.Class==FilterFor)
+		{
+			returnArray.Add(name);
+		}
+	}
+
+	FilterArray=returnArray;
+}
+
+void UArrayFilterBFL::FilterCardRarity(TArray<FName>& FilterArray, ECardRarity FilterFor)
+{
+	TArray<FName> returnArray;
+
+	for (auto& name : FilterArray)
+	{
+		const FCard card=UDeckBFL::GetCardData(name, ECardSet::Empty);
+		if (card.Rarity==FilterFor)
+		{
+			returnArray.Add(name);
+		}
+	}
+
+	FilterArray=returnArray;
 }
