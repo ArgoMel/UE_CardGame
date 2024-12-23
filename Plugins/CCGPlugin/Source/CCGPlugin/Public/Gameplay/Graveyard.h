@@ -46,11 +46,11 @@ protected:
 // 	/** Scene decal Mat Instance.  */
 // 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="디폴트")
 // 	TObjectPtr<UMaterialInstanceDynamic> OutlineDecal_MaterialInstance;
-//
-// 	/** Which player index this graveyard belongs to.  */
-// 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="디폴트")
-// 	int32 Player_Index;
-//
+
+	/** Which player index this graveyard belongs to.  */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="디폴트")
+	int32 mPlayerIndex;
+
 // 	/** An Array which holds all 3D Cards which have been sent to the graveyard. */
 // 	static_assert(false, "You will need to add DOREPLIFETIME(AGraveyard, ActorsInGraveyard) to GetLifetimeReplicatedProps");
 // 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="디폴트", Replicated)
@@ -95,4 +95,6 @@ public:
 
 	UFUNCTION(Server,Reliable)
 	void Server_RemoveCardFromGraveyard(FName Card, int32 Index);
+
+	FORCEINLINE int32 GetPlayerIndex() const { return mPlayerIndex; }
 };

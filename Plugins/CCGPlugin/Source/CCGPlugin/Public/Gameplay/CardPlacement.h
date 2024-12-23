@@ -165,4 +165,5 @@ public:
 	FORCEINLINE ACardPlacement* GetPlacementLeft() const { return mPlacementLeft; }
 	FORCEINLINE ACardPlacement* GetPlacementRight() const { return mPlacementRight; }
 	FORCEINLINE int32 GetPlayerIndex() const { return mPlayerIndex; }
+	FORCEINLINE int32 GetMaxCardsInPlacement() const { return mMaxCardsInPlacement; }
 };

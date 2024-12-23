@@ -11,6 +11,11 @@ namespace CCG
 	constexpr int32 MaxManaCost=10;
 }
 
+namespace CCG_TAG
+{
+	const FName Camera(TEXT("CardGameCamera")); 
+}
+
 namespace CCG_ZOrder
 {
 	constexpr int32 MainMenu=5;
@@ -30,6 +35,7 @@ namespace CCG_MatchType
 namespace CCG_SaveSlotName
 {
 	const FString CardGameSave(TEXT("CardGameSave"));
+	const FString HappySnaps(TEXT("HappySnaps"));
 }
 
 namespace CCG_BB

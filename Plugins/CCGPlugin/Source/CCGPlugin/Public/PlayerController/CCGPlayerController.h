@@ -4,9 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Common/CCGEnum.h"
+#include "Common/CCGStruct.h"
 #include "GameFramework/PlayerController.h"
+#include "Interface/CardsInHandInterface.h"
+#include "Interface/ControllerInterface.h"
+#include "Interface/DeckInterface.h"
+#include "Interface/GameStateInterface.h"
 #include "CCGPlayerController.generated.h"
 
+class ACCGMode;
 class ACCGPlayerState;
 class ACardPlacement;
 class UDragDropOperation;
@@ -17,14 +23,39 @@ class ACard3D;
 
 UCLASS()
 class CCGPLUGIN_API ACCGPlayerController : public APlayerController
+	,public ICardsInHandInterface
+	,public IControllerInterface
+	,public IDeckInterface
+	,public IGameStateInterface
 {
 	GENERATED_BODY()
 public:
+	friend ACCGMode;
 	ACCGPlayerController();
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
 	
+public:
+	/** ICardsInHandInterface */
+	virtual bool RemoveCardFromHand_Implementation(FName Card, int32 Index, bool RemoveAll) override;
+	virtual void DrawCard_Implementation(FName CardName, bool IgnoreMaxCards, int32 NumberOfCardsToDraw) override;
+
+	/** IControllerInterface */
+	virtual ACard3D* CreatePlayableCard_Implementation(FTransform SpawnTransform) override;
+	virtual bool AddCardToPlayersHand_Implementation(FName CardName) override;
+	virtual void BeginPlayerTurn_Implementation() override;
+
+	/** IDeckInterface */
+	virtual void GetPlayerDeck_Implementation(TArray<FName>& Deck) override;
+	virtual bool RemoveCardFromDeck_Implementation(bool RemoveAll, int32 IndexToRemove) override;
+	
+	/** IGameStateInterface */
+	virtual void MatchEnd_Implementation(EEndGameResults Result) override;
+	virtual void MatchBegin_Implementation() override;
+	virtual void ChangeActivePlayerTurn_Implementation(bool TurnActive) override;
+
 protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Game Interaction", Replicated)
 	TObjectPtr<ACard3D> mHitCard;
@@ -58,6 +89,8 @@ protected:
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, Category="Player")
 	TObjectPtr<UUserWidget> mOpponentUI;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Player", Replicated)
+	TObjectPtr<ABoardPlayer> mBoardPlayer;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Player")
 	ECardPlayerState mPlayerStateEnum;
@@ -178,14 +211,10 @@ protected:
 	int32 mCardInHandIndex;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Card Manager")
-	double CardPickupDelay;
+	double mCardPickupDelay;
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Developer", Replicated)
 	bool bSkipManaCheck;
-
-public:
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Player", Replicated)
-	TObjectPtr<ABoardPlayer> mBoardPlayer;
 
 protected:
 	/** Please add a function description */
@@ -194,124 +223,138 @@ protected:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
 	void OnRep_TurnState();
+
+	UFUNCTION(Category="Delegate")
+	void TouchBegin(ETouchIndex::Type FingerIndex, AActor* TouchedActor);
+	UFUNCTION(Category="Delegate")
+	void TouchEnd(ETouchIndex::Type FingerIndex, AActor* TouchedActor);
+	UFUNCTION(Category="Delegate")
+	void ClickBegin(AActor* TouchedActor , FKey ButtonPressed);
+	UFUNCTION(Category="Delegate")
+	void ClickEnd(AActor* TouchedActor , FKey ButtonPressed);
+
+	void CardInteraction();
 	
 public:
-	// UFUNCTION(BlueprintCallable, Category="Card Functions")
-	// void SetCardLocation(A3DCard_C* Card, FVector HoldLocation, FRotator Rotation);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="Card Interaction Functions")
-	// void DetectCardInteraction();
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="Card Interaction Functions")
-	// void ValidateInteractionState(bool& ValidInteraction);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="Card Interaction Functions")
-	// void DetectInteractionOnMove();
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="Card Functions")
-	// void ValidateCardPlacement(AActor* HitActor, bool& ValidPlacement);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="Game Setup")
-	// void SetupGameUI();
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="Game Setup")
-	// void SetupDeck(FString DeckName, UPARAM(ref) TArray<FName>& PlayerDeck);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="Deck / Hand  Functions")
-	// void FilterWeightedCards();
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="Game Setup")
-	// void SetTimer(int32 Time);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="Deck / Hand  Functions")
-	// void ShufflePlayerDeck(const TArray<FName>& TargetArray);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="Card Interaction Functions")
-	// void RunCardInteraction(A3DCard_C* Interaction_TalkingCard, A3DCard_C* Interaction_ReceivingCard, ABoardPlayer_C* Interaction Receiving Player, A3DCard_C* InteractionReceivingCard, A3DCard_C* InteractionTalkingCard, ABoardPlayer_C* InteractionReceivingPlayer);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="Game")
-	// void NotifyCardTurnActive();
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="Game")
-	// void NotifyCardsEndTurn();
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="Card Interaction Functions")
-	// void CreateDragActorVisual(bool UseActorLocation?, bool& Valid);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="Deck / Hand  Functions")
-	// void AddCardToHand_OLD(const FName& CardToAdd, TEnumAsByte<CardSet_Enum> FromCardSet);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="Deck / Hand  Functions")
-	// void RemoveCardFromHand_OLD(bool ClearAll, FName CardName, int32 IndexToRemove, bool& Success);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintPure, Category="Deck / Hand  Functions")
-	// void GetCardInHand_OLD(int32 Index, bool LastIndex, FName& Item);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintPure, Category="Deck / Hand  Functions")
-	// int32 CountCardsInHand_OLD();
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintPure, Category="Deck / Hand  Functions")
-	// int32 CountCardsInDeck_OLD();
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintPure, Category="Deck / Hand  Functions")
-	// void HasCardInHand_OLD(FName CardName, int32 Index, bool& HasCard);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="Card Functions")
-	// void CreatePlaceableCard(Client)(FName Name, TEnumAsByte<CardSet_Enum> CardSet, FVector Spawn Transform Location, A3DCard_C*& Card Created, FTransform TEMP_SpawnTransform);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="Card Functions")
-	// void CreatePlaceableCard(Server)(FTransform SpawnTransform, A3DCard_C*& Card Created, FTransform TEMP_SpawnTransform);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="Card Functions")
-	// void ServerValidateCardPlacement(ACardPlacement_C* CardPlacement, FCard_Struct CardStruct, bool& ValidPlacement, ACardPlacement_C*& ValidCardPlacement);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="Card Functions")
-	// void SetCustomCardData(A3DCard_C* Card, bool ActiveAbility, A3DCard_C*& ReturnCard);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="Card Functions")
-	// void PlayCard(FName CardName, TEnumAsByte<CardSet_Enum> CardSet, ACardPlacement_C* CardPlacement, int32 CardHandIndex, FTransform SpawnTransform);
-
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="Game Setup")
-	// void LoadClientDeck(FString& DeckName, TArray<FName>& Deck);
+	UFUNCTION(BlueprintCallable, Category="Card Functions")
+	void SetCardLocation(ACard3D* Card, FVector HoldLocation, FRotator Rotation);
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Card Functions")
+	bool ValidateCardPlacement(AActor* HitActor);
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Card Functions")
+	ACard3D* Client_CreatePlaceableCard(FName Name, ECardSet CardSet, FVector SpawnTransformLocation);
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Card Functions")
+	ACard3D* Server_CreatePlaceableCard(FTransform SpawnTransform);
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Card Functions")
+	ACardPlacement* ServerValidateCardPlacement(ACardPlacement* CardPlacement, FCard CardStruct);
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Card Functions")
+	ACard3D* SetCustomCardData(ACard3D* Card, bool ActiveAbility);
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Card Functions")
+	void PlayCard(FName CardName, ECardSet CardSet, ACardPlacement* CardPlacement, int32 CardHandIndex, FTransform SpawnTransform);
 	
-	UFUNCTION(BlueprintCallable,Server,Reliable,Category="Server")
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Card Interaction Functions")
+	void DetectCardInteraction();
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Card Interaction Functions")
+	bool ValidateInteractionState();
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Card Interaction Functions")
+	void DetectInteractionOnMove();
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Card Interaction Functions")
+	void RunCardInteraction(ACard3D* InteractionTalkingCard, ACard3D* InteractionReceivingCard, ABoardPlayer* InteractionReceivingPlayer);
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Card Interaction Functions")
+	bool CreateDragActorVisual(bool UseActorLocation);
+	
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Game Setup")
+	void SetupGameUI();
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Game Setup")
+	void SetupDeck(FString DeckName, TArray<FName>& PlayerDeck);
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Game Setup")
+	void SetTimer(int32 Time);
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Game Setup")
+	FString LoadClientDeck(TArray<FName>& Deck);
+	
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Deck / Hand  Functions")
+	void FilterWeightedCards();
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Deck / Hand  Functions")
+	void ShufflePlayerDeck(const TArray<FName>& TargetArray);
+	
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Game")
+	void NotifyCardTurnActive();
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Game")
+	void NotifyCardsEndTurn();
+
+	UFUNCTION(BlueprintCallable,Category="Event")
+	void CallCreateCard(FName CardName,ECardSet CardSet,int32 CardHandIndex,UUserWidget* CardWidget);
+	UFUNCTION(BlueprintCallable,Category="Event")
+	void DragCanceled();
+
+	UFUNCTION(BlueprintCallable,Server,Unreliable,Category="Server")
+	void Server_SpawnAIOpponent();
+	UFUNCTION(BlueprintCallable,Server,Unreliable,Category="Server")
 	void Server_SetupDeck();
 	UFUNCTION(BlueprintCallable,Server,Reliable,Category="Server")
-	void Server_SpawnAIOpponent();
+	void Server_ReturnPlayerDeck(const FString& DeckName,const TArray<FName>& DeckArray);
+	UFUNCTION(BlueprintCallable,Server,Reliable,Category="Server")
+	void Server_RequestChangeTurnState();
+	UFUNCTION(BlueprintCallable,Server,Reliable,Category="Server")
+	void Server_UpdatePlayerHealth();
+	UFUNCTION(BlueprintCallable,Server,Reliable,Category="Server")
+	void Server_UpdatePlayerState();
+	UFUNCTION(BlueprintCallable,Server,Reliable,Category="Server")
+	void Server_PlayCard(FName CardName, ECardSet CardSet, ACardPlacement* CardPlacement, int32 CardHandIndex, FTransform SpawnTransform);
+	UFUNCTION(BlueprintCallable,Server,Unreliable,Category="Server")
+	void Server_RunCardInteraction(ACard3D* InteractionTalkingCard, ACard3D* InteractionReceivingCard, ABoardPlayer* InteractionReceivingPlayer);
+	UFUNCTION(BlueprintCallable,Server,Unreliable,Category="Server")
+	void Server_SetSkipManaCheck(bool SkipCheck);
+	UFUNCTION(BlueprintCallable,Server,Unreliable,Category="Server")
+	void Server_ReshuffleDeck();
+	UFUNCTION(BlueprintCallable,Server,Unreliable,Category="Server")
+	void Server_ClearCardsInHand();
 	
-	UFUNCTION(BlueprintCallable,Client,Reliable,Category="Cient")
+	UFUNCTION(BlueprintCallable,Client,Reliable,Category="Client")
 	void Client_PostLogin();
-	UFUNCTION(BlueprintCallable,Client,Reliable,Category="Cient")
+	UFUNCTION(BlueprintCallable,Client,Reliable,Category="Client")
 	void Client_SetCountdownTimer(int32 Time);
-	UFUNCTION(BlueprintCallable,Client,Reliable,Category="Cient")
+	UFUNCTION(BlueprintCallable,Client,Reliable,Category="Client")
 	void Client_EndMatchState(EEndGameResults Result);
-	UFUNCTION(BlueprintCallable,Client,Reliable,Category="Cient")
+	UFUNCTION(BlueprintCallable,Client,Reliable,Category="Client")
 	void Client_UpdateGameUI(bool ForceCleanUpdate=false);
+	UFUNCTION(BlueprintCallable,Client,Reliable,Category="Client")
+	void Client_DropCard(bool CardPlayed,ECardError Error);
+	UFUNCTION(BlueprintCallable,Client,Unreliable,Category="Client")
+	void Client_CreateDisplayMessage(const FString& Msg,FLinearColor Color, bool ToScreen, float ScreenDuration, bool ToMsgLogger=false);
+	UFUNCTION(BlueprintCallable,Client,Reliable,Category="Client")
+	void Client_LogNotificationMessage(const FString& Msg,FLinearColor Color);
+	UFUNCTION(BlueprintCallable,Client,Reliable,Category="Client")
+	void Client_GetPlayerDeck();
+	UFUNCTION(BlueprintCallable,Client,Reliable,Category="Client")
+	void Client_DestroyCard();
+
+	UFUNCTION(BlueprintCallable,Server,Unreliable,Category="Card Manager")
+	void Debug_Server_AddCardToHand();
+	UFUNCTION(Category="Card Manager")
+	void AddCardToHand();
+	UFUNCTION(BlueprintCallable,Client,Reliable,Category="Card Manager")
+	void Client_AddCardToCardManager(FName CardName,ECardSet FromCardSet);
+	UFUNCTION(BlueprintCallable,Client,Reliable,Category="Card Manager")
+	void Client_RemoveCardFromCardManager(UUserWidget* CardWidget,int32 CardHandIndex,bool RemoveAll=false);
 
 	FORCEINLINE UUserWidget* GetPlayerGameUI(){return mPlayerGameUI;}
 	FORCEINLINE TArray<FName> GetPlayerDeck(){return mPlayerDeck;}

@@ -23,14 +23,12 @@ public:
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
 
 protected:
 	/** 인덱스 0이 현재 플레이어 */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
 	TArray<AController*> mPlayerTurns;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
-	TSubclassOf<UUserWidget> mCardSystemClass;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, Category="System")
 	TObjectPtr<UUserWidget> mCardSystem;
@@ -99,6 +97,9 @@ public:
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Recorded Game Data")
 	TArray<ACard3D*> mCardReferenceArray;
+
+protected:
+	void ResetTurn();
 	
 public:
 	UFUNCTION(BlueprintCallable, Category="System")
@@ -114,7 +115,7 @@ public:
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure, Category="System")
-	bool CheckPlayerTurnState(EGameTurn GameTurnState);
+	bool CheckPlayerTurnState(EGameTurn GameTurnState) const;
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure, Category="System")
@@ -129,16 +130,24 @@ public:
 	void RemoveCardOnBoard(ACard3D* CardReference, int32 PlayerID);
 
 	/** Please add a function description */
-	UFUNCTION(BlueprintPure, Category="Board")
-	void GetBoardState(int32 PlayerID, TArray<ACard3D*>& PlayerCards, TArray<ACard3D*>& OpponentCards);
-
-	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Board")
 	void CompilePlacementsPerPlayer();
 
 	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Board")
+	void GetGraveyardReferencesPerPlayer();
+
+	/** Please add a function description */
 	UFUNCTION(BlueprintPure, Category="Board")
-	int32 GetCardPlacementReferences(int32 PlayerID, TArray<ACardPlacement*>& PlacementArray);
+	AGraveyard* GetGraveyardReference(int32 PlayerID);
+	UFUNCTION(BlueprintPure, Category="Board")
+	int32 GetTotalCardPlacementPos(int32 PlayerID);
+	UFUNCTION(BlueprintPure, Category="Board")
+	void GetAllPlayerCards(TArray<ACard3D*>& Cards);
+	UFUNCTION(BlueprintPure, Category="Board")
+	void GetActivePlayerCards(int32 Index, TArray<ACard3D*>& Cards);
+	UFUNCTION(BlueprintPure, Category="Board")
+	void GetCardPlacements(int32 Index, TArray<ACardPlacement*>& CardPlacements);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Gameplay")
@@ -159,18 +168,6 @@ public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Recorded Game Data")
 	void RecordBattleHistory(FBattleHistory BattleHistoryStruct);
-
-	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, Category="Board")
-	void GetGraveyardReferencesPerPlayer();
-
-	/** Please add a function description */
-	UFUNCTION(BlueprintPure, Category="Board")
-	AGraveyard* GetGraveyardReference(int32 PlayerID);
-
-	void GetAllPlayerCards(TArray<ACard3D*>& Cards);
-	void GetActivePlayerCards(int32 Index, TArray<ACard3D*>& Cards);
-	void GetCardPlacements(int32 Index, TArray<ACardPlacement*>& CardPlacements);
 
 	UFUNCTION(Server, Unreliable)
 	void Server_OnGameStart();

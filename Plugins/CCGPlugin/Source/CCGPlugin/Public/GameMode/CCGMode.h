@@ -29,9 +29,6 @@ private:
 protected:
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, Category="System")
-	TArray<AActor*> mPlayerAndAIStates;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, Category="System")
 	TObjectPtr<ACCGState> mGameState;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
@@ -65,6 +62,9 @@ protected:
 	bool bSpectator;
 
 public:
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, Category="System")
+	TArray<AActor*> mPlayerAndAIStates;
 	UPROPERTY(BlueprintReadWrite, Category="System")
 	TArray<AController*> mGameControllersArray;
 	UPROPERTY(BlueprintReadWrite, Category="System")
@@ -134,6 +134,7 @@ public:
 	void EndGame();
 
 	FORCEINLINE bool IsGameActive() const { return bGameActive; }
+	FORCEINLINE double GetGameSecond() const { return mGameSeconds; }
 	FORCEINLINE int32 GetPlayerStartingHealth() const { return mPlayerStartingHealth; }
 	FORCEINLINE int32 GetMaxNumOfPlayers() const { return mMaxNumOfPlayers; }
 };

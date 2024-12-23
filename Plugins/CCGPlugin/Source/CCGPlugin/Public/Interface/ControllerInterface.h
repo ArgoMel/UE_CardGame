@@ -37,5 +37,4 @@ public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void UpdateUI();
-
 };

@@ -385,6 +385,7 @@ public:
 
 	FORCEINLINE void SetPlacementOwner(ACardPlacement* PlacementOwner) {mPlacementOwner=PlacementOwner;}
 	FORCEINLINE void SetAttack(int32 Attack) {mAttack=Attack;}
+	FORCEINLINE void SetCardID(int32 ID) {mCardID=ID;}
 	FORCEINLINE void SetTurnPoint(int32 Point) {mTurnPoint=Point;}
 	FORCEINLINE void SetOwningPlayerID(int32 ID) {mOwningPlayerID=ID;}
 	FORCEINLINE void SetIsAbilityActive(bool AbilityActive){bIsAbilityActive=AbilityActive;}
