@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Common/CCGEnum.h"
 #include "Common/CCGStruct.h"
 #include "GameFramework/PlayerController.h"
 #include "Interface/CardsInHandInterface.h"
@@ -45,7 +44,6 @@ public:
 	/** IControllerInterface */
 	virtual ACard3D* CreatePlayableCard_Implementation(FTransform SpawnTransform) override;
 	virtual bool AddCardToPlayersHand_Implementation(FName CardName) override;
-	virtual void BeginPlayerTurn_Implementation() override;
 
 	/** IDeckInterface */
 	virtual void GetPlayerDeck_Implementation(TArray<FName>& Deck) override;
@@ -56,7 +54,14 @@ public:
 	virtual void MatchBegin_Implementation() override;
 	virtual void ChangeActivePlayerTurn_Implementation(bool TurnActive) override;
 
+private:
+	FTimerHandle mAddCardTH;
+	bool bCardPlayerStateDirty;
+
 protected:
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UParticleSystem> mWarningParticle;
+	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Game Interaction", Replicated)
 	TObjectPtr<ACard3D> mHitCard;
 	/** Please add a variable description */
@@ -93,7 +98,7 @@ protected:
 	TObjectPtr<ABoardPlayer> mBoardPlayer;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Player")
-	ECardPlayerState mPlayerStateEnum;
+	ECardPlayerState mCardPlayerState;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Player", Replicated)
 	ECardSet mCardSet;
 	/** The max card the player can hold in their hand at any one time. Note: Not used when 'IgnoreMaxCards?' is enabled on the 'Request Card pickup' event. */
@@ -233,6 +238,17 @@ protected:
 	UFUNCTION(Category="Delegate")
 	void ClickEnd(AActor* TouchedActor , FKey ButtonPressed);
 
+	UFUNCTION(Category="Macro")
+	bool IsPlatformMobile() const;
+	UFUNCTION(Category="Macro")
+	void DisableCardSelection(ACard3D* ReceivingCard) const;
+	UFUNCTION(Category="Macro")
+	void ClearCardInteractionState();
+	UFUNCTION(Category="Macro")
+	void ClearCardPlacementState();
+	UFUNCTION(Category="Macro")
+	bool CheckPlayerState(EViewState ViewState,ECardPlayerState ValidState1,ECardPlayerState ValidState2);
+
 	void CardInteraction();
 	
 public:
@@ -348,7 +364,7 @@ public:
 	void Client_DestroyCard();
 
 	UFUNCTION(BlueprintCallable,Server,Unreliable,Category="Card Manager")
-	void Debug_Server_AddCardToHand();
+	void Debug_Server_AddCardToHand(FName CardName);
 	UFUNCTION(Category="Card Manager")
 	void AddCardToHand();
 	UFUNCTION(BlueprintCallable,Client,Reliable,Category="Card Manager")

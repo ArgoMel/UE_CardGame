@@ -63,6 +63,14 @@ void ACard3D::OnRep_CardType()
 {
 }
 
+void ACard3D::DisableMobileCardPreview()
+{
+}
+
+void ACard3D::Deselected()
+{
+}
+
 void ACard3D::ForceMoveCardDirectlyToGraveyard_Implementation(AGraveyard* graveyard)
 {
 }

@@ -36,7 +36,7 @@ public:
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
-	static void MouseDistanceInWorldSpace(const UWorld* World,ACCGPlayerController* PlayerController, double Distance, FTransform& SpawnTransform);
+	static void MouseDistanceInWorldSpace(ACCGPlayerController* PlayerController, double Distance, FTransform& SpawnTransform);
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)

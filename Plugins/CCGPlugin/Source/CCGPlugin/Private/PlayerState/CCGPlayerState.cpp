@@ -12,6 +12,8 @@ ACCGPlayerState::ACCGPlayerState()
 , mCardGamePlayerId(0)
 , bForceUIUpdateOnReplication(false)
 {
+	SetNetUpdateFrequency(100.f);
+	SetMinNetUpdateFrequency(3.f);
 }
 
 void ACCGPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const

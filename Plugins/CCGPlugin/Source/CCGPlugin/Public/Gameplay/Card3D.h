@@ -355,6 +355,11 @@ public:
 	// UFUNCTION(BlueprintCallable, Category="Abilities")
 	// void RunCardAbility(int32 AbilityIndex, bool& Successful, int32 AbilityIndex_Ref);
 
+	UFUNCTION(Category="Event")
+	void DisableMobileCardPreview();
+	UFUNCTION(Category="Event")
+	void Deselected();
+
 	UFUNCTION(Server,Reliable)
 	void Server_SetCardData(const FName& CardTableName,ECardSet CardRace,FCard CardStruct,bool SetCardDataFromStruct);
 	

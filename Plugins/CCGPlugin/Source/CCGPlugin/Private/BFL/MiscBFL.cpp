@@ -79,17 +79,18 @@ int32 UMiscBFL::ReadInteractingCardDataAttack(ACard3D* ReadCard)
 	return ReadCard->GetAttack();
 }
 
-void UMiscBFL::MouseDistanceInWorldSpace(const UWorld* World, ACCGPlayerController* PlayerController, double Distance, FTransform& SpawnTransform)
+void UMiscBFL::MouseDistanceInWorldSpace(ACCGPlayerController* PlayerController, double Distance, FTransform& SpawnTransform)
 {
-	IF_RET_VOID(World);
 	IF_RET_VOID(PlayerController);
+	const UWorld* world=PlayerController->GetWorld();
+	IF_RET_VOID(world);
 	FVector worldLoc;
 	FVector worldDir;
 	PlayerController->DeprojectMousePositionToWorld(worldLoc,worldDir);
 	SpawnTransform.SetLocation(worldLoc+worldDir*Distance);
 
 	FRotator worldRot;
-	GetWorldRotationForPlayer(World,FRotator::ZeroRotator,worldRot);
+	GetWorldRotationForPlayer(world,FRotator::ZeroRotator,worldRot);
 	SpawnTransform.SetRotation(worldRot.Quaternion());
 	SpawnTransform.SetScale3D(FVector(1.f));
 }

@@ -23,18 +23,14 @@ public class CCGPlugin : ModuleRules
 			);
 			
 		
-		PublicDependencyModuleNames.AddRange(
-			new string[]
+		PublicDependencyModuleNames.AddRange(new string[]
 			{
 				"Core",
 				"OnlineSubsystem", 
 				"UMG",
-			}
-			);
-			
+			});
 		
-		PrivateDependencyModuleNames.AddRange(
-			new string[]
+		PrivateDependencyModuleNames.AddRange(new string[]
 			{
 				"CoreUObject",
 				"Engine",
@@ -43,8 +39,8 @@ public class CCGPlugin : ModuleRules
                 "UMG", 
                 "MultiplayerSessions",
                 "AIModule",
-			}
-			);
+                "InputCore",
+			});
 		
 		
 		DynamicallyLoadedModuleNames.AddRange(

@@ -26,6 +26,7 @@ ACCGMode::ACCGMode()
 , bSingleClientEnabled(false)
 , bSpectator(false)
 {
+	bDelayedStart=true;
 }
 
 void ACCGMode::PostLogin(APlayerController* NewPlayer)

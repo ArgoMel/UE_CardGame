@@ -11,6 +11,13 @@ namespace CCG
 	constexpr int32 MaxManaCost=10;
 }
 
+namespace CCG_MSG
+{
+	const FString GameStart(TEXT("Game has Started")); 
+	const FString PlayerTurn(TEXT("Your Turn!")); 
+	const FString OpponentTurn(TEXT("Opponents Turn!")); 
+}
+
 namespace CCG_TAG
 {
 	const FName Camera(TEXT("CardGameCamera")); 
