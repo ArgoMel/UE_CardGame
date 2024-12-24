@@ -5,12 +5,14 @@
 #include "CoreMinimal.h"
 #include "Common/CCGStruct.h"
 #include "GameFramework/Pawn.h"
+#include "Interface/PlayerStateInterface.h"
 #include "CCGAIPawn.generated.h"
 
 class ACCGMode;
 
 UCLASS()
 class CCGPLUGIN_API ACCGAIPawn : public APawn
+	,public IPlayerStateInterface
 {
 	GENERATED_BODY()
 public:

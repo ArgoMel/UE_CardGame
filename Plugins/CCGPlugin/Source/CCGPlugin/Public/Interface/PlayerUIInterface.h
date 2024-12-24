@@ -28,5 +28,10 @@ public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void UpdateUIGameTurnTime();
-
+	//SetCardView State(EViewState CardViewState ,bool Force)
+	//AddCardWidget(FName CardName,ECardSet FromCardSet)
+	//RemoveCardWidget(UUserWidget* CardWidget,int32 HandIndex,bool RemoveAll=false)
+	//EViewState GetViewState()
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void LogNotificationMessage(const FString& Message, FLinearColor SpecifiedColor);
 };

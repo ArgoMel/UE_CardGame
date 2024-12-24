@@ -4,6 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Common/CCGStruct.h"
+#include "Interface/CardsInHandInterface.h"
+#include "Interface/ControllerInterface.h"
+#include "Interface/DeckInterface.h"
+#include "Interface/GameStateInterface.h"
 #include "Runtime/AIModule/Classes/AIController.h"
 #include "CCGAIController.generated.h"
 
@@ -15,6 +19,10 @@ class ACCGAIPawn;
 
 UCLASS()
 class CCGPLUGIN_API ACCGAIController : public AAIController
+	,public ICardsInHandInterface
+	,public IControllerInterface
+	,public IDeckInterface
+	,public IGameStateInterface
 {
 	GENERATED_BODY()
 public:

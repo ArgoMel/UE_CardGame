@@ -6,6 +6,7 @@
 #include "BoardPlayer.h"
 #include "Common/CCGStruct.h"
 #include "GameFramework/Actor.h"
+#include "Interface/CardInteractionInterface.h"
 #include "Card3D.generated.h"
 
 class UBoxComponent;
@@ -13,6 +14,7 @@ class UTextRenderComponent;
 
 UCLASS()
 class CCGPLUGIN_API ACard3D : public AActor
+	,public ICardInteractionInterface
 {
 	GENERATED_BODY()
 public:

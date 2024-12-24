@@ -126,7 +126,7 @@ class ACard3D;
 class ACardPlacement;
 
 USTRUCT(BlueprintType)
-struct FAIPersonality
+struct FAIPersonality: public FTableRowBase 
 {
 	GENERATED_BODY()
 public:
@@ -317,7 +317,7 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FPointAllocation
+struct FPointAllocation: public FTableRowBase 
 {
 	GENERATED_BODY()
 public:
@@ -334,7 +334,7 @@ public:
 
 #pragma region CardLayoutStruct
 USTRUCT(BlueprintType)
-struct FCardLayout
+struct FCardLayout: public FTableRowBase 
 {
 	GENERATED_BODY()
 public:
@@ -703,7 +703,7 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FPrebuildDeck
+struct FPrebuildDeck: public FTableRowBase 
 {
 	GENERATED_BODY()
 public:

@@ -84,7 +84,7 @@ void UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FS
 		return;
 	}
 
-	auto existingSession = SessionInterface->GetNamedSession(NAME_GameSession);
+	const auto existingSession = SessionInterface->GetNamedSession(NAME_GameSession);
 	if (existingSession != nullptr)
 	{
 		bCreateSessionOnDestroy = true;
