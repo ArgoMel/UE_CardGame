@@ -337,25 +337,6 @@ enum class EEndGameResults : uint8
 };
 
 UENUM(BlueprintType)
-enum class ECardError : uint8
-{
-	ValidDrop UMETA(DisplayName = "ValidDrop"),
-	NotAValidPlacement UMETA(DisplayName = "NotAValidPlacement"),
-	CastFailedToPlayer UMETA(DisplayName = "CastFailedToPlayer"),
-	PlacementFullORNotValidPlayerPlacement UMETA(DisplayName = "PlacementFullORNotValidPlayerPlacement"),
-	PlacementFull UMETA(DisplayName = "PlacementFull"),
-	NotEnoughMana UMETA(DisplayName = "NotEnoughMana"),
-	MaxCardsAllowedForPlacement UMETA(DisplayName = "MaxCardsAllowedForPlacement"),
-	PlacementDoesNotSupportCardType UMETA(DisplayName = "PlacementDoesNotSupportCardType"),
-	IncorrectPlayerPlacementForCard UMETA(DisplayName = "IncorrectPlayerPlacementForCard"),
-	InvalidPlacement UMETA(DisplayName = "InvalidPlacement"),
-	NoSupportedDropLocationFound UMETA(DisplayName = "NoSupportedDropLocationFound"),
-	CardNotFoundInHand UMETA(DisplayName = "CardNotFoundInHand(Server)"),
-	OneIsInvalid UMETA(DisplayName = "OneIsInvalid"),
-	Max UMETA(Hidden)
-};
-
-UENUM(BlueprintType)
 enum class EManaCostSorting : uint8
 {
 	LowestToHighest UMETA(DisplayName = "LowestToHighest"),

@@ -59,7 +59,9 @@ private:
 	bool bCardPlayerStateDirty;
 
 protected:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly,Category="Asset")
+	TSubclassOf<ACard3D> mCard3DClass;
+	UPROPERTY(EditDefaultsOnly,Category="Asset")
 	TObjectPtr<UParticleSystem> mWarningParticle;
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Game Interaction", Replicated)
@@ -158,9 +160,6 @@ protected:
 	TObjectPtr<ACCGState> mGameState;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
 	TObjectPtr<ACCGPlayerState> mPlayerState;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
-	ECardError mError;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", ReplicatedUsing="OnRep_TurnState")
 	EGameTurn mTurnState;
 
@@ -247,13 +246,17 @@ protected:
 	UFUNCTION(Category="Macro")
 	void ClearCardPlacementState();
 	UFUNCTION(Category="Macro")
-	bool CheckPlayerState(EViewState ViewState,ECardPlayerState ValidState1,ECardPlayerState ValidState2);
+	bool CheckPlayerState(EViewState ViewState,ECardPlayerState ValidState1,ECardPlayerState ValidState2) const;
+	UFUNCTION(Category="Macro")
+	bool ValidatePlacement(ACardPlacement* PlacementTarget,FCard Card) const;
+	UFUNCTION(Category="Macro")
+	bool ValidatePlacementOwner(int32 PlayerIndex,int32 PlacementPlayerIndex,FCard Card) const;
 
 	void CardInteraction();
 	
 public:
 	UFUNCTION(BlueprintCallable, Category="Card Functions")
-	void SetCardLocation(ACard3D* Card, FVector HoldLocation, FRotator Rotation);
+	void SetCardLocation(ACard3D* Card, FVector HoldLocation, FRotator Rotation) const;
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Card Functions")
 	bool ValidateCardPlacement(AActor* HitActor);
@@ -353,7 +356,7 @@ public:
 	UFUNCTION(BlueprintCallable,Client,Reliable,Category="Client")
 	void Client_UpdateGameUI(bool ForceCleanUpdate=false);
 	UFUNCTION(BlueprintCallable,Client,Reliable,Category="Client")
-	void Client_DropCard(bool CardPlayed,ECardError Error);
+	void Client_DropCard(bool CardPlayed);
 	UFUNCTION(BlueprintCallable,Client,Unreliable,Category="Client")
 	void Client_CreateDisplayMessage(const FString& Msg,FLinearColor Color, bool ToScreen, float ScreenDuration, bool ToMsgLogger=false);
 	UFUNCTION(BlueprintCallable,Client,Reliable,Category="Client")

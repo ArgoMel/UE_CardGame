@@ -20,7 +20,7 @@ TSubclassOf<UUserWidget> UMiscBFL::mDisplayWidgetClass;
 
 UMiscBFL::UMiscBFL()
 {
-	GetClassAsset(mDisplayWidgetClass,UUserWidget,"/CCGPlugin/CCGToolkit/BP/Widgets/Additional/DisplayMessage.DisplayMessage_C")
+	GetClassAsset(mDisplayWidgetClass,UUserWidget,"/CCGPlugin/CCGToolkit/BP/Widgets/Additional/WBP_DisplayMessage.WBP_DisplayMessage_C")
 }
 
 bool UMiscBFL::InterpToGoalLocation2D(FWidgetTransform CurrentTransform, FWidgetTransform GoalTransform, double DeltaTime, double InterpSpeed, FWidgetTransform& Transform)

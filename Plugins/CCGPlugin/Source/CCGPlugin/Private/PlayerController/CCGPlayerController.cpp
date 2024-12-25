@@ -6,11 +6,15 @@
 #include "BFL/CardsInHandBFL.h"
 #include "BFL/DeckBFL.h"
 #include "BFL/MiscBFL.h"
+#include "Blueprint/UserWidget.h"
 #include "GameInstance/CCGameInstance.h"
 #include "Gameplay/Card3D.h"
+#include "Gameplay/CardPlacement.h"
 #include "Gameplay/TargetDragSelection.h"
 #include "GameState/CCGState.h"
+#include "Interface/PlayerUIInterface.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "PlayerState/CCGPlayerState.h"
 
@@ -31,7 +35,6 @@ ACCGPlayerController::ACCGPlayerController()
 	, bPlayCardSuccess(false)
 	, bIsPlayed(false)
 	, bEnabledMobileCardPreview(false)
-	, mError()
 	, mTurnState()
 	, mWeightedFilterIndex(0)
 	, bShuffleDeck(true)
@@ -171,7 +174,6 @@ bool ACCGPlayerController::RemoveCardFromHand_Implementation(FName Card, int32 I
 	{
 		if (!UCardsInHandBFL::HasCardInHand(mCardsInHand,Card,Index))
 		{
-			mError=ECardError::CardNotFoundInHand;
 			return false;
 		}
 		mCardsInHand.RemoveAt(Index);
@@ -226,11 +228,12 @@ ACard3D* ACCGPlayerController::CreatePlayableCard_Implementation(FTransform Spaw
 	}
 	UWorld* world=GetWorld();
 	IF_RET_NULL(world);
+	IF_RET_NULL(mCard3DClass);
 	FActorSpawnParameters spawnParameters;
 	spawnParameters.Owner=this;
 	spawnParameters.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	spawnParameters.TransformScaleMethod=ESpawnActorScaleMethod::OverrideRootScale;
-	mPlayCard_Server=world->SpawnActor<ACard3D>(ACard3D::StaticClass(),SpawnTransform,spawnParameters);
+	mPlayCard_Server=world->SpawnActor<ACard3D>(mCard3DClass,SpawnTransform,spawnParameters);
 	return mPlayCard_Server;
 }
 
@@ -380,9 +383,36 @@ void ACCGPlayerController::ClearCardPlacementState()
 	}
 }
 
-bool ACCGPlayerController::CheckPlayerState(EViewState ViewState, ECardPlayerState ValidState1, ECardPlayerState ValidState2)
+bool ACCGPlayerController::CheckPlayerState(EViewState ViewState, ECardPlayerState ValidState1, ECardPlayerState ValidState2) const
 {
-	return false;
+	IF_RET_BOOL(mPlayerGameUI);
+	if (!mPlayerGameUI->Implements<UPlayerUIInterface>()
+		||IPlayerUIInterface::Execute_GetViewState(mPlayerGameUI)!=ViewState)
+	{
+		return false;
+	}
+	return mCardPlayerState==ValidState1||mCardPlayerState==ValidState2;
+}
+
+bool ACCGPlayerController::ValidatePlacement(ACardPlacement* PlacementTarget, FCard Card) const
+{
+	IF_RET_BOOL(PlacementTarget);
+	return PlacementTarget->mValidCardTypes.Contains(Card.Type)&&!PlacementTarget->IsFull();
+}
+
+bool ACCGPlayerController::ValidatePlacementOwner(int32 PlayerIndex, int32 PlacementPlayerIndex, FCard Card) const
+{
+	if (Card.PlacementSetting.Owner==ECardPlayers::SelfAndOpponent)
+	{
+		return true;
+	}
+	if (Card.PlacementSetting.Owner==ECardPlayers::Self
+		&&PlayerIndex==PlacementPlayerIndex)
+	{
+		return true;
+	}
+	return Card.PlacementSetting.Owner==ECardPlayers::Opponent
+		&&PlayerIndex!=PlacementPlayerIndex;
 }
 
 void ACCGPlayerController::CardInteraction()
@@ -406,14 +436,70 @@ void ACCGPlayerController::CardInteraction()
 	}
 }
 
-void ACCGPlayerController::SetCardLocation(ACard3D* Card, FVector HoldLocation, FRotator Rotation)
+void ACCGPlayerController::SetCardLocation(ACard3D* Card, FVector HoldLocation, FRotator Rotation) const
 {
-	
+	IF_RET_VOID(Card);
+	const FVector cardLoc=Card->GetActorLocation();
+	const UWorld* world = GetWorld();
+	IF_RET_VOID(world);
+	const float deltaTime=world->GetDeltaSeconds();
+	const FVector interpVector=UKismetMathLibrary::VInterpTo(cardLoc,HoldLocation,deltaTime,10.f);
+	Card->SetActorLocation(interpVector);
+	if (bEnableInHandMovementRotation)
+	{
+		if (Rotation.Yaw>0.f)
+		{
+			Rotation.Pitch=(cardLoc.X-HoldLocation.X)/5.f;
+			Rotation.Roll=(cardLoc.Y-HoldLocation.Y)/-5.f;
+		}
+		else
+		{
+			Rotation.Pitch=(cardLoc.X-HoldLocation.X)/-5.f;
+			Rotation.Roll=(cardLoc.Y-HoldLocation.Y)/5.f;
+		}
+		const FRotator interpRot=UKismetMathLibrary::RInterpTo(Card->GetActorRotation(),Rotation,deltaTime,5.f);
+		Card->SetActorRotation(interpRot);
+	}
 }
 
 bool ACCGPlayerController::ValidateCardPlacement(AActor* HitActor)
 {
-	return false;
+	mCardPlacement=nullptr;
+	mTargetCardPlacement=nullptr;
+	
+	IF_RET_BOOL(HitActor);
+	ACardPlacement* cardPlacement=Cast<ACardPlacement>(HitActor);
+	if (cardPlacement)
+	{
+		if (cardPlacement==mTargetCardPlacement)
+		{
+			return false;
+		}
+		mCardPlacement=cardPlacement;
+	}
+	else if (ACard3D* card3D=Cast<ACard3D>(HitActor))
+	{
+		if (card3D->GetPlacementOwner()==mTargetCardPlacement)
+		{
+			return false;
+		}
+		mCardOnBoard=card3D;
+		mCardPlacement=cardPlacement;
+	}
+	else
+	{
+		return false;
+	}
+	IF_RET_BOOL(mPlayerState);
+	const int32 playerID=mPlayerState->GetCardGamePlayerId();
+	const FCard card=UDeckBFL::GetCardData(tCreateCardName,tChosenCardSet);
+	if (!ValidatePlacement(mCardPlacement,card)
+		||!ValidatePlacementOwner(playerID,mCardPlacement->GetPlayerIndex(),card))
+	{
+		return false;
+	}
+	mTargetCardPlacement=cardPlacement;
+	return true;
 }
 
 ACard3D* ACCGPlayerController::Client_CreatePlaceableCard(FName Name, ECardSet CardSet, FVector SpawnTransformLocation)
@@ -532,7 +618,7 @@ void ACCGPlayerController::DragCanceled()
 		}
 		else
 		{
-			Client_DropCard(false,mError);
+			Client_DropCard(false);
 			Client_DestroyCard();
 		}
 		break;
@@ -600,7 +686,7 @@ void ACCGPlayerController::Client_UpdateGameUI_Implementation(bool ForceCleanUpd
 {
 }
 
-void ACCGPlayerController::Client_DropCard_Implementation(bool CardPlayed, ECardError Error)
+void ACCGPlayerController::Client_DropCard_Implementation(bool CardPlayed)
 {
 }
 
