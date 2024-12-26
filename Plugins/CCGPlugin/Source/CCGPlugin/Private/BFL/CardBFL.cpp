@@ -128,7 +128,7 @@ bool UCardBFL::ValidateCardPlayConditions(FName CardName, AController* CallingCo
 	FCard card=UDeckBFL::GetCardData(CardName,ECardSet::Empty);
 	const int32 controllerID=UControllerBFL::GetControllerID(CallingController);
 
-	for (auto& condition:card.CardSystemData.PlayConditions)
+	for (const auto& condition:card.CardSystemData.PlayConditions)
 	{
 		ConditionFailure=condition;
 		switch (condition)

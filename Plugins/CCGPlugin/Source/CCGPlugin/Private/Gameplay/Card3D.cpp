@@ -23,6 +23,8 @@ void ACard3D::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLif
 	DOREPLIFETIME(ThisClass,mType)
 	DOREPLIFETIME(ThisClass,mPlacementOwner)
 	DOREPLIFETIME(ThisClass,mOwningPlayerID)
+	DOREPLIFETIME(ThisClass,bCanAttackPlayer)
+	DOREPLIFETIME(ThisClass,bCanAttackCard)
 }
 
 void ACard3D::BeginPlay()
@@ -63,7 +65,19 @@ void ACard3D::OnRep_CardType()
 {
 }
 
+void ACard3D::SetClientSideData(FName CardTableName, ECardSet CardRace)
+{
+}
+
+void ACard3D::EnableMobileCardPreview()
+{
+}
+
 void ACard3D::DisableMobileCardPreview()
+{
+}
+
+void ACard3D::Selected(int32 SelectingPlayerID)
 {
 }
 

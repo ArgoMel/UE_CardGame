@@ -87,9 +87,6 @@ protected:
 	bool bIsDragging;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Game Interaction", Replicated)
 	bool bIsCardSelected;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Game Interaction")
-	bool bValidInteraction;
 	
 	UPROPERTY(BlueprintReadWrite, Category="Player")
 	TObjectPtr<UUserWidget> mPlayerGameUI;
@@ -244,10 +241,6 @@ protected:
 	UFUNCTION(Category="Macro")
 	void ClearCardInteractionState();
 	UFUNCTION(Category="Macro")
-	void ClearCardPlacementState();
-	UFUNCTION(Category="Macro")
-	bool CheckPlayerState(EViewState ViewState,ECardPlayerState ValidState1,ECardPlayerState ValidState2) const;
-	UFUNCTION(Category="Macro")
 	bool ValidatePlacement(ACardPlacement* PlacementTarget,FCard Card) const;
 	UFUNCTION(Category="Macro")
 	bool ValidatePlacementOwner(int32 PlayerIndex,int32 PlacementPlayerIndex,FCard Card) const;
@@ -268,10 +261,10 @@ public:
 	ACard3D* Server_CreatePlaceableCard(FTransform SpawnTransform);
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Card Functions")
-	ACardPlacement* ServerValidateCardPlacement(ACardPlacement* CardPlacement, FCard CardStruct);
+	ACardPlacement* ServerValidateCardPlacement(ACardPlacement* CardPlacement, FCard CardStruct) const;
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Card Functions")
-	ACard3D* SetCustomCardData(ACard3D* Card, bool ActiveAbility);
+	ACard3D* SetCustomCardData(ACard3D* Card, bool ActiveAbility) const;
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Card Functions")
 	void PlayCard(FName CardName, ECardSet CardSet, ACardPlacement* CardPlacement, int32 CardHandIndex, FTransform SpawnTransform);
@@ -281,7 +274,7 @@ public:
 	void DetectCardInteraction();
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Card Interaction Functions")
-	bool ValidateInteractionState();
+	bool ValidateInteractionState() const;
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Card Interaction Functions")
 	void DetectInteractionOnMove();

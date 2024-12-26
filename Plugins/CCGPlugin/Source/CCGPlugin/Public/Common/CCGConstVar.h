@@ -16,6 +16,8 @@ namespace CCG_MSG
 	const FString GameStart(TEXT("Game has Started")); 
 	const FString PlayerTurn(TEXT("Your Turn!")); 
 	const FString OpponentTurn(TEXT("Opponents Turn!")); 
+	const FString InvalidPlacement(TEXT("Placement Not Valid")); 
+	const FString NotEnoughMana(TEXT("Not Enough Mana")); 
 }
 
 namespace CCG_TAG

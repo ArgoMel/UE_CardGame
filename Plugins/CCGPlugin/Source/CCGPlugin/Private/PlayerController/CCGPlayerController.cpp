@@ -3,6 +3,7 @@
 #include "PlayerController/CCGPlayerController.h"
 
 #include "CCGPlugin.h"
+#include "BFL/CardBFL.h"
 #include "BFL/CardsInHandBFL.h"
 #include "BFL/DeckBFL.h"
 #include "BFL/MiscBFL.h"
@@ -22,7 +23,6 @@ ACCGPlayerController::ACCGPlayerController()
 	: bCardPlayerStateDirty(false)
 	, bIsDragging(false)
 	, bIsCardSelected(false)
-	, bValidInteraction(false)
 	, mCardPlayerState(ECardPlayerState::PendingAction)
 	, mCardSet(ECardSet::BasicSet)
 	, mMaxCardsInHand(7)
@@ -130,7 +130,10 @@ void ACCGPlayerController::Tick(float DeltaTime)
 		{
 			bCardPlayerStateDirty=false;
 			ClearCardInteractionState();
-			ClearCardPlacementState();
+			if (mPlayCard_Client)
+			{
+				Client_DestroyCard();
+			}
 		}
 		break;
 	case ECardPlayerState::PlacingCard:
@@ -150,7 +153,11 @@ void ACCGPlayerController::Tick(float DeltaTime)
 		{
 			bCardPlayerStateDirty=false;
 			ClearCardInteractionState();
-			ClearCardPlacementState();
+			//ClearCardPlacementState
+			if (mPlayCard_Client)
+			{
+				Client_DestroyCard();
+			}
 		}
 		break;
 	default: ;
@@ -375,25 +382,6 @@ void ACCGPlayerController::ClearCardInteractionState()
 	bIsCardSelected=false;
 }
 
-void ACCGPlayerController::ClearCardPlacementState()
-{
-	if (mPlayCard_Client)
-	{
-		Client_DestroyCard();
-	}
-}
-
-bool ACCGPlayerController::CheckPlayerState(EViewState ViewState, ECardPlayerState ValidState1, ECardPlayerState ValidState2) const
-{
-	IF_RET_BOOL(mPlayerGameUI);
-	if (!mPlayerGameUI->Implements<UPlayerUIInterface>()
-		||IPlayerUIInterface::Execute_GetViewState(mPlayerGameUI)!=ViewState)
-	{
-		return false;
-	}
-	return mCardPlayerState==ValidState1||mCardPlayerState==ValidState2;
-}
-
 bool ACCGPlayerController::ValidatePlacement(ACardPlacement* PlacementTarget, FCard Card) const
 {
 	IF_RET_BOOL(PlacementTarget);
@@ -419,7 +407,10 @@ void ACCGPlayerController::CardInteraction()
 {
 	if (bTurnActive)
 	{
-		if (CheckPlayerState(EViewState::Default,ECardPlayerState::PendingAction,ECardPlayerState::CardInteraction))
+		IF_RET_VOID(mPlayerGameUI);
+		if (mPlayerGameUI->Implements<UPlayerUIInterface>()
+			&&IPlayerUIInterface::Execute_GetViewState(mPlayerGameUI)!=EViewState::Default
+			&&(mCardPlayerState==ECardPlayerState::PendingAction||mCardPlayerState==ECardPlayerState::CardInteraction))
 		{
 			DetectCardInteraction();
 		}
@@ -504,44 +495,270 @@ bool ACCGPlayerController::ValidateCardPlacement(AActor* HitActor)
 
 ACard3D* ACCGPlayerController::Client_CreatePlaceableCard(FName Name, ECardSet CardSet, FVector SpawnTransformLocation)
 {
-	return nullptr;
+	UWorld* world=GetWorld();
+	IF_RET_NULL(world);
+	IF_RET_NULL(mCard3DClass);
+	FRotator cardRot;
+	UMiscBFL::GetWorldRotationForPlayer(world,FRotator::ZeroRotator,cardRot);
+	FActorSpawnParameters spawnParameters;
+	spawnParameters.Owner=this;
+	spawnParameters.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	spawnParameters.TransformScaleMethod=ESpawnActorScaleMethod::OverrideRootScale;
+	mPlayCard_Client=world->SpawnActor<ACard3D>(mCard3DClass,SpawnTransformLocation,cardRot,spawnParameters);
+	if (mPlayCard_Client)
+	{
+		mPlayCard_Client->SetClientSideData(Name,CardSet);
+	}
+	return mPlayCard_Client;
 }
 
 ACard3D* ACCGPlayerController::Server_CreatePlaceableCard(FTransform SpawnTransform)
 {
-	return nullptr;
+	if (!HasAuthority())
+	{
+		return nullptr;
+	}
+	UWorld* world=GetWorld();
+	IF_RET_NULL(world);
+	IF_RET_NULL(mCard3DClass);
+	FActorSpawnParameters spawnParameters;
+	spawnParameters.Owner=this;
+	spawnParameters.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	spawnParameters.TransformScaleMethod=ESpawnActorScaleMethod::OverrideRootScale;
+	mPlayCard_Server=world->SpawnActor<ACard3D>(mCard3DClass,SpawnTransform,spawnParameters);
+	return mPlayCard_Server;
 }
 
-ACardPlacement* ACCGPlayerController::ServerValidateCardPlacement(ACardPlacement* CardPlacement, FCard CardStruct)
+ACardPlacement* ACCGPlayerController::ServerValidateCardPlacement(ACardPlacement* CardPlacement, FCard CardStruct) const
 {
-	return nullptr;
+	if (!HasAuthority())
+	{
+		return nullptr;
+	}
+	IF_RET_NULL(CardPlacement);
+	IF_RET_NULL(mPlayerState);
+	const int32 playerID=mPlayerState->GetCardGamePlayerId();
+	if (!ValidatePlacementOwner(playerID,CardPlacement->GetPlayerIndex(),CardStruct))
+	{
+		return nullptr;
+	}
+	if (!ValidatePlacement(CardPlacement,CardStruct))
+	{
+		return nullptr;
+	}
+	return CardPlacement;
 }
 
-ACard3D* ACCGPlayerController::SetCustomCardData(ACard3D* Card, bool ActiveAbility)
+ACard3D* ACCGPlayerController::SetCustomCardData(ACard3D* Card, bool ActiveAbility) const
 {
-	return nullptr;
+	IF_RET_NULL(Card);
+	Card->SetIsAbilityActive(ActiveAbility);
+	return Card;
 }
 
 void ACCGPlayerController::PlayCard(FName CardName, ECardSet CardSet, ACardPlacement* CardPlacement, int32 CardHandIndex, FTransform SpawnTransform)
 {
+	if (!HasAuthority())
+	{
+		return;
+	}
+	IF_RET_VOID(mPlayerState);
+	const FCard card=UDeckBFL::GetCardData(CardName,CardSet);
+	bool cardPlayed=false;
+	if (UCardsInHandBFL::HasCardInHand(mCardsInHand,CardName,CardHandIndex))
+	{
+		if (ServerValidateCardPlacement(CardPlacement,card))
+		{
+			ECardPlayConditions condition;
+			if (UCardBFL::ValidateCardPlayConditions(CardName,this,condition))
+			{
+				int32 tempInt=0;
+				if (UCardBFL::ChargeCardManaCost(this,mPlayerState->GetCardGamePlayerId(),bSkipManaCheck,card,EManaAccount::Placement,tempInt))
+				{
+					if (Execute_RemoveCardFromHand(this,CardName,CardHandIndex,false))
+					{
+						ACard3D* card3d=Server_CreatePlaceableCard(SpawnTransform);
+						card3d=UCardBFL::SetupCard(card3d,mPlayerState->GetCardGamePlayerId(),CardName,CardSet,FCard(),false);
+						UCardBFL::AddCardToBoardPlacement(card3d,CardPlacement,mPlayerState->GetCardGamePlayerId());
+						cardPlayed=true;
+					}
+				}
+				else
+				{
+					Client_LogNotificationMessage(CCG_MSG::NotEnoughMana,FLinearColor::Red);
+				}
+			}
+			else
+			{
+				Client_LogNotificationMessage(UEnum::GetDisplayValueAsText(condition).ToString(),FLinearColor::Red);
+			}
+		}
+		else
+		{
+			Client_LogNotificationMessage(CCG_MSG::InvalidPlacement,FLinearColor::Red);
+		}
+	}
+	Client_DestroyCard();
+	Client_DropCard(cardPlayed);
+	Server_UpdatePlayerState();
 }
 
 void ACCGPlayerController::DetectCardInteraction()
 {
+	IF_RET_VOID(mPlayerState);
+	FHitResult result;
+	UMiscBFL::MouseToWorldLocation(this,result);
+	const ACard3D* card3d=Cast<ACard3D>(result.GetActor());
+	if (!card3d)
+	{
+		ClearCardInteractionState();
+		mCardPlayerState=ECardPlayerState::PendingAction;
+		return;
+	}
+	bool checkTalkingCard=true;
+	bool checkMobile=true;
+	if (card3d->GetOwningPlayerID()==mPlayerState->GetCardGamePlayerId())
+	{
+		if (bIsCardSelected)
+		{
+			if (!mTalkingCard)
+			{
+				checkMobile=false;
+				checkTalkingCard=false;
+				mTalkingCard=mHitCard;
+				mTalkingCard->Selected(mPlayerState->GetCardGamePlayerId());
+			}
+		}
+		else
+		{
+			checkMobile=false;
+			checkTalkingCard=false;
+			bIsCardSelected=true;
+			mCardPlayerState=ECardPlayerState::CardInteraction;
+			mTalkingCard=mHitCard;
+			mTalkingCard->Selected(mPlayerState->GetCardGamePlayerId());
+		}
+	}
+	if (checkTalkingCard&&mTalkingCard)
+	{
+		if (mTalkingCard!=mHitCard)
+		{
+			checkMobile=false;
+			IF_RET_VOID(mHitCard);
+			if (mTalkingCard->IsPreviewEnabled())
+			{
+				mHitCard->DisableMobileCardPreview();
+				ClearCardInteractionState();
+				mCardPlayerState=ECardPlayerState::PendingAction;
+			}
+			else if (mTalkingCard->CanAttackCard())
+			{
+				mReceivingCard=mHitCard;
+				mReceivingCard->Selected(mPlayerState->GetCardGamePlayerId());
+			}
+			else
+			{
+				ClearCardInteractionState();
+				mCardPlayerState=ECardPlayerState::PendingAction;
+			}
+		}
+	}
+	if (checkMobile&&IsPlatformMobile())
+	{
+		IF_RET_VOID(mHitCard);
+		if (mHitCard->IsPreviewEnabled())
+		{
+			mHitCard->DisableMobileCardPreview();
+			ClearCardInteractionState();
+			mCardPlayerState=ECardPlayerState::PendingAction;
+		}
+		else
+		{
+			mHitCard->EnableMobileCardPreview();
+			mEnabledMobilePreview=mHitCard;
+		}
+	}
+	else
+	{
+		ClearCardInteractionState();
+		mCardPlayerState=ECardPlayerState::PendingAction;
+	}
 }
 
-bool ACCGPlayerController::ValidateInteractionState()
+bool ACCGPlayerController::ValidateInteractionState() const
 {
-	return false;
+	if (!bIsCardSelected)
+	{
+		return false;
+	}
+	const bool validateInteraction=mReceivingPlayer||(mTalkingCard&&mReceivingCard&&mTalkingCard!=mReceivingCard);
+	if (!validateInteraction)
+	{
+		return false;
+	}
+	return true;
 }
 
 void ACCGPlayerController::DetectInteractionOnMove()
 {
-	
+	//EnableDragSelection
+	if (!bIsDragging)
+	{
+		ClearCardInteractionState();
+		DetectCardInteraction();
+		bIsDragging=true;
+	}
+
+	FHitResult result;
+	UMiscBFL::MouseToWorldLocation(this,result);
+	IF_RET_VOID(mReceivingCard);
+	if (Cast<ACard3D>(result.GetActor()))
+	{
+		IF_RET_VOID(mTalkingCard);
+		IF_RET_VOID(mPlayerState);
+		if (mTalkingCard->CanAttackCard()
+			&&mHitCard!=mReceivingCard)
+		{
+			mReceivingCard->Deselected();
+			mReceivingCard=nullptr;
+			if (mHitCard!=mTalkingCard)
+			{
+				mReceivingCard=mHitCard;
+				mReceivingPlayer=nullptr;
+				mReceivingCard->Selected(mPlayerState->GetCardGamePlayerId());
+			}
+		}
+	}
+	else if (ABoardPlayer* boardPlayer=Cast<ABoardPlayer>(result.GetActor()))
+	{
+		IF_RET_VOID(mTalkingCard);
+		if (mTalkingCard->CanAttackPlayer())
+		{
+			mReceivingPlayer=boardPlayer;
+		}
+		mReceivingCard->Deselected();
+		mReceivingCard=nullptr;
+	}
+	else
+	{
+		mReceivingCard->Deselected();
+		mReceivingCard=nullptr;
+		mReceivingPlayer=nullptr;
+	}
+	if (CreateDragActorVisual(true))
+	{
+		IF_RET_VOID(mTargetDragSelectionActor);
+		mTargetDragSelectionActor->SetSelectionProperties(result.Location,mReceivingCard||mReceivingPlayer);
+	}
 }
 
 void ACCGPlayerController::RunCardInteraction(ACard3D* InteractionTalkingCard, ACard3D* InteractionReceivingCard, ABoardPlayer* InteractionReceivingPlayer)
 {
+	if (!HasAuthority())
+	{
+		return;
+	}
+	
 }
 
 bool ACCGPlayerController::CreateDragActorVisual(bool UseActorLocation)

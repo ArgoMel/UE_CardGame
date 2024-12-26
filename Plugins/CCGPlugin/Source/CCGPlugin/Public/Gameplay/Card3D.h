@@ -235,16 +235,14 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Abilities")
 	bool bIsAbilityActive;
 	
-	// /** Please add a variable description */
-	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, CanAttackPlayer) to GetLifetimeReplicatedProps");
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
-	// bool CanAttackPlayer;
-	//
-	// /** Please add a variable description */
-	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, CanAttackCards) to GetLifetimeReplicatedProps");
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
-	// bool CanAttackCards;
-	//
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
+	bool bCanAttackPlayer;
+	
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
+	bool bCanAttackCard;
+	
 	// /** Please add a variable description */
 	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
 	// bool bIsPlatformMobile;
@@ -358,7 +356,13 @@ public:
 	// void RunCardAbility(int32 AbilityIndex, bool& Successful, int32 AbilityIndex_Ref);
 
 	UFUNCTION(Category="Event")
+	void SetClientSideData(FName CardTableName,ECardSet CardRace);
+	UFUNCTION(Category="Event")
+	void EnableMobileCardPreview();
+	UFUNCTION(Category="Event")
 	void DisableMobileCardPreview();
+	UFUNCTION(Category="Event")
+	void Selected(int32 SelectingPlayerID);
 	UFUNCTION(Category="Event")
 	void Deselected();
 
@@ -389,6 +393,9 @@ public:
 	FORCEINLINE ECardType GetCardType() const {return mType;}
 	FORCEINLINE bool IsInGraveyard() const {return bInGraveyard;}
 	FORCEINLINE bool IsPlaced() const {return bIsPlaced;}
+	FORCEINLINE bool IsPreviewEnabled() const {return bPreviewEnabled;}
+	FORCEINLINE bool CanAttackPlayer() const {return bCanAttackPlayer;}
+	FORCEINLINE bool CanAttackCard() const {return bCanAttackCard;}
 
 	FORCEINLINE void SetPlacementOwner(ACardPlacement* PlacementOwner) {mPlacementOwner=PlacementOwner;}
 	FORCEINLINE void SetAttack(int32 Attack) {mAttack=Attack;}
