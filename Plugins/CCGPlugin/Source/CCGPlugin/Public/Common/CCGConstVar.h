@@ -18,6 +18,7 @@ namespace CCG_MSG
 	const FString OpponentTurn(TEXT("Opponents Turn!")); 
 	const FString InvalidPlacement(TEXT("Placement Not Valid")); 
 	const FString NotEnoughMana(TEXT("Not Enough Mana")); 
+	const FString DeckCreated(TEXT("Deck Created!")); 
 }
 
 namespace CCG_TAG
@@ -29,6 +30,9 @@ namespace CCG_ZOrder
 {
 	constexpr int32 MainMenu=5;
 	constexpr int32 DisplayMessage=5;
+	constexpr int32 Countdown=5;
+	constexpr int32 PlayerGameUI=2;
+	constexpr int32 OpponentUI=1;
 }
 
 namespace CCG_Level

@@ -54,5 +54,5 @@ public:
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
-	static void FilterWeightedCardsInDeck(const TArray<FName>& CardsInDeck, TArray<FName> ReturnPlayerDeck);
+	static void FilterWeightedCardsInDeck(TArray<FName>& CardsInDeck);
 };

@@ -32,7 +32,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Widgets")
 	TObjectPtr<UUserWidget> mDeckBuilder;
 
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "디폴트")
+	UPROPERTY(BlueprintReadWrite, Category = "디폴트")
 	TArray<FName> mDeck;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "디폴트")
 	FString mSelectedCardSet;
@@ -43,7 +43,7 @@ protected:
 	ECardSet mChosenCardSet;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "디폴트")
 	EArenaList mArena;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "디폴트")
+	UPROPERTY(BlueprintReadOnly, Category = "디폴트")
 	EPlatform mPlatform;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "디폴트")
 	bool bAIOpponent;
@@ -90,9 +90,13 @@ public:
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
-	EPlatform GetCurrentPlatform(bool& IsMobile) const;
+	bool IsMobilePlatform() const;
 
 	/** 현재 스테이트 반환 */
 	UFUNCTION(BlueprintPure)
-	ECardGameState GetGameState(ECardGameState InState, bool& IsSameState) const;
+	bool IsSameGameState(ECardGameState InState) const;
+
+	FORCEINLINE ECardGameState GetCurGameState() const { return mCurGameState; }
+	FORCEINLINE EPlatform GetPlatform() const { return mPlatform; }
+	FORCEINLINE FString GetSelectedCardSet() const { return mSelectedCardSet; }
 };

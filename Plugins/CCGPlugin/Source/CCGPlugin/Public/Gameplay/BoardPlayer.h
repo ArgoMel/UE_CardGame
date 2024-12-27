@@ -115,4 +115,7 @@ public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
 	void OnRep_Health();
+
+	UFUNCTION(BlueprintCallable,Server,Reliable)
+	void Server_UpdateHealth(int32 Health);
 };

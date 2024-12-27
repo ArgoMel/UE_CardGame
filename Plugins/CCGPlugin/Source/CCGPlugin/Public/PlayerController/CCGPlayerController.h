@@ -62,30 +62,38 @@ protected:
 	UPROPERTY(EditDefaultsOnly,Category="Asset")
 	TSubclassOf<ACard3D> mCard3DClass;
 	UPROPERTY(EditDefaultsOnly,Category="Asset")
+	TSubclassOf<ATargetDragSelection> mDragSelectionClass;
+	UPROPERTY(EditDefaultsOnly,Category="Asset")
+	TSubclassOf<UUserWidget> mPlayerGameUIClass;
+	UPROPERTY(EditDefaultsOnly,Category="Asset")
+	TSubclassOf<UUserWidget> mOpponentUIClass;
+	UPROPERTY(EditDefaultsOnly,Category="Asset")
+	TSubclassOf<UUserWidget> mCountdownWidgetClass;
+	UPROPERTY(EditDefaultsOnly,Category="Asset")
 	TObjectPtr<UParticleSystem> mWarningParticle;
 	
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Game Interaction", Replicated)
+	UPROPERTY(BlueprintReadWrite, Category="Game Interaction", Replicated)
 	TObjectPtr<ACard3D> mHitCard;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Game Interaction")
+	UPROPERTY(BlueprintReadWrite, Category="Game Interaction")
 	TObjectPtr<ABoardPlayer> mHitPlayer;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Game Interaction")
+	UPROPERTY(BlueprintReadWrite, Category="Game Interaction")
 	TObjectPtr<AActor> mHitActor;
 	/** The card which is sending the interaction event */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Game Interaction")
+	UPROPERTY(BlueprintReadWrite, Category="Game Interaction")
 	TObjectPtr<ACard3D> mTalkingCard ;
 	/** The card which is receiving the interaction event */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Game Interaction")
+	UPROPERTY(BlueprintReadWrite, Category="Game Interaction")
 	TObjectPtr<ACard3D> mReceivingCard;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Game Interaction")
+	UPROPERTY(BlueprintReadWrite, Category="Game Interaction")
 	TObjectPtr<ABoardPlayer> mReceivingPlayer;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Game Interaction", Replicated)
+	UPROPERTY(BlueprintReadWrite, Category="Game Interaction", Replicated)
 	TObjectPtr<ATargetDragSelection> mTargetDragSelectionActor;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Game Interaction", Replicated)
+	UPROPERTY(BlueprintReadWrite, Category="Game Interaction", Replicated)
 	bool bIsDragging;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Game Interaction", Replicated)
+	UPROPERTY(BlueprintReadWrite, Category="Game Interaction", Replicated)
 	bool bIsCardSelected;
 	
 	UPROPERTY(BlueprintReadWrite, Category="Player")
@@ -93,7 +101,7 @@ protected:
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, Category="Player")
 	TObjectPtr<UUserWidget> mOpponentUI;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Player", Replicated)
+	UPROPERTY(BlueprintReadWrite, Category="Player", Replicated)
 	TObjectPtr<ABoardPlayer> mBoardPlayer;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Player")
@@ -109,23 +117,23 @@ protected:
 	/** The number of cards the player can draw at the beginning of their turn.  */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Player")
 	int32 mCardsToDrawPerTurn;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Player", ReplicatedUsing="OnRep_bTurnActive")
+	UPROPERTY(BlueprintReadWrite, Category="Player", ReplicatedUsing="OnRep_bTurnActive")
 	bool bTurnActive;
 
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Placement")
+	UPROPERTY(BlueprintReadWrite, Category="Card Placement")
 	TObjectPtr<ACard3D> mPlayCard_Server;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Placement")
+	UPROPERTY(BlueprintReadWrite, Category="Card Placement")
 	TObjectPtr<ACard3D> mPlayCard_Client;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Placement")
+	UPROPERTY(BlueprintReadWrite, Category="Card Placement")
 	TObjectPtr<ACard3D> mCardOnBoard;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Placement")
+	UPROPERTY(BlueprintReadWrite, Category="Card Placement")
 	TObjectPtr<ACardPlacement> mTargetCardPlacement;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Placement")
+	UPROPERTY(BlueprintReadWrite, Category="Card Placement")
 	TObjectPtr<ACardPlacement> mCardPlacement;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, Category="Card Placement")
@@ -141,12 +149,9 @@ protected:
 	bool bIsValidClientDrop;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Placement", Replicated)
 	bool bPlayCardSuccess;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Placement")
-	bool bIsPlayed;
 
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Mobile")
+	UPROPERTY(BlueprintReadWrite, Category="Mobile")
 	TObjectPtr<ACard3D> mEnabledMobilePreview;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Mobile")
@@ -159,15 +164,9 @@ protected:
 	TObjectPtr<ACCGPlayerState> mPlayerState;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", ReplicatedUsing="OnRep_TurnState")
 	EGameTurn mTurnState;
-
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Deck")
-	TArray<FName> mTempDeck;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Deck", Replicated)
+	
+	UPROPERTY(BlueprintReadWrite, Category="Deck", Replicated)
 	TArray<FName> mPlayerDeck;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Deck")
-	int32 mWeightedFilterIndex;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Deck")
 	bool bShuffleDeck;
@@ -189,9 +188,7 @@ protected:
 	int32 tHandIndex;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Temp Variables")
 	bool bCardIsClone;
-
-	UPROPERTY(EditDefaultsOnly, Category="Game")
-	TSubclassOf<UUserWidget> mCountdownTimerClass;
+	
 	UPROPERTY(BlueprintReadWrite, Category="Game")
 	TObjectPtr<UUserWidget> mCountdownTimerWidget;
 
@@ -296,21 +293,18 @@ public:
 	void SetTimer(int32 Time);
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Game Setup")
-	FString LoadClientDeck(TArray<FName>& Deck);
+	FString LoadClientDeck(TArray<FName>& Deck) const;
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Deck / Hand  Functions")
-	void FilterWeightedCards();
-	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, Category="Deck / Hand  Functions")
-	void ShufflePlayerDeck(const TArray<FName>& TargetArray);
+	void ShufflePlayerDeck(TArray<FName>& TargetArray) const;
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Game")
-	void NotifyCardTurnActive();
+	void NotifyCardTurnActive() const;
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Game")
-	void NotifyCardsEndTurn();
+	void NotifyCardsEndTurn() const;
 
 	UFUNCTION(BlueprintCallable,Category="Event")
 	void CallCreateCard(FName CardName,ECardSet CardSet,int32 CardHandIndex,UUserWidget* CardWidget);

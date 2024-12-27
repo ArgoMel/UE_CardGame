@@ -83,4 +83,6 @@ public:
 	void Multicast_ForceUpdateUI();
 
 	FORCEINLINE int32 GetCardGamePlayerId() const { return mCardGamePlayerId; }
+	
+	FORCEINLINE void SetMaxCardsInDeck(int32 MaxCards) { mMaxCardsInDeck=MaxCards; }
 };

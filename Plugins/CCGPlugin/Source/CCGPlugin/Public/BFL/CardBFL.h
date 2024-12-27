@@ -55,4 +55,6 @@ public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
 	static bool HasAbility(ACard3D* Card, EAbilityType Ability, EAbilityTrigger Trigger);
+
+	static void GetAllPreBuildDeckNames(TArray<FName>& Names);
 };

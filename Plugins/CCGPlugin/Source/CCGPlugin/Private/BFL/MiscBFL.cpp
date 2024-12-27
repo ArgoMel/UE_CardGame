@@ -4,10 +4,9 @@
 
 #include "CCGPlugin.h"
 #include "BFL/CCGBFL.h"
-#include "BFL/ControllerBFL.h"
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
-#include "CameraActor/CCGCamera.h"
+#include "Camera/CameraActor.h"
 #include "GameInstance/CCGameInstance.h"
 #include "Gameplay/Card3D.h"
 #include "Interface/WidgetInterface.h"
@@ -46,11 +45,10 @@ void UMiscBFL::MouseToWorldLocation(APlayerController* PlayerController, FHitRes
 	IF_RET_VOID(world);
 	const UCCGameInstance* gameInstance=Cast<UCCGameInstance>(world->GetGameInstance());
 	IF_RET_VOID(gameInstance);
-	bool isMobile;
-	gameInstance->GetCurrentPlatform(isMobile);
-
+	bool isMobile=gameInstance->IsMobilePlatform();
 	FVector worldLoc;
 	FVector worldDir;
+	
 	if (isMobile)
 	{
 		float locX;
@@ -79,36 +77,51 @@ int32 UMiscBFL::ReadInteractingCardDataAttack(ACard3D* ReadCard)
 	return ReadCard->GetAttack();
 }
 
-void UMiscBFL::MouseDistanceInWorldSpace(ACCGPlayerController* PlayerController, double Distance, FTransform& SpawnTransform)
+FTransform UMiscBFL::MouseDistanceInWorldSpace(ACCGPlayerController* PlayerController, double Distance)
 {
-	IF_RET_VOID(PlayerController);
+	IF_RET(FTransform,PlayerController);
 	const UWorld* world=PlayerController->GetWorld();
-	IF_RET_VOID(world);
+	IF_RET(FTransform,world);
+	FTransform spawnTransform;
 	FVector worldLoc;
 	FVector worldDir;
 	PlayerController->DeprojectMousePositionToWorld(worldLoc,worldDir);
-	SpawnTransform.SetLocation(worldLoc+worldDir*Distance);
+	spawnTransform.SetLocation(worldLoc+worldDir*Distance);
 
 	FRotator worldRot;
 	GetWorldRotationForPlayer(world,FRotator::ZeroRotator,worldRot);
-	SpawnTransform.SetRotation(worldRot.Quaternion());
-	SpawnTransform.SetScale3D(FVector(1.f));
+	spawnTransform.SetRotation(worldRot.Quaternion());
+	spawnTransform.SetScale3D(FVector(1.f));
+	return spawnTransform;
 }
 
-void UMiscBFL::CreateScreenDisplayMessage(const UWorld* World, const FString& Message, FLinearColor SpecifiedColor, double Duration)
+void UMiscBFL::CreateScreenDisplayMessage(const UObject* WorldContextObject, const FString& Message, FLinearColor SpecifiedColor, double Duration)
 {
-	IF_RET_VOID(World);
-	if (!UCCGBFL::CanExecuteCosmeticEvents(World))
+	IF_RET_VOID(WorldContextObject);
+	const UWorld* world=WorldContextObject->GetWorld();
+	IF_RET_VOID(world);
+	if (!UCCGBFL::CanExecuteCosmeticEvents(world))
 	{
 		return;
 	}
-	UUserWidget* displayMsg=CreateWidget<UUserWidget>(World->GetFirstPlayerController(),mDisplayWidgetClass);
+	UUserWidget* displayMsg=CreateWidget<UUserWidget>(world->GetFirstPlayerController(),mDisplayWidgetClass);
 	IF_RET_VOID(displayMsg);
 	if (displayMsg->Implements<UWidgetInterface>())
 	{
 		IWidgetInterface::Execute_DisplayMessage(displayMsg,Message,SpecifiedColor,Duration);
 	}
 	displayMsg->AddToViewport(CCG_ZOrder::DisplayMessage);
+}
+
+void UMiscBFL::AddMsgToLog(ACCGPlayerController* CallingPlayer, const FString& Message, FLinearColor SpecifiedColor, double Duration)
+{
+	IF_RET_VOID(CallingPlayer);
+	UUserWidget* playerUI=CallingPlayer->GetPlayerGameUI();
+	IF_RET_VOID(playerUI);
+	if (playerUI->Implements<UWidgetInterface>())
+	{
+		IWidgetInterface::Execute_DisplayMessage(playerUI,Message,SpecifiedColor,Duration);
+	}
 }
 
 bool UMiscBFL::GetWorldRotationForPlayer(const UWorld* World, FRotator OverrideRotationAxis, FRotator& ReturnRotation)
@@ -177,19 +190,20 @@ float UMiscBFL::ModifyDPIScaling(UObject* WorldContextObject, double Value, bool
 	return Value/invertValue;
 }
 
-ACCGCamera* UMiscBFL::GetCardGamePlayerCamera(ACCGPlayerController* PlayerController)
+ACameraActor* UMiscBFL::GetCardGamePlayerCamera(ACCGPlayerController* PlayerController)
 {
 	IF_RET_NULL(PlayerController);
 	const ACCGPlayerState* playerState=PlayerController->GetPlayerState<ACCGPlayerState>();
 	IF_RET_NULL(playerState);
 	TArray<AActor*> allActors;
-	UGameplayStatics::GetAllActorsOfClass(PlayerController,ACCGCamera::StaticClass(),allActors);
+	UGameplayStatics::GetAllActorsOfClass(PlayerController,ACameraActor::StaticClass(),allActors);
 
 	for (const auto& actor : allActors)
 	{
-		ACCGCamera* camera=Cast<ACCGCamera>(actor);
-		if (camera&&
-			camera->GetAutoActivatePlayerIndex()+1==playerState->GetCardGamePlayerId())
+		ACameraActor* camera=Cast<ACameraActor>(actor);
+		if (camera
+			&&camera->ActorHasTag(CCG_TAG::Camera)
+			&&camera->GetAutoActivatePlayerIndex()+1==playerState->GetCardGamePlayerId())
 		{
 			return camera;	
 		}
@@ -208,12 +222,13 @@ float UMiscBFL::GetWaitTimeWithRandomDeviation(double WaitTime, double RandomDev
 	return  WaitTime+FMath::RandRange(-RandomDeviation,RandomDeviation);
 }
 
-void UMiscBFL::ScreenPositionInWorldSpace(ACCGPlayerController* PlayerController,
-	FVector2D ScreenPosition, double ForwardDistance, FTransform& SpawnTransform)
+FTransform UMiscBFL::ScreenPositionInWorldSpace(ACCGPlayerController* PlayerController,
+	FVector2D ScreenPosition, double ForwardDistance)
 {
-	IF_RET_VOID(PlayerController);
+	IF_RET(FTransform,PlayerController);
 	const UWorld* world=PlayerController->GetWorld();
-	IF_RET_VOID(world);
+	IF_RET(FTransform,world);
+	FTransform spawnTransform;
 	const float viewportScale=UWidgetLayoutLibrary::GetViewportScale(PlayerController);
 	FVector worldLoc;
 	FVector worldDir;
@@ -221,18 +236,8 @@ void UMiscBFL::ScreenPositionInWorldSpace(ACCGPlayerController* PlayerController
 	FRotator worldRot;
 	GetWorldRotationForPlayer(world,FRotator::ZeroRotator,worldRot);
 
-	SpawnTransform.SetLocation(worldLoc+worldDir*ForwardDistance);
-	SpawnTransform.SetRotation(worldRot.Quaternion());
-	SpawnTransform.SetScale3D(FVector(1.f));
-}
-
-void UMiscBFL::AddMessageToLog(ACCGPlayerController* CallingPlayer, const FString& Message, FLinearColor SpecifiedColor, double Duration)
-{
-	IF_RET_VOID(CallingPlayer);
-	UUserWidget* playerGameUI=CallingPlayer->GetPlayerGameUI();
-	IF_RET_VOID(playerGameUI);
-	if (playerGameUI->Implements<UWidgetInterface>())
-	{
-		IWidgetInterface::Execute_DisplayMessage(playerGameUI,Message,SpecifiedColor,Duration);
-	}
+	spawnTransform.SetLocation(worldLoc+worldDir*ForwardDistance);
+	spawnTransform.SetRotation(worldRot.Quaternion());
+	spawnTransform.SetScale3D(FVector(1.f));
+	return spawnTransform;
 }

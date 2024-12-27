@@ -4,16 +4,22 @@
 
 #include "CCGPlugin.h"
 #include "BFL/CardBFL.h"
+#include "BFL/CardInteractionBFL.h"
 #include "BFL/CardsInHandBFL.h"
+#include "BFL/CCGBFL.h"
 #include "BFL/DeckBFL.h"
 #include "BFL/MiscBFL.h"
+#include "BFL/SaveGameBFL.h"
 #include "Blueprint/UserWidget.h"
 #include "GameInstance/CCGameInstance.h"
+#include "GameMode/CCGMode.h"
 #include "Gameplay/Card3D.h"
 #include "Gameplay/CardPlacement.h"
 #include "Gameplay/TargetDragSelection.h"
 #include "GameState/CCGState.h"
+#include "Interface/CardWidgetInterface.h"
 #include "Interface/PlayerUIInterface.h"
+#include "Interface/TimerInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
@@ -33,10 +39,8 @@ ACCGPlayerController::ACCGPlayerController()
 	, bEnableInHandMovementRotation(true)
 	, bIsValidClientDrop(false)
 	, bPlayCardSuccess(false)
-	, bIsPlayed(false)
 	, bEnabledMobileCardPreview(false)
 	, mTurnState()
-	, mWeightedFilterIndex(0)
 	, bShuffleDeck(true)
 	, bEnableWeightedCards(true)
 	, tLocation()
@@ -95,8 +99,7 @@ void ACCGPlayerController::BeginPlay()
 	OnClicked.AddDynamic(this,&ThisClass::ClickBegin);
 	OnReleased.AddDynamic(this,&ThisClass::ClickEnd);
 
-	FInputModeGameAndUI inputMode;
-	inputMode.SetHideCursorDuringCapture(false);
+	const FInputModeGameAndUI inputMode;
 	SetInputMode(inputMode);
 }
 
@@ -139,8 +142,7 @@ void ACCGPlayerController::Tick(float DeltaTime)
 	case ECardPlayerState::PlacingCard:
 		if (bTurnActive)
 		{
-			FTransform transform;
-			UMiscBFL::MouseDistanceInWorldSpace(this,mCardHoldDistance,transform);
+			const FTransform transform=UMiscBFL::MouseDistanceInWorldSpace(this,mCardHoldDistance);
 			FRotator rotator;
 			UMiscBFL::GetWorldRotationForPlayer(GetWorld(),FRotator::ZeroRotator,rotator);
 			SetCardLocation(mPlayCard_Client,transform.GetLocation(),rotator);
@@ -282,7 +284,7 @@ void ACCGPlayerController::MatchBegin_Implementation()
 	{
 		Execute_DrawCard(this,FName(),false,mCardsInFirstHand);
 		Server_UpdatePlayerHealth();
-		Client_CreateDisplayMessage(CCG_MSG::GameStart,FLinearColor::Yellow,false,0.f);
+		Client_CreateDisplayMessage(CCG_MSG::GameStart,FLinearColor::Yellow,false,0.f,true);
 	}
 }
 
@@ -301,13 +303,13 @@ void ACCGPlayerController::ChangeActivePlayerTurn_Implementation(bool TurnActive
 			}
 			Execute_DrawCard(this,FName(),false,mCardsToDrawPerTurn);
 			++mPlayerState->mPlayerStat.PlayerTurn;
-			Client_CreateDisplayMessage(CCG_MSG::PlayerTurn,FLinearColor::Yellow,true,1.f);
+			Client_CreateDisplayMessage(CCG_MSG::PlayerTurn,FLinearColor::Yellow,true,1.f,true);
 		}
 		else
 		{
 			mTurnState=EGameTurn::TurnInactive;
 			bTurnActive=false;
-			Client_CreateDisplayMessage(CCG_MSG::OpponentTurn,FLinearColor::Red,false,1.f);
+			Client_CreateDisplayMessage(CCG_MSG::OpponentTurn,FLinearColor::Red,false,1.f,true);
 		}
 		Client_UpdateGameUI(false);
 	}
@@ -347,9 +349,7 @@ bool ACCGPlayerController::IsPlatformMobile() const
 {
 	const UCCGameInstance* gameInstance = Cast<UCCGameInstance>(GetGameInstance());
 	IF_RET_BOOL(gameInstance);
-	bool isMobile=false;
-	gameInstance->GetCurrentPlatform(isMobile);
-	return isMobile;
+	return gameInstance->IsMobilePlatform();
 }
 
 void ACCGPlayerController::DisableCardSelection(ACard3D* ReceivingCard) const
@@ -758,49 +758,190 @@ void ACCGPlayerController::RunCardInteraction(ACard3D* InteractionTalkingCard, A
 	{
 		return;
 	}
+	IF_RET_VOID(InteractionTalkingCard);
+	IF_RET_VOID(mPlayerState);
+	int32 cost=0;
+	if (!UCardBFL::ChargeCardManaCost(this,mPlayerState->GetCardGamePlayerId(),bSkipManaCheck,*InteractionTalkingCard->GetCardData(),EManaAccount::Attack,cost))
+	{
+		Client_LogNotificationMessage(CCG_MSG::NotEnoughMana,FLinearColor::Red);
+		return;
+	}
 	
+	if (InteractionReceivingPlayer)
+	{
+		EInteractionConditions condition;
+		if (!UCardInteractionBFL::DealDamageToPlayer(false,InteractionTalkingCard,InteractionReceivingPlayer,0,condition))
+		{
+			Client_LogNotificationMessage(UEnum::GetDisplayValueAsText(condition).ToString(),FLinearColor::Yellow);
+			return;
+		}
+	}
+	else
+	{
+		EInteractionConditions callingCondition;
+		EInteractionConditions talkingCondition;
+		if (!UCardInteractionBFL::DealDamageToCard(false,InteractionTalkingCard,InteractionReceivingCard,0,callingCondition,talkingCondition))
+		{
+			if (callingCondition!=EInteractionConditions::None)
+			{
+				Client_LogNotificationMessage(UEnum::GetDisplayValueAsText(callingCondition).ToString(),FLinearColor::Yellow);
+			}
+			if (talkingCondition!=EInteractionConditions::None)
+			{
+				Client_LogNotificationMessage(UEnum::GetDisplayValueAsText(talkingCondition).ToString(),FLinearColor::Yellow);
+			}
+		}
+	}
 }
 
 bool ACCGPlayerController::CreateDragActorVisual(bool UseActorLocation)
 {
-	return false;
+	if (mTargetDragSelectionActor
+		||!mTalkingCard)
+	{
+		return mTalkingCard!=nullptr;
+	}
+	IF_RET_BOOL(mDragSelectionClass);
+	UWorld* world=GetWorld();
+	IF_RET_BOOL(world);
+	FVector spawnLoc;
+	if (UseActorLocation)
+	{
+		spawnLoc=mTalkingCard->GetActorLocation();
+	}
+	else
+	{
+		FHitResult hitResult;
+		UMiscBFL::MouseToWorldLocation(this,hitResult);
+		spawnLoc=hitResult.Location;
+	}
+	FActorSpawnParameters spawnParams;
+	spawnParams.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	mTargetDragSelectionActor=world->SpawnActor<ATargetDragSelection>(mDragSelectionClass,spawnLoc,FRotator::ZeroRotator,spawnParams);
+	return mTalkingCard!=nullptr;
 }
 
 void ACCGPlayerController::SetupGameUI()
 {
+	if (!IsLocalPlayerController())
+	{
+		return;
+	}
+	IF_RET_VOID(mPlayerGameUIClass);
+	mPlayerGameUI=CreateWidget(this,mPlayerGameUIClass);
+	mPlayerGameUI->AddToViewport(CCG_ZOrder::PlayerGameUI);
+	
+	IF_RET_VOID(mOpponentUIClass);
+	mOpponentUI=CreateWidget(this,mOpponentUIClass);
+	mOpponentUI->AddToViewport(CCG_ZOrder::OpponentUI);
 }
 
 void ACCGPlayerController::SetupDeck(FString DeckName, TArray<FName>& PlayerDeck)
 {
+	if (!HasAuthority())
+	{
+		return;
+	}
+	if (bShuffleDeck)
+	{
+		ShufflePlayerDeck(PlayerDeck);
+	}
+	if (bEnableWeightedCards)
+	{
+		UDeckBFL::FilterWeightedCardsInDeck(PlayerDeck);
+	}
+	IF_RET_VOID(mPlayerState);
+	mPlayerState->SetMaxCardsInDeck(PlayerDeck.Num());
+	mPlayerDeck=PlayerDeck;
 }
 
 void ACCGPlayerController::SetTimer(int32 Time)
 {
+	if (!mCountdownTimerWidget)
+	{
+		mCountdownTimerWidget=CreateWidget(this,mCountdownWidgetClass);
+		mCountdownTimerWidget->AddToViewport(CCG_ZOrder::Countdown);
+	}
+	if (mCountdownTimerWidget->Implements<UTimerInterface>())
+	{
+		ITimerInterface::Execute_SetTime(mCountdownTimerWidget,Time);
+	}
+	if (Time<1)
+	{
+		mCountdownTimerWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+	else
+	{
+		mCountdownTimerWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
+	}
 }
 
-FString ACCGPlayerController::LoadClientDeck(TArray<FName>& Deck)
+FString ACCGPlayerController::LoadClientDeck(TArray<FName>& Deck) const
 {
-	return FString();
+	const UCCGameInstance* gameInstance= Cast<UCCGameInstance>(GetGameInstance());
+	IF_RET(FString,gameInstance);
+	FString deckName=gameInstance->GetSelectedCardSet();
+	bool tempBool=false;
+	if (USaveGameBFL::LoadCustomDeck(deckName,Deck,tempBool))
+	{
+		return deckName;
+	}
+	TArray<FName> deckNames;
+	UCardBFL::GetAllPreBuildDeckNames(deckNames);
+	deckName=deckNames[FMath::Rand()%deckNames.Num()].ToString();
+	USaveGameBFL::LoadCustomDeck(deckName,Deck,tempBool);
+	return deckName;
 }
 
-void ACCGPlayerController::FilterWeightedCards()
+void ACCGPlayerController::ShufflePlayerDeck(TArray<FName>& TargetArray) const
 {
+	UCCGBFL::ShuffleArray(TargetArray);
 }
 
-void ACCGPlayerController::ShufflePlayerDeck(const TArray<FName>& TargetArray)
+void ACCGPlayerController::NotifyCardTurnActive() const
 {
+	IF_RET_VOID(mGameState);
+	IF_RET_VOID(mPlayerState);
+	mGameState->BeginPlayerTurn(mPlayerState->GetCardGamePlayerId());
 }
 
-void ACCGPlayerController::NotifyCardTurnActive()
+void ACCGPlayerController::NotifyCardsEndTurn() const
 {
-}
-
-void ACCGPlayerController::NotifyCardsEndTurn()
-{
+	IF_RET_VOID(mGameState);
+	IF_RET_VOID(mPlayerState);
+	mGameState->EndOfPlayerTurn(mPlayerState->GetCardGamePlayerId());
 }
 
 void ACCGPlayerController::CallCreateCard(FName CardName, ECardSet CardSet, int32 CardHandIndex, UUserWidget* CardWidget)
 {
+	IF_RET_VOID(CardWidget);
+	if (!bTurnActive)
+	{
+		return;
+	}
+	const FInputModeGameOnly inputMode;
+	SetInputMode(inputMode);
+	mCardWidget=CardWidget;
+	tCreateCardName=CardName;
+	tChosenCardSet=CardSet;
+	tHandIndex=CardHandIndex;
+	mCardPlayerState=ECardPlayerState::PlacingCard;
+
+	FVector spawnLoc;
+	const UCCGameInstance* gameInstance=Cast<UCCGameInstance>(GetGameInstance());
+	IF_RET_VOID(gameInstance);
+	const bool isMobile= gameInstance->IsMobilePlatform();
+	if (isMobile)
+	{
+		spawnLoc=UMiscBFL::MouseDistanceInWorldSpace(this,mCardHoldDistance).GetLocation();
+	}
+	else
+	{
+		IF_RET_VOID(mCardWidget->Implements<UCardWidgetInterface>());
+		const FVector2D mousePos=ICardWidgetInterface::Execute_GetInitialMousePos(mCardWidget);
+		spawnLoc=UMiscBFL::ScreenPositionInWorldSpace(this,mousePos,1500.f).GetLocation();
+	}
+	Client_CreatePlaceableCard(CardName,CardSet,spawnLoc);
 }
 
 void ACCGPlayerController::DragCanceled()
@@ -845,78 +986,196 @@ void ACCGPlayerController::DragCanceled()
 
 void ACCGPlayerController::Server_SpawnAIOpponent_Implementation()
 {
+	const UWorld* world=GetWorld();
+	IF_RET_VOID(world);
+	ACCGMode* gameMode=Cast<ACCGMode>(world->GetAuthGameMode());
+	IF_RET_VOID(gameMode);
+	gameMode->ForceSpawnAIOpponent();
 }
 
 void ACCGPlayerController::Server_SetupDeck_Implementation()
 {
+	Client_GetPlayerDeck();
 }
 
 void ACCGPlayerController::Server_ReturnPlayerDeck_Implementation(const FString& DeckName,const TArray<FName>& DeckArray)
 {
+	TArray<FName> newDeck=DeckArray;
+	SetupDeck(DeckName,newDeck);
+	Server_UpdatePlayerState();
+	Client_CreateDisplayMessage(CCG_MSG::DeckCreated,FLinearColor::Green,false,0.f,true);
 }
 
 void ACCGPlayerController::Server_RequestChangeTurnState_Implementation()
 {
+	IF_RET_VOID(mGameState);
+	if (mGameState->RequestChangeTurnState(this))
+	{
+		mGameState->Server_RequestChangeTurnState(this);
+	}
 }
 
 void ACCGPlayerController::Server_UpdatePlayerHealth_Implementation()
 {
+	IF_RET_VOID(mPlayerState);
+	IF_RET_VOID(mBoardPlayer);
+	mBoardPlayer->Server_UpdateHealth(mPlayerState->mPlayerStat.Health);
 }
 
 void ACCGPlayerController::Server_UpdatePlayerState_Implementation()
 {
+	IF_RET_VOID(mGameState);
+	IF_RET_VOID(mPlayerState);
+	TArray<ACard3D*> cards;
+	mGameState->GetActivePlayerCards(mPlayerState->GetCardGamePlayerId(),cards);
+	mPlayerState->UpdatePlayersCardStates(mCardsInHand.Num(),mPlayerDeck.Num(),cards.Num());
 }
 
 void ACCGPlayerController::Server_PlayCard_Implementation(FName CardName, ECardSet CardSet, ACardPlacement* CardPlacement, int32 CardHandIndex, FTransform SpawnTransform)
 {
+	PlayCard(CardName,CardSet,CardPlacement,CardHandIndex,SpawnTransform);
 }
 
 void ACCGPlayerController::Server_RunCardInteraction_Implementation(ACard3D* InteractionTalkingCard, ACard3D* InteractionReceivingCard, ABoardPlayer* InteractionReceivingPlayer)
 {
+	RunCardInteraction(InteractionTalkingCard,InteractionReceivingCard,InteractionReceivingPlayer);
 }
 
 void ACCGPlayerController::Server_SetSkipManaCheck_Implementation(bool SkipCheck)
 {
+	bSkipManaCheck=SkipCheck;
 }
 
 void ACCGPlayerController::Server_ReshuffleDeck_Implementation()
 {
+	Client_GetPlayerDeck();
 }
 
 void ACCGPlayerController::Server_ClearCardsInHand_Implementation()
 {
+	mCardsInHand.Empty();
+	Server_UpdatePlayerState();
 }
 
 void ACCGPlayerController::Client_PostLogin_Implementation()
 {
+	const UCCGameInstance* gameInstance=Cast<UCCGameInstance>(GetGameInstance());
+	IF_RET_VOID(gameInstance);
+	if (gameInstance->IsSameGameState(ECardGameState::Playing))
+	{
+		SetupGameUI();
+		Client_UpdateGameUI(false);
+	}
 }
 
 void ACCGPlayerController::Client_SetCountdownTimer_Implementation(int32 Time)
 {
+	SetTimer(Time);
 }
 
 void ACCGPlayerController::Client_EndMatchState_Implementation(EEndGameResults Result)
 {
+	IF_RET_VOID(mPlayerGameUI);
+	IF_RET_VOID(mOpponentUI);
+	if (mPlayerGameUI->Implements<UPlayerUIInterface>())
+	{
+		IPlayerUIInterface::Execute_SetCardViewState(mPlayerGameUI,EViewState::HideHand,true);
+	}
+	if (mOpponentUI->Implements<UPlayerUIInterface>())
+	{
+		IPlayerUIInterface::Execute_SetCardViewState(mOpponentUI,EViewState::HideHand,true);
+	}
+
+	FLinearColor color=FLinearColor::White;
+	switch (Result)
+	{
+	case EEndGameResults::Victory:
+		color=FLinearColor::Green;
+		break;
+	case EEndGameResults::Defeat:
+		color=FLinearColor::Red;
+		break;
+	case EEndGameResults::Draw:
+		color=FLinearColor::Yellow;
+		break;
+	default: ;
+	}
+	FTimerDelegate tempTimerDel;
+	FTimerHandle tempTimer;
+	tempTimerDel.BindUFunction(this, FName("Client_CreateDisplayMessage"), UEnum::GetDisplayValueAsText(Result).ToString(),color,true,3.f,false);
+	GetWorld()->GetTimerManager().SetTimer(tempTimer, tempTimerDel, 1.f, false);
 }
 
 void ACCGPlayerController::Client_UpdateGameUI_Implementation(bool ForceCleanUpdate)
 {
+	IF_RET_VOID(mPlayerGameUI);
+	IF_RET_VOID(mOpponentUI);
+	Server_UpdatePlayerHealth();
+	if (mOpponentUI->Implements<UPlayerUIInterface>())
+	{
+		IPlayerUIInterface::Execute_UpdateUIPlayerStats(mOpponentUI,ForceCleanUpdate);
+	}
+	if (mPlayerGameUI->Implements<UPlayerUIInterface>())
+	{
+		IPlayerUIInterface::Execute_UpdateUIPlayerStats(mPlayerGameUI,false);
+		IPlayerUIInterface::Execute_UpdateUITurnState(mPlayerGameUI,bTurnActive,mTurnState);
+	}
 }
 
 void ACCGPlayerController::Client_DropCard_Implementation(bool CardPlayed)
 {
+	IF_RET_VOID(mPlayerGameUI);
+	if (CardPlayed)
+	{
+		if (mPlayerGameUI->Implements<UPlayerUIInterface>())
+		{
+			IPlayerUIInterface::Execute_SetCardViewState(mPlayerGameUI,EViewState::Default,false);
+		}
+		Client_UpdateGameUI(false);
+	}
+	else
+	{
+		IF_RET_VOID(mCardWidget);
+		if (mCardWidget->Implements<UCardWidgetInterface>())
+		{
+			ICardWidgetInterface::Execute_SetDefaults(mCardWidget);
+		}
+		mCardWidget=nullptr;
+		if (mPlayerGameUI->Implements<UPlayerUIInterface>())
+		{
+			IPlayerUIInterface::Execute_SetCardViewState(mPlayerGameUI,EViewState::Default,false);
+		}
+	}
+	const FInputModeGameAndUI inputMode;
+	SetInputMode(inputMode);
 }
 
 void ACCGPlayerController::Client_CreateDisplayMessage_Implementation(const FString& Msg, FLinearColor Color, bool ToScreen, float ScreenDuration, bool ToMsgLogger)
 {
+	if (ToScreen)
+	{
+		UMiscBFL::CreateScreenDisplayMessage(this,Msg,Color,ScreenDuration);
+	}
+	if (ToMsgLogger)
+	{
+		UMiscBFL::AddMsgToLog(this,Msg,Color,ScreenDuration);
+	}
 }
 
 void ACCGPlayerController::Client_LogNotificationMessage_Implementation(const FString& Msg, FLinearColor Color)
 {
+	IF_RET_VOID(mPlayerGameUI);
+	if (mPlayerGameUI->Implements<UPlayerUIInterface>())
+	{
+		IPlayerUIInterface::Execute_LogNotificationMessage(mPlayerGameUI,Msg,Color);
+	}
 }
 
 void ACCGPlayerController::Client_GetPlayerDeck_Implementation()
 {
+	TArray<FName> deck;
+	const FString deckName=LoadClientDeck(deck);
+	Server_ReturnPlayerDeck(deckName,deck);
 }
 
 void ACCGPlayerController::Client_DestroyCard_Implementation()
@@ -971,8 +1230,18 @@ void ACCGPlayerController::AddCardToHand()
 
 void ACCGPlayerController::Client_AddCardToCardManager_Implementation(FName CardName, ECardSet FromCardSet)
 {
+	IF_RET_VOID(mPlayerGameUI);
+	if (mPlayerGameUI->Implements<UPlayerUIInterface>())
+	{
+		IPlayerUIInterface::Execute_AddCardWidget(mPlayerGameUI,CardName,FromCardSet);
+	}
 }
 
 void ACCGPlayerController::Client_RemoveCardFromCardManager_Implementation(UUserWidget* CardWidget, int32 CardHandIndex, bool RemoveAll)
 {
+	IF_RET_VOID(mPlayerGameUI);
+	if (mPlayerGameUI->Implements<UPlayerUIInterface>())
+	{
+		IPlayerUIInterface::Execute_RemoveCardWidget(mPlayerGameUI,CardWidget,CardHandIndex,RemoveAll);
+	}
 }

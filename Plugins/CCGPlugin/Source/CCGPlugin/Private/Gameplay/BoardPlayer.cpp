@@ -33,3 +33,7 @@ void ABoardPlayer::Tick(float DeltaTime)
 void ABoardPlayer::OnRep_Health()
 {
 }
+
+void ABoardPlayer::Server_UpdateHealth_Implementation(int32 Health)
+{
+}

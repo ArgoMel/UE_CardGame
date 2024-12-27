@@ -7,7 +7,6 @@
 #include "Slate/WidgetTransform.h"
 #include "MiscBFL.generated.h"
 
-class ACCGCamera;
 class ACCGPlayerController;
 class ACard3D;
 
@@ -36,11 +35,15 @@ public:
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
-	static void MouseDistanceInWorldSpace(ACCGPlayerController* PlayerController, double Distance, FTransform& SpawnTransform);
+	static FTransform MouseDistanceInWorldSpace(ACCGPlayerController* PlayerController, double Distance);
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
-	static void CreateScreenDisplayMessage(const UWorld* World,const FString& Message, FLinearColor SpecifiedColor, double Duration);
+	static void CreateScreenDisplayMessage(const UObject* WorldContextObject,const FString& Message, FLinearColor SpecifiedColor, double Duration);
+	
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable)
+	static void AddMsgToLog(ACCGPlayerController* CallingPlayer,const FString& Message, FLinearColor SpecifiedColor, double Duration);
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
@@ -60,7 +63,7 @@ public:
 	
 	/** 플레이어 스테이트가 들고있는게 나은듯 */
 	UFUNCTION(BlueprintCallable)
-	static ACCGCamera* GetCardGamePlayerCamera(ACCGPlayerController* PlayerController);
+	static ACameraActor* GetCardGamePlayerCamera(ACCGPlayerController* PlayerController);
 	
 	/** 2.213= 2.2 */
 	UFUNCTION(BlueprintPure)
@@ -72,9 +75,5 @@ public:
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
-	static void ScreenPositionInWorldSpace(ACCGPlayerController* PlayerController, FVector2D ScreenPosition, double ForwardDistance, FTransform& SpawnTransform);
-	
-	/** Please add a function description */
-	UFUNCTION(BlueprintCallable)
-	static void AddMessageToLog(ACCGPlayerController* CallingPlayer,const FString& Message, FLinearColor SpecifiedColor, double Duration=5.);
+	static FTransform ScreenPositionInWorldSpace(ACCGPlayerController* PlayerController, FVector2D ScreenPosition, double ForwardDistance);
 };

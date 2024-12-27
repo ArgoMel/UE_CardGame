@@ -228,14 +228,12 @@ void UCCGameInstance::Setup(int32 NumberOfPublicConnections, FString TypeOfMatch
 	}
 }
 
-EPlatform UCCGameInstance::GetCurrentPlatform(bool& IsMobile) const
+bool UCCGameInstance::IsMobilePlatform() const
 {
-	IsMobile=mPlatform==EPlatform::Android||mPlatform==EPlatform::Mac;
-	return mPlatform;
+	return mPlatform==EPlatform::Android||mPlatform==EPlatform::Mac;
 }
 
-ECardGameState UCCGameInstance::GetGameState(ECardGameState InState, bool& IsSameState) const
+bool UCCGameInstance::IsSameGameState(ECardGameState InState) const
 {
-	IsSameState=InState==mCurGameState;
-	return mCurGameState;
+	return InState==mCurGameState;
 }

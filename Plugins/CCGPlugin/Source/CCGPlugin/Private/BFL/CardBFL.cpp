@@ -189,3 +189,8 @@ bool UCardBFL::HasAbility(ACard3D* Card, EAbilityType Ability, EAbilityTrigger T
 	}
 	return false;
 }
+
+void UCardBFL::GetAllPreBuildDeckNames(TArray<FName>& Names)
+{
+	Names=mPreBuildDeckDT->GetRowNames();
+}

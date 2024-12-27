@@ -117,10 +117,11 @@ int32 UDeckBFL::CountCardsInDeck(TArray<FName>& Deck)
 	return Deck.Num();
 }
 
-void UDeckBFL::FilterWeightedCardsInDeck(const TArray<FName>& CardsInDeck, TArray<FName> ReturnPlayerDeck)
+void UDeckBFL::FilterWeightedCardsInDeck(TArray<FName>& CardsInDeck)
 {
 	TArray<FName> tempDeck=CardsInDeck;
-	ReturnPlayerDeck.Init(FName(),tempDeck.Num());
+	TArray<FName> returnPlayerDeck;
+	returnPlayerDeck.Init(FName(),tempDeck.Num());
 	int32 weightedFilterIndex;
 
 	int32 index=0;
@@ -129,7 +130,7 @@ void UDeckBFL::FilterWeightedCardsInDeck(const TArray<FName>& CardsInDeck, TArra
 		const FCard card= GetCardData(cardName,ECardSet::Empty);
 		if (card.DeckSetting.Weight>=2)
 		{
-			if (card.DeckSetting.Weight+index>=ReturnPlayerDeck.Num())
+			if (card.DeckSetting.Weight+index>=returnPlayerDeck.Num())
 			{
 				weightedFilterIndex=index;
 			}
@@ -137,9 +138,9 @@ void UDeckBFL::FilterWeightedCardsInDeck(const TArray<FName>& CardsInDeck, TArra
 			{
 				weightedFilterIndex=card.DeckSetting.Weight+index;
 			}
-			while (!ReturnPlayerDeck[weightedFilterIndex].IsNone())
+			while (!returnPlayerDeck[weightedFilterIndex].IsNone())
 			{
-				if (weightedFilterIndex+1>=ReturnPlayerDeck.Num())
+				if (weightedFilterIndex+1>=returnPlayerDeck.Num())
 				{
 					weightedFilterIndex=1;
 				}
@@ -148,25 +149,26 @@ void UDeckBFL::FilterWeightedCardsInDeck(const TArray<FName>& CardsInDeck, TArra
 					++weightedFilterIndex;
 				}
 			}
-			ReturnPlayerDeck[weightedFilterIndex]=cardName;
+			returnPlayerDeck[weightedFilterIndex]=cardName;
 		}
 		++index;
 	}
 
-	for (const auto& cardName : ReturnPlayerDeck)
+	for (const auto& cardName : returnPlayerDeck)
 	{
 		tempDeck.Remove(cardName);
 	}
 
 	index=0;
-	for (const auto& cardName : ReturnPlayerDeck)
+	for (const auto& cardName : returnPlayerDeck)
 	{
 		if (cardName.IsNone()&&
 			!tempDeck.IsEmpty())
 		{
-			ReturnPlayerDeck[index]=tempDeck.Last();
+			returnPlayerDeck[index]=tempDeck.Last();
 			tempDeck.Pop();
 		}
 		++index;	
 	}
+	CardsInDeck=returnPlayerDeck;
 }
