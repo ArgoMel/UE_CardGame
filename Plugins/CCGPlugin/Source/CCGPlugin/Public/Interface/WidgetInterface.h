@@ -37,10 +37,6 @@ public:
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void ReturnServerSelection();
-
-	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void ReturnDeckSelection(const FString& DeckSelection);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
