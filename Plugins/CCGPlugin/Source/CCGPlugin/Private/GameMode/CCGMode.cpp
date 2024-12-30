@@ -83,7 +83,7 @@ void ACCGMode::CollectGameResults(TArray<EEndGameResults>& PlayerResults)
 {
 	int32 victory=0;
 	int32 defeat=0;
-	for (int32 i=0;i<mMaxNumOfPlayers;++i)
+	for (int32 i=0;i<mGameControllersArray.Num();++i)
 	{
 		if (CheckIsPlayerActive(i+1))
 		{
@@ -98,7 +98,7 @@ void ACCGMode::CollectGameResults(TArray<EEndGameResults>& PlayerResults)
 	}
 	if (defeat==0||victory==0)
 	{
-		PlayerResults.Init(EEndGameResults::Draw,mMaxNumOfPlayers);
+		PlayerResults.Init(EEndGameResults::Draw,mGameControllersArray.Num());
 	}
 }
 
@@ -160,7 +160,7 @@ void ACCGMode::SetBoardPlayerReference()
 	}
 }
 
-void ACCGMode::GetPlayerControllers(TArray<AController*>& Players) const
+void ACCGMode::GetPlayerControllers(TArray<ACCGPlayerController*>& Players) const
 {
 	Players=mGameControllersArray;
 }
@@ -177,15 +177,24 @@ void ACCGMode::SetCardGamePlayerId(AController* Controller)
 AController* ACCGMode::AddPlayerToArray(AActor* PlayerState, AController* PlayerController)
 {
 	mPlayerAndAIStates.AddUnique(PlayerState);
-	mGameControllersArray.AddUnique(PlayerController);
+	ACCGPlayerController* playerController=Cast<ACCGPlayerController>(PlayerController);
+	if (playerController)
+	{
+		mGameControllersArray.AddUnique(playerController);
+	}
+	for (const auto& gameController:mGameControllersArray)
+	{
+		gameController->mPlayerNum=mGameControllersArray.Num();
+	}
+	
 	mGameState->mPlayerAndAIStates=mPlayerAndAIStates;
 	return PlayerController;
 }
 
 void ACCGMode::SetBoardPlayerReferences(AController* Controller)
 {
-	ABoardPlayer* boardPlayer=mBoardPlayersArray[mGameControllersArray.Find(Controller)];
 	ACCGPlayerController* playerController=Cast<ACCGPlayerController>(Controller);
+	ABoardPlayer* boardPlayer=mBoardPlayersArray[mGameControllersArray.Find(playerController)];
 	if (playerController)
 	{
 		playerController->mBoardPlayer=boardPlayer;
@@ -205,7 +214,15 @@ void ACCGMode::SetBoardPlayerReferences(AController* Controller)
 
 void ACCGMode::RemovePlayerFromGame(AController* Controller)
 {
-	mGameControllersArray.Remove(Controller);
+	ACCGPlayerController* playerController=Cast<ACCGPlayerController>(Controller);
+	if (playerController)
+	{
+		mGameControllersArray.Remove(playerController);
+	}
+	for (const auto& gameController:mGameControllersArray)
+	{
+		gameController->mPlayerNum=mGameControllersArray.Num();
+	}
 }
 
 void ACCGMode::CreateCardGameAIOpponent()
@@ -247,11 +264,7 @@ void ACCGMode::GameStartCountdown_Implementation()
 		--mCountdownTimer;
 		for (const auto& gameController:mGameControllersArray)
 		{
-			ACCGPlayerController* playerController=Cast<ACCGPlayerController>(gameController);
-			if (playerController)
-			{
-				playerController->Client_SetCountdownTimer(mCountdownTimer);
-			}
+			gameController->Client_SetCountdownTimer(mCountdownTimer);
 		}
 	}
 	if (mCountdownTimer<1||

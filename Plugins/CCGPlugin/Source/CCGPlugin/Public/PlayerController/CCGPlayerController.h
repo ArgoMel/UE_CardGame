@@ -44,6 +44,7 @@ public:
 	/** IControllerInterface */
 	virtual ACard3D* CreatePlayableCard_Implementation(FTransform SpawnTransform) override;
 	virtual bool AddCardToPlayersHand_Implementation(FName CardName) override;
+	virtual int32 CurPlayerNum_Implementation() override;
 
 	/** IDeckInterface */
 	virtual void GetPlayerDeck_Implementation(TArray<FName>& Deck) override;
@@ -138,6 +139,8 @@ protected:
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, Category="Card Placement")
 	TObjectPtr<UUserWidget> mCardWidget;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Placement")
+	int32 mCardInHandIndex;
 	/** Distance the player will hold a card from the camera when placing on the board */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Card Placement")
 	double mCardHoldDistance;
@@ -164,6 +167,8 @@ protected:
 	TObjectPtr<ACCGPlayerState> mPlayerState;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", ReplicatedUsing="OnRep_TurnState")
 	EGameTurn mTurnState;
+	UPROPERTY(BlueprintReadWrite, Category="System", Replicated)
+	int32 mPlayerNum;
 	
 	UPROPERTY(BlueprintReadWrite, Category="Deck", Replicated)
 	TArray<FName> mPlayerDeck;
@@ -204,9 +209,6 @@ protected:
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Manager")
 	int32 mNumberOfCardsToAdd;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Placement")
-	int32 mCardInHandIndex;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Card Manager")
 	double mCardPickupDelay;

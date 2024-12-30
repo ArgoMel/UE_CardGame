@@ -35,12 +35,14 @@ ACCGPlayerController::ACCGPlayerController()
 	, mCardsInFirstHand(5)
 	, mCardsToDrawPerTurn(1)
 	, bTurnActive(false)
+	, mCardInHandIndex(0)
 	, mCardHoldDistance(1700.)
 	, bEnableInHandMovementRotation(true)
 	, bIsValidClientDrop(false)
 	, bPlayCardSuccess(false)
 	, bEnabledMobileCardPreview(false)
 	, mTurnState()
+	, mPlayerNum(0)
 	, bShuffleDeck(true)
 	, bEnableWeightedCards(true)
 	, tLocation()
@@ -49,7 +51,6 @@ ACCGPlayerController::ACCGPlayerController()
 	, bCardIsClone(false)
 	, mCardSetRef(ECardSet::BasicSet)
 	, mNumberOfCardsToAdd(0)
-	, mCardInHandIndex(0)
 	, mCardPickupDelay(0.2)
 	, bSkipManaCheck(false)
 {
@@ -79,6 +80,7 @@ void ACCGPlayerController::GetLifetimeReplicatedProps(TArray<class FLifetimeProp
 	DOREPLIFETIME(ThisClass,bPlayCardSuccess);
 
 	DOREPLIFETIME(ThisClass,mTurnState);
+	DOREPLIFETIME(ThisClass,mPlayerNum);
 
 	DOREPLIFETIME(ThisClass,mPlayerDeck);
 
@@ -252,6 +254,11 @@ bool ACCGPlayerController::AddCardToPlayersHand_Implementation(FName CardName)
 	Client_AddCardToCardManager(UCardsInHandBFL::GetCardInHand(mCardsInHand,0,true),ECardSet::Empty);
 	Server_UpdatePlayerState();
 	return true;
+}
+
+int32 ACCGPlayerController::CurPlayerNum_Implementation()
+{
+	return mPlayerNum;
 }
 
 void ACCGPlayerController::GetPlayerDeck_Implementation(TArray<FName>& Deck)

@@ -7,6 +7,7 @@
 #include "GameFramework/GameMode.h"
 #include "CCGMode.generated.h"
 
+class ACCGPlayerController;
 class AAIController;
 class ABoardPlayer;
 class ACCGState;
@@ -66,7 +67,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category="System")
 	TArray<AActor*> mPlayerAndAIStates;
 	UPROPERTY(BlueprintReadWrite, Category="System")
-	TArray<AController*> mGameControllersArray;
+	TArray<ACCGPlayerController*> mGameControllersArray;
+	//TArray<AController*> mGameControllersArray;
 	UPROPERTY(BlueprintReadWrite, Category="System")
 	TArray<AAIController*> mAIControllersArray;
 	/** Please add a variable description */
@@ -96,7 +98,7 @@ public:
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure, Category="System")
-	void GetPlayerControllers(TArray<AController*>& Players) const;
+	void GetPlayerControllers(TArray<ACCGPlayerController*>& Players) const;
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="System")

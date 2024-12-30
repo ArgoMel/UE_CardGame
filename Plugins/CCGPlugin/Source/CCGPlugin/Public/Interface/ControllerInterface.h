@@ -37,4 +37,8 @@ public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void UpdateUI();
+
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Server")
+	int32 CurPlayerNum();
 };

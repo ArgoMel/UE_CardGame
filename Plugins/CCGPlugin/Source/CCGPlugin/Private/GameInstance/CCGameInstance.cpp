@@ -10,10 +10,6 @@
 
 UCCGameInstance::UCCGameInstance()
 {
-	// GetClassAsset(mMainMenuClass, UUserWidget,"");
-	// GetClassAsset(mLoadingScreenClass, UUserWidget,"");
-	// GetClassAsset(mDeckBuilderClass, UUserWidget,"");
-
 	mSelectedCardSet = TEXT("Creature Reborn");
 	mCurGameState = ECardGameState::Startup;
 	mChosenCardSet = ECardSet::BasicSet;
@@ -56,27 +52,6 @@ void UCCGameInstance::OnCreateSession(bool bWasSuccessful)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("CCG 세션 생성 실패"));
 		ShowMainMenuEvent();
-	}
-}
-
-// ReSharper disable once CppMemberFunctionMayBeConst
-void UCCGameInstance::OnFindSessions(const TArray<FOnlineSessionSearchResult>& SessionResults, bool bWasSuccessful)
-{
-	UMultiplayerSessionsSubsystem* subsystem=GetSubsystem<UMultiplayerSessionsSubsystem>();
-	if (!subsystem)
-	{
-		return;
-	}
-	
-	for (auto& result : SessionResults)
-	{
-		FString settingsValue;
-		result.Session.SessionSettings.Get(FName("MatchType"), settingsValue);
-		if (settingsValue == mMatchType)
-		{
-			subsystem->JoinSession(result);
-			return;
-		}
 	}
 }
 
@@ -198,13 +173,13 @@ void UCCGameInstance::HostGame_Implementation(EArenaList SelectedArena)
 	}
 }
 
-void UCCGameInstance::JoinGameSession_Implementation()
+void UCCGameInstance::JoinGameSession(const FOnlineSessionSearchResult& Result)
 {
 	ShowLoadingScreen();
 	UMultiplayerSessionsSubsystem* subsystem=GetSubsystem<UMultiplayerSessionsSubsystem>();
 	if (subsystem)
 	{
-		subsystem->FindSessions(10000);
+		subsystem->JoinSession(Result);
 	}
 }
 
@@ -219,7 +194,6 @@ void UCCGameInstance::Setup(int32 NumberOfPublicConnections, FString TypeOfMatch
 		IF_RET_VOID(subsystem);  
 		
 		subsystem->MultiplayerOnCreateSessionComplete.AddDynamic(this, &ThisClass::OnCreateSession);        
-		subsystem->MultiplayerOnFindSessionsComplete.AddUObject(this, &ThisClass::OnFindSessions);    
 		subsystem->MultiplayerOnJoinSessionComplete.AddUObject(this, &ThisClass::OnJoinSession);      
 		subsystem->MultiplayerOnDestroySessionComplete.AddDynamic(this, &ThisClass::OnDestroySession);
 		subsystem->MultiplayerOnStartSessionComplete.AddDynamic(this, &ThisClass::OnStartSession);    
