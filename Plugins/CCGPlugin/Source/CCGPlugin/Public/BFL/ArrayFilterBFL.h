@@ -31,19 +31,19 @@ public:
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
-	static float GetManaInDeck(TArray<FName>& Array, TArray<int32>& ReturnArray);
+	static float GetManaInDeck(UPARAM(ref) const TArray<FName>& Array, TArray<int32>& ReturnArray);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
-	static int32 CalculateDeckStatMana(TArray<FName>& FilterArray, TArray<int32>& ManaStats);
+	static int32 CalculateDeckStatMana(UPARAM(ref) TArray<FName>& FilterArray, TArray<int32>& ManaStats);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
-	static int32 CalculateDeckStatUnlockedCard(TArray<FName>& FilterArray, TArray<FName>& UnlockedCards);
+	static int32 CalculateDeckStatUnlockedCard(UPARAM(ref) TArray<FName>& FilterArray, TArray<FName>& UnlockedCards);
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
-	static int32 CalculateDeckStatRarity(TArray<FName>& FilterArray, TArray<int32>& Rarity);
+	static int32 CalculateDeckStatRarity(UPARAM(ref) TArray<FName>& FilterArray, TArray<int32>& Rarity);
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)

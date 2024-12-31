@@ -147,7 +147,7 @@ void UArrayFilterBFL::FilterIncludedCards(TArray<FName>& FilterArray, TMap<ECard
 	FilterArray=returnArray;
 }
 
-float UArrayFilterBFL::GetManaInDeck(TArray<FName>& Array, TArray<int32>& ReturnArray)
+float UArrayFilterBFL::GetManaInDeck(const TArray<FName>& Array, TArray<int32>& ReturnArray)
 {
 	ReturnArray.Init(0,CCG::MaxManaCost+1);
 	if (Array.IsEmpty())
