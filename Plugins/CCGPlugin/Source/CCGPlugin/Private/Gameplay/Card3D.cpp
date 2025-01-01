@@ -12,19 +12,32 @@ ACard3D::ACard3D()
 void ACard3D::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(ThisClass,mCardDataTableName)
-	DOREPLIFETIME(ThisClass,mCardSet)
-	DOREPLIFETIME(ThisClass,mCardData)
-	DOREPLIFETIME(ThisClass,mHealth)
-	DOREPLIFETIME(ThisClass,mAttack)
-	DOREPLIFETIME(ThisClass,bIsPlaced)
-	DOREPLIFETIME(ThisClass,bInGraveyard)
-	DOREPLIFETIME(ThisClass,mTurnPoint)
-	DOREPLIFETIME(ThisClass,mType)
+	DOREPLIFETIME(ThisClass,mHomeDestination)
+	
 	DOREPLIFETIME(ThisClass,mPlacementOwner)
 	DOREPLIFETIME(ThisClass,mOwningPlayerID)
+	DOREPLIFETIME(ThisClass,bIsPlaced)
+	DOREPLIFETIME(ThisClass,bInGraveyard)
+	DOREPLIFETIME(ThisClass,bEnableLifeExpectancy)
+	DOREPLIFETIME(ThisClass,bCardActive)
+	
+	DOREPLIFETIME(ThisClass,mCardData)
+	DOREPLIFETIME(ThisClass,mCardDataTableName)
+	DOREPLIFETIME(ThisClass,mName)
+	DOREPLIFETIME(ThisClass,mDescription)
+	DOREPLIFETIME(ThisClass,mType)
+	DOREPLIFETIME(ThisClass,mCardSet)
+	DOREPLIFETIME(ThisClass,mAttack)
+	DOREPLIFETIME(ThisClass,mHealth)
+	DOREPLIFETIME(ThisClass,mManaCostPlacement)
+	DOREPLIFETIME(ThisClass,mTurnPoint)
+	DOREPLIFETIME(ThisClass,mLifeExpectancy)
+	DOREPLIFETIME(ThisClass,mTurnsAlive)
 	DOREPLIFETIME(ThisClass,bCanAttackPlayer)
 	DOREPLIFETIME(ThisClass,bCanAttackCard)
+	
+	DOREPLIFETIME(ThisClass,mAbilityTriggers)
+	DOREPLIFETIME(ThisClass,mAbilityTypes)
 }
 
 void ACard3D::BeginPlay()

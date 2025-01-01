@@ -445,4 +445,17 @@ enum class EViewState: uint8
 	TestProfile UMETA(DisplayName = "Test Profile"),
 	Max UMETA(Hidden)
 };
+
+UENUM(BlueprintType)
+enum class EViewCard: uint8
+{
+	Health UMETA(DisplayName = "Health"),
+	Mana UMETA(DisplayName = "Mana"),
+	Attack UMETA(DisplayName = "Attack"),
+	Name UMETA(DisplayName = "Name"),
+	Type UMETA(DisplayName = "Type"),
+	Description UMETA(DisplayName = "Description"),
+	Tag UMETA(DisplayName = "Tag"),
+	Max UMETA(Hidden)
+};
 #pragma endregion

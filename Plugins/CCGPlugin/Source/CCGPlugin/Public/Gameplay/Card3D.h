@@ -9,6 +9,8 @@
 #include "Interface/CardInteractionInterface.h"
 #include "Card3D.generated.h"
 
+class ACCGState;
+class ACCGPlayerController;
 class UBoxComponent;
 class UTextRenderComponent;
 
@@ -27,99 +29,151 @@ protected:
 protected:
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<UTextRenderComponent> Name_Text;
-
+	TObjectPtr<UTextRenderComponent> mNameText;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<UTextRenderComponent> CardType_Text;
-
+	TObjectPtr<UTextRenderComponent> mCardTypeText;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<UTextRenderComponent> Description_Text;
-
+	TObjectPtr<UTextRenderComponent> mDescriptionText;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<UTextRenderComponent> Attack_Text;
-
+	TObjectPtr<UTextRenderComponent> mAttackText;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<UStaticMeshComponent> Attack_Plane;
-
+	TObjectPtr<UStaticMeshComponent> mAttackMesh;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<UTextRenderComponent> Health_Text;
-
+	TObjectPtr<UTextRenderComponent> mHealthText;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<UStaticMeshComponent> Heart_Plane;
-
+	TObjectPtr<UStaticMeshComponent> mHeartMesh;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<UTextRenderComponent> ManaCost_Text;
-
+	TObjectPtr<UTextRenderComponent> mManaCostText;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<UStaticMeshComponent> ManaGem_Plane;
-
+	TObjectPtr<UStaticMeshComponent> mManaGemMesh;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<UStaticMeshComponent> CardBase;
-
+	TObjectPtr<UStaticMeshComponent> mCardBaseMesh;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<UBoxComponent> Box;
+	TObjectPtr<UBoxComponent> mBox;
 
+	/** Home Destination a variable which holds the placement destination of the card. This is where the card will always end up if it is still in play.  */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Misc Variables", Replicated)
+	FVector mHomeDestination;
+	/** The goal destination is used to move the card when performing actions away from the home destination. This can be used for fly-to animations, like when the card is attacking.  */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Misc Variables")
+	FVector mGoalDestination;
+	/** The goal rotation is simply a rotation goal which the card can be set to, much like the goal destination.  */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Misc Variables")
+	FRotator mGoalRotation;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Misc Variables")
+	FRotator mHomeRotation;
+
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
+	TObjectPtr<ACardPlacement> mPlacementOwner;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	TObjectPtr<ACCGPlayerController> mOwningPlayer;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	TObjectPtr<ACCGState> mGameState;
+	/** Current platform the game is being played on */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	EPlatform mPlatform;
+	/** The movement state which the card is currently moving within. This determines the result when the movement is completed, and whether to trigger additional evens or functions.  */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	E3DCardMovementState mCardMovementState;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	ETurnState mCardGameState;
+	/** The maximum amount of characters that the 3D text renderer can hold per line. Note: This does not currently filter full words. Which may result in words being split between lines.  */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	int32 mMaxDescCharacterLineLength;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", ReplicatedUsing="OnRep_OwningPlayerID")
+	int32 mOwningPlayerID;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	int32 mCardID;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
 	double mDeltaTime;
-
-	/** Home Destination a variable which holds the placement destination of the card. This is where the card will always end up if it is still in play.  */
-	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, HomeDestination) to GetLifetimeReplicatedProps");
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Misc Variables", Replicated)
-	// FVector HomeDestination;
-	//
-	// /** The goal destination is used to move the card when performing actions away from the home destination. This can be used for fly-to animations, like when the card is attacking.  */
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Misc Variables")
-	// FVector GoalDestination;
-	//
-	// /** The goal rotation is simply a rotation goal which the card can be set to, much like the goal destination.  */
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Misc Variables")
-	// FRotator GoalRotation;
-	//
-	// /** Interpolation Speed */
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
-	// double InterpSpeed;
-	//
-	// /** Please add a variable description */
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
-	// double ErrorTolerance;
-	//
-	// /** Please add a variable description */
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
-	// double CardPreviewScale;
-	//
-	// /** The maximum amount of characters that the 3D text renderer can hold per line. Note: This does not currently filter full words. Which may result in words being split between lines.  */
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
-	// int32 MaxDescriptionCharacterLineLength;
+	/** Interpolation Speed */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	double mInterpSpeed;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	double mErrorTolerance;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	double mCardPreviewScale;
+	/** Has the card been placed on the board? */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
+	bool bIsPlaced;
+	/** Is the card selected by the player */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	bool bIsSelected;
+	/** Whether the card is currently attacking */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	bool bIsAttacking;
+	/** Has the card been moved to the player graveyard */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
+	bool bInGraveyard;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	bool bIsPlatformMobile;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
+	bool bEnableLifeExpectancy;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", ReplicatedUsing="OnRep_bCardActive")
+	bool bCardActive;
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
 	FCard mCardData;
-	
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
 	FName mCardDataTableName;
-	
-	// /** Please add a variable description */
-	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, Name) to GetLifetimeReplicatedProps");
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
-	// FText Name;
-	
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
+	FText mName;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
+	FString mDescription;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", ReplicatedUsing="OnRep_CardType")
+	ECardType mType;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
+	ECardSet mCardSet;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", ReplicatedUsing="OnRep_Attack")
 	int32 mAttack;
-
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", ReplicatedUsing="OnRep_Health")
 	int32 mHealth;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", ReplicatedUsing="OnRep_ManaCostPlacement")
+	int32 mManaCostPlacement;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
+	int32 mTurnPoint;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
+	int32 mLifeExpectancy;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", ReplicatedUsing="OnRep_TurnsAlive")
+	int32 mTurnsAlive;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
+	bool bCanAttackPlayer;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
+	bool bCanAttackCard;
 
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Preview")
@@ -127,155 +181,38 @@ protected:
 
 	/** This is an extra layer around the card which can be set to display anything like an outline or a shadow without needing any complex material setup. Mostly used for optimisation purposes.   */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Visual")
-	TObjectPtr<UMaterial> OuterMaterial;
-
+	TObjectPtr<UMaterial> mOuterMaterial;
 	/** Reference to Shadow material */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Visual")
-	TObjectPtr<UMaterial> Shadow_Mat_Ref;
-
+	TObjectPtr<UMaterial> mShadowMaterial;
 	/** The cards frame material.  */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Visual")
-	TObjectPtr<UMaterialInstance> CardFrameMaterial;
-
+	TObjectPtr<UMaterialInstance> mCardFrameMaterial;
 	/** Card Frame Material */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Visual")
-	TObjectPtr<UMaterialInstanceDynamic> CardFrameMaterial_Instance;
-
+	TObjectPtr<UMaterialInstanceDynamic> mCardFrameMaterial_Instance;
 	/** The cards image material.  */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Visual")
-	TObjectPtr<UMaterialInstance> CardImageMaterial;
-
+	TObjectPtr<UMaterialInstance> mCardImageMaterial;
 	/** Card Image Material */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Visual")
-	TObjectPtr<UMaterialInstanceDynamic> CardImageMaterial_Instance;
-
-	// /** A mouse over card widget reference */
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Visual", meta=(EditInline="true"))
-	// TObjectPtr<UCardPreview_C> ViewCardPreview;
-	//
-	// /** Please add a variable description */
-	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, AbilityTrigger(s)) to GetLifetimeReplicatedProps");
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Abilities", Replicated)
-	// TArray<TEnumAsByte<AbilityTrigger_Enum> > AbilityTrigger(s);
-	//
-	// /** Please add a variable description */
-	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, Mana_Cost_Placement) to GetLifetimeReplicatedProps");
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", ReplicatedUsing="OnRep_Mana_Cost_Placement")
-	// int32 Mana_Cost_Placement;
-	//
-	// /** Current platform the game is being played on */
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
-	// TEnumAsByte<Platform_Enum> Platform;
-	//
-	// /** The movement state which the card is currently moving within. This determins the result when the movement is completed, and whether to trigger additional evens or functions.  */
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
-	// TEnumAsByte<3DCardMovementState_Enum> CardMovementState;
-	//
-	// /** Please add a variable description */
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
-	// TEnumAsByte<TurnState_Enum> CardGameState;
+	TObjectPtr<UMaterialInstanceDynamic> mCardImageMaterial_Instance;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Visual")
+	TObjectPtr<UMaterialInstanceDynamic> mCardBackMaterial;
+	/** A mouse over card widget reference */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Visual")
+	TObjectPtr<UUserWidget> mViewCardPreview;
 	
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
-	TObjectPtr<ACardPlacement> mPlacementOwner;
-	
-	/** Please add a variable description */
-	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, OwningPlayer) to GetLifetimeReplicatedProps");
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
-	// TObjectPtr<ABP_CardGamePlayerController_C> OwningPlayer;
-	
-	/** Has the card been placed on the board? */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
-	bool bIsPlaced;
-	
-	// /** Is the card selected by the player */
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
-	// bool bIsSelected;
-	//
-	// /** Whether the card is currrently attacking */
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
-	// bool bIsAttacking;
-	
-	/** Has the card been moved to the player graveyard */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
-	bool bInGraveyard;
-	
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
-	int32 mTurnPoint;
-	
-	// /** Please add a variable description */
-	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, LifeExpectancy) to GetLifetimeReplicatedProps");
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
-	// int32 LifeExpectancy;
-	//
-	// /** Please add a variable description */
-	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, TurnsAlive) to GetLifetimeReplicatedProps");
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", ReplicatedUsing="OnRep_TurnsAlive")
-	// int32 TurnsAlive;
-	
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", ReplicatedUsing="OnRep_CardType")
-	ECardType mType;
-	
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
-	ECardSet mCardSet;
-	
-	// /** Please add a variable description */
-	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, Description) to GetLifetimeReplicatedProps");
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
-	// FString Description;
-	//
-	// /** The Type(s) of abilities this card posesses */
-	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, AbilityType(s)) to GetLifetimeReplicatedProps");
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Abilities", Replicated)
-	// TArray<TEnumAsByte<AbilityType_Enum> > AbilityType(s);
-	
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Abilities", Replicated)
+	TArray<EAbilityTrigger> mAbilityTriggers;
+	/** The Type(s) of abilities this card possesses */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Abilities", Replicated)
+	TArray<EAbilityType> mAbilityTypes;
 	/** T */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Abilities")
 	bool bIsAbilityActive;
-	
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
-	bool bCanAttackPlayer;
-	
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
-	bool bCanAttackCard;
-	
-	// /** Please add a variable description */
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
-	// bool bIsPlatformMobile;
-	//
-	// /** Please add a variable description */
-	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, bEnableLifeExpectancy) to GetLifetimeReplicatedProps");
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
-	// bool bEnableLifeExpectancy;
-	//
-	// /** Please add a variable description */
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Misc Variables")
-	// FRotator HomeRotation;
-	//
-	// /** Please add a variable description */
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Visual")
-	// TObjectPtr<UMaterialInstanceDynamic> CardBackMaterial;
-	//
-	// /** Please add a variable description */
-	// static_assert(false, "You will need to add DOREPLIFETIME(A3DCard, bCardActive) to GetLifetimeReplicatedProps");
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", ReplicatedUsing="OnRep_bCardActive")
-	// bool bCardActive;
-	//
-	// /** Please add a variable description */
-	// UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
-	// TObjectPtr<ABP_CardGameState_C> GameState_Ref;
-	
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", ReplicatedUsing="OnRep_OwningPlayerID")
-	int32 mOwningPlayerID;
-
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
-	int32 mCardID;
 
 public:
 	/** Please add a variable description */
