@@ -194,3 +194,8 @@ void UCardBFL::GetAllPreBuildDeckNames(TArray<FName>& Names)
 {
 	Names=mPreBuildDeckDT->GetRowNames();
 }
+
+void UCardBFL::GetPreBuildDeck(FName Name,FPrebuildDeck& Deck)
+{
+	Deck=*mPreBuildDeckDT->FindRow<FPrebuildDeck>(Name,nullptr,false);
+}

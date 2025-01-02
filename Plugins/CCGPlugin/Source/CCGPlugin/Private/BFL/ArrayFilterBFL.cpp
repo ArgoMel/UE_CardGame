@@ -6,8 +6,7 @@
 #include "BFL/MiscBFL.h"
 #include "Common/CCGConstVar.h"
 
-bool UArrayFilterBFL::ValidateCardThroughFilter(FName CardName, ECardSet CardSet, TMap<ECardClass, bool>& IncludeClass, TMap<ECardType, bool>& IncludeType, TMap<ECardRarity, bool>& IncludeRarity, bool CardWithAbility, bool UnlockedOnly,
-                                                bool SpecialOnly, bool IncludeAddToDeckOnly)
+bool UArrayFilterBFL::ValidateCardThroughFilter(FName CardName, ECardSet CardSet, TMap<ECardClass, bool>& IncludeClass, TMap<ECardType, bool>& IncludeType, TMap<ECardRarity, bool>& IncludeRarity, bool CardWithAbility, bool UnlockedOnly,        bool SpecialOnly, bool IncludeAddToDeckOnly)
 {
 	FCard card=UDeckBFL::GetCardData(CardName,CardSet);
 	if (!IncludeClass.Contains(card.Class))
@@ -48,11 +47,10 @@ bool UArrayFilterBFL::ValidateCardThroughFilter(FName CardName, ECardSet CardSet
 	return true;
 }
 
-void UArrayFilterBFL::FilterCardArrayByName(TArray<FName>& FilterArray, EAlphabeticalSorting Method)
+void UArrayFilterBFL::FilterCardArrayByName(TArray<FName>& FilterArray, TArray<FName>& ReturnArray, EAlphabeticalSorting Method)
 {
 	const TArray<FString> Alphabet={"0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"};
 	const int32 alphabetNum=Alphabet.Num();
-	TArray<FName> returnArray;
 	
 	int32 filterIndex=0;
 	switch (Method)
@@ -66,7 +64,7 @@ void UArrayFilterBFL::FilterCardArrayByName(TArray<FName>& FilterArray, EAlphabe
 				FString str=name.ToString();
 				if (str.StartsWith(Alphabet[filterIndex]))
 				{
-					returnArray.Add(name);
+					ReturnArray.Add(name);
 				}
 			}
 		}
@@ -81,14 +79,13 @@ void UArrayFilterBFL::FilterCardArrayByName(TArray<FName>& FilterArray, EAlphabe
 				FString str=name.ToString();
 				if (str.StartsWith(Alphabet[filterIndex]))
 				{
-					returnArray.Add(name);
+					ReturnArray.Add(name);
 				}
 			}
 		}
 		break;
 	default: ;
 	}
-	FilterArray=returnArray;
 }
 
 void UArrayFilterBFL::FilterCardArrayByManaCost(TArray<FName>& FilterArray, EManaCostSorting Method, int32 ManaMin, int32 ManaMax)
@@ -134,17 +131,16 @@ void UArrayFilterBFL::FilterCardArrayByManaCost(TArray<FName>& FilterArray, EMan
 	FilterArray=returnArray;
 }
 
-void UArrayFilterBFL::FilterIncludedCards(TArray<FName>& FilterArray, TMap<ECardClass, bool>& IncludeClass, TMap<ECardType, bool>& IncludeType, TMap<ECardRarity, bool>& IncludeRarity, bool CardWithAbility, bool UnlockedOnly, bool SpecialOnly, bool IncludeAddToDeckOnly)
+void UArrayFilterBFL::FilterIncludedCards(TArray<FName>& FilterArray, TMap<ECardClass, bool>& IncludeClass, TMap<ECardType, bool>& IncludeType, TMap<ECardRarity, bool>& IncludeRarity, bool CardWithAbility, bool UnlockedOnly, bool SpecialOnly, bool IncludeAddToDeckOnly,TArray<FName>& ReturnArray)
 {
-	TArray<FName> returnArray;
+	ReturnArray.Empty();
 	for (auto& name : FilterArray)
 	{
 		if (ValidateCardThroughFilter(name,ECardSet::Empty,IncludeClass,IncludeType,IncludeRarity,CardWithAbility,UnlockedOnly,SpecialOnly,IncludeAddToDeckOnly))
 		{
-			returnArray.Add(name);
+			ReturnArray.Add(name);
 		}
 	}
-	FilterArray=returnArray;
 }
 
 float UArrayFilterBFL::GetManaInDeck(const TArray<FName>& Array, TArray<int32>& ReturnArray)

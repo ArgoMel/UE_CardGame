@@ -14,4 +14,8 @@ public:
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="디폴트")
 	TArray<FString> mDeckList;
+
+public:
+	UFUNCTION(BlueprintPure)
+	void GetDeckListByName(TArray<FName>& Names) const;
 };

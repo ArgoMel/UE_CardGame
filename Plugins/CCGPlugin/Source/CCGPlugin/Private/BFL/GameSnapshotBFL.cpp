@@ -13,6 +13,7 @@
 // ReSharper disable once CppUnusedIncludeDirective
 #include "Gameplay/BoardPlayer.h"
 #include "Gameplay/CardPlacement.h"
+#include "PlayerController/CCGPlayerController.h"
 
 void UGameSnapshotBFL::GetGameStateSnapshot(const UObject* WorldContextObject, FGameStateSnapshot& ReturnSnapshot)
 {

@@ -12,14 +12,12 @@ class CCGPLUGIN_API UArrayFilterBFL : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 private:
-	/** Please add a function description */
-	UFUNCTION(BlueprintCallable)
 	static bool ValidateCardThroughFilter(FName CardName, ECardSet CardSet,TMap<ECardClass,bool>& IncludeClass, TMap<ECardType,bool>& IncludeType, TMap<ECardRarity,bool>& IncludeRarity, bool CardWithAbility, bool UnlockedOnly, bool SpecialOnly, bool IncludeAddToDeckOnly);
 	
 public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
-	static void FilterCardArrayByName(TArray<FName>& FilterArray, EAlphabeticalSorting Method=EAlphabeticalSorting::AToZ);
+	static void FilterCardArrayByName(UPARAM(ref) TArray<FName>& FilterArray, TArray<FName>& ReturnArray, EAlphabeticalSorting Method=EAlphabeticalSorting::AToZ);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
@@ -27,7 +25,7 @@ public:
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
-	static void FilterIncludedCards(TArray<FName>& FilterArray, TMap<ECardClass,bool>& IncludeClass, TMap<ECardType,bool>& IncludeType, TMap<ECardRarity,bool>& IncludeRarity, bool CardWithAbility, bool UnlockedOnly, bool SpecialOnly, bool IncludeAddToDeckOnly);
+	static void FilterIncludedCards(UPARAM(ref) TArray<FName>& FilterArray, UPARAM(ref) TMap<ECardClass,bool>& IncludeClass, UPARAM(ref) TMap<ECardType,bool>& IncludeType, UPARAM(ref) TMap<ECardRarity,bool>& IncludeRarity, bool CardWithAbility, bool UnlockedOnly, bool SpecialOnly, bool IncludeAddToDeckOnly,TArray<FName>& ReturnArray);
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)

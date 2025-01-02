@@ -56,5 +56,9 @@ public:
 	UFUNCTION(BlueprintPure)
 	static bool HasAbility(ACard3D* Card, EAbilityType Ability, EAbilityTrigger Trigger);
 
+	UFUNCTION(BlueprintPure)
 	static void GetAllPreBuildDeckNames(TArray<FName>& Names);
+	
+	UFUNCTION(BlueprintPure)
+	static void GetPreBuildDeck(FName Name,FPrebuildDeck& Deck);
 };
