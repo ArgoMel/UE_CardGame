@@ -8,3 +8,5 @@ miscBFL
 bp 폴더 bfl 정리
 
 쓸모없는 변수 정리 필요
+
+deckbuilder 배열 이니셜라이즈시 초기화
