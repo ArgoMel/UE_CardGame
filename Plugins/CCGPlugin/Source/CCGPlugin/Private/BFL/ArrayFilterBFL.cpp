@@ -6,18 +6,18 @@
 #include "BFL/MiscBFL.h"
 #include "Common/CCGConstVar.h"
 
-bool UArrayFilterBFL::ValidateCardThroughFilter(FName CardName, ECardSet CardSet, TMap<ECardClass, bool>& IncludeClass, TMap<ECardType, bool>& IncludeType, TMap<ECardRarity, bool>& IncludeRarity, bool CardWithAbility, bool UnlockedOnly,        bool SpecialOnly, bool IncludeAddToDeckOnly)
+bool UArrayFilterBFL::ValidateCardThroughFilter(FName CardName, ECardSet CardSet, TArray<bool>& IncludeClass, TArray<bool>& IncludeType, TArray<bool>& IncludeRarity, bool CardWithAbility, bool UnlockedOnly, bool SpecialOnly, bool IncludeAddToDeckOnly)
 {
 	FCard card=UDeckBFL::GetCardData(CardName,CardSet);
-	if (!IncludeClass.Contains(card.Class))
+	if (!IncludeClass[static_cast<int32>(card.Class)])
 	{
 		return false;
 	}
-	if (!IncludeType.Contains(card.Type))
+	if (!IncludeType[static_cast<int32>(card.Type)])
 	{
 		return false;
 	}
-	if (!IncludeRarity.Contains(card.Rarity))
+	if (!IncludeRarity[static_cast<int32>(card.Rarity)])
 	{
 		return false;
 	}
@@ -88,9 +88,9 @@ void UArrayFilterBFL::FilterCardArrayByName(TArray<FName>& FilterArray, TArray<F
 	}
 }
 
-void UArrayFilterBFL::FilterCardArrayByManaCost(TArray<FName>& FilterArray, EManaCostSorting Method, int32 ManaMin, int32 ManaMax)
+void UArrayFilterBFL::FilterCardArrayByManaCost(TArray<FName>& FilterArray, TArray<FName>& ReturnArray, EManaCostSorting Method, int32 ManaMin, int32 ManaMax)
 {
-	TArray<FName> returnArray;
+	ReturnArray.Empty();
 	int32 validCheck=0;
 	switch (Method)
 	{
@@ -113,7 +113,7 @@ void UArrayFilterBFL::FilterCardArrayByManaCost(TArray<FName>& FilterArray, EMan
 				&&ManaMin<=validCheck
 				&&validCheck<=ManaMax)
 			{
-				returnArray.Add(name);
+				ReturnArray.Add(name);
 			}
 		}
 		switch (Method)
@@ -128,10 +128,9 @@ void UArrayFilterBFL::FilterCardArrayByManaCost(TArray<FName>& FilterArray, EMan
 		}
 		--filterCount;
 	}
-	FilterArray=returnArray;
 }
 
-void UArrayFilterBFL::FilterIncludedCards(TArray<FName>& FilterArray, TMap<ECardClass, bool>& IncludeClass, TMap<ECardType, bool>& IncludeType, TMap<ECardRarity, bool>& IncludeRarity, bool CardWithAbility, bool UnlockedOnly, bool SpecialOnly, bool IncludeAddToDeckOnly,TArray<FName>& ReturnArray)
+void UArrayFilterBFL::FilterIncludedCards(TArray<FName>& FilterArray, TArray<bool>& IncludeClass, TArray<bool>& IncludeType, TArray<bool>& IncludeRarity, bool CardWithAbility, bool UnlockedOnly, bool SpecialOnly, bool IncludeAddToDeckOnly,TArray<FName>& ReturnArray)
 {
 	ReturnArray.Empty();
 	for (auto& name : FilterArray)

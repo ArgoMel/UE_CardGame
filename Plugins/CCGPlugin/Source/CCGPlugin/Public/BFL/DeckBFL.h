@@ -38,7 +38,7 @@ public:
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
-	static int32 FindCardInArray(FName SearchForCard, TArray<FName>& CardArray, TArray<int32>& IndexArray);
+	static int32 FindCardInArray(FName SearchForCard,UPARAM(ref) TArray<FName>& CardArray, TArray<int32>& IndexArray);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)

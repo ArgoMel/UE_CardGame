@@ -25,14 +25,6 @@ public:
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void ReturnSearch(const FText& SearchText);
-
-	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void ReturnCardSet(ECardSet CardSet);
-
-	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void ReturnPreview(bool PreviewEnabled);
 
 	/** Please add a function description */

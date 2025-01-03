@@ -12,7 +12,7 @@ class CCGPLUGIN_API UArrayFilterBFL : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 private:
-	static bool ValidateCardThroughFilter(FName CardName, ECardSet CardSet,TMap<ECardClass,bool>& IncludeClass, TMap<ECardType,bool>& IncludeType, TMap<ECardRarity,bool>& IncludeRarity, bool CardWithAbility, bool UnlockedOnly, bool SpecialOnly, bool IncludeAddToDeckOnly);
+	static bool ValidateCardThroughFilter(FName CardName, ECardSet CardSet,TArray<bool>& IncludeClass, TArray<bool>& IncludeType, TArray<bool>& IncludeRarity, bool CardWithAbility, bool UnlockedOnly, bool SpecialOnly, bool IncludeAddToDeckOnly);
 	
 public:
 	/** Please add a function description */
@@ -21,11 +21,11 @@ public:
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
-	static void FilterCardArrayByManaCost(TArray<FName>& FilterArray, EManaCostSorting Method, int32 ManaMin, int32 ManaMax);
+	static void FilterCardArrayByManaCost(UPARAM(ref) TArray<FName>& FilterArray, TArray<FName>& ReturnArray,EManaCostSorting Method, int32 ManaMin, int32 ManaMax);
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
-	static void FilterIncludedCards(UPARAM(ref) TArray<FName>& FilterArray, UPARAM(ref) TMap<ECardClass,bool>& IncludeClass, UPARAM(ref) TMap<ECardType,bool>& IncludeType, UPARAM(ref) TMap<ECardRarity,bool>& IncludeRarity, bool CardWithAbility, bool UnlockedOnly, bool SpecialOnly, bool IncludeAddToDeckOnly,TArray<FName>& ReturnArray);
+	static void FilterIncludedCards(UPARAM(ref) TArray<FName>& FilterArray, UPARAM(ref) TArray<bool>& IncludeClass, UPARAM(ref) TArray<bool>& IncludeType, UPARAM(ref) TArray<bool>& IncludeRarity, bool CardWithAbility, bool UnlockedOnly, bool SpecialOnly, bool IncludeAddToDeckOnly,TArray<FName>& ReturnArray);
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
