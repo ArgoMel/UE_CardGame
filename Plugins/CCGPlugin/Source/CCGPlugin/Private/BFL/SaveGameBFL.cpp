@@ -7,7 +7,7 @@
 #include "SaveGame/CCGSG.h"
 #include "SaveGame/CustomDeckSG.h"
 
-void USaveGameBFL::RemoveSaveGameSlot(FString SaveGame, UObject* __WorldContext)
+void USaveGameBFL::RemoveSaveGameSlot(FString SaveGame)
 {
 	if (!UGameplayStatics::DoesSaveGameExist(SaveGame,0))
 	{

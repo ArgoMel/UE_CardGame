@@ -15,7 +15,7 @@ class CCGPLUGIN_API USaveGameBFL : public UBlueprintFunctionLibrary
 public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
-	static void RemoveSaveGameSlot(FString SaveGame, UObject* __WorldContext);
+	static void RemoveSaveGameSlot(FString SaveGame);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable,DisplayName="Create/LoadCardGameSave")
