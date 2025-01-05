@@ -108,7 +108,7 @@ bool UCCGameInstance::MoveToGameState(ECardGameState InState)
 		case ECardGameState::Store:
 			break;
 		case ECardGameState::DeckBuildingMenu:
-			mDeckBuilder->RemoveFromParent();
+			mMainMenu->RemoveFromParent();
 			break;
 		default: ;
 		}

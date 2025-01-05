@@ -26,11 +26,6 @@ protected:
 	TSubclassOf<UUserWidget> mLoadingScreenClass;
 	UPROPERTY(BlueprintReadOnly, Category = "Widgets")
 	TObjectPtr<UUserWidget> mLoadingScreen;
-	/** Please add a variable description */
-	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
-	TSubclassOf<UUserWidget> mDeckBuilderClass;
-	UPROPERTY(BlueprintReadOnly, Category = "Widgets")
-	TObjectPtr<UUserWidget> mDeckBuilder;
 
 	UPROPERTY(BlueprintReadWrite, Category = "디폴트")
 	TArray<FName> mDeck;
