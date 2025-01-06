@@ -27,28 +27,22 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Widgets")
 	TObjectPtr<UUserWidget> mLoadingScreen;
 
+	/*덱셀렉션 메뉴에서 설정하고 플레이어컨트롤러에서 클라이언트덱 받아올때 사용*/
 	UPROPERTY(BlueprintReadWrite, Category = "디폴트")
-	TArray<FName> mDeck;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "디폴트")
 	FString mSelectedCardSet;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "디폴트")
+	UPROPERTY(BlueprintReadWrite, Category = "디폴트")
 	ECardGameState mCurGameState;
-	/** Holds an enum reference to the chosen deck */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "디폴트")
-	ECardSet mChosenCardSet;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "디폴트")
+	UPROPERTY(BlueprintReadWrite, Category = "디폴트")
 	EArenaList mArena;
 	UPROPERTY(BlueprintReadOnly, Category = "디폴트")
 	EPlatform mPlatform;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "디폴트")
-	bool bAIOpponent;
 
 public:
-	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly, Category = "OnlineSetting")
+	UPROPERTY(BlueprintReadOnly, Category = "OnlineSetting")
 	FString mPathToLobby;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "OnlineSetting")
+	UPROPERTY(BlueprintReadWrite, Category = "OnlineSetting")
 	FString mMatchType;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "OnlineSetting")
+	UPROPERTY(BlueprintReadWrite, Category = "OnlineSetting")
 	int32 mNumPublicConnections;
 
 protected:

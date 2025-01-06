@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Common/CCGStruct.h"
 #include "UObject/Interface.h"
 #include "ControllerInterface.generated.h"
 
@@ -41,4 +42,7 @@ public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Server")
 	int32 CurPlayerNum();
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Server")
+	void SetGameModeOption(FCardGameOption Option);
 };

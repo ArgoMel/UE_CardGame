@@ -17,11 +17,11 @@
 #include "Interface/GameStateInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "PlayerController/CCGPlayerController.h"
 #include "SaveGame/RecordGameStateSG.h"
 
 ACCGState::ACCGState()
-: mPlatform(EPlatform::Windows)
-, mGameSeconds(1.f)
+: mGameSeconds(1.f)
 , bGameActive(false)
 , bEnableBattleHistory(true)
 , mCountdownTimer(4)

@@ -261,6 +261,11 @@ int32 ACCGPlayerController::CurPlayerNum_Implementation()
 	return mPlayerNum;
 }
 
+void ACCGPlayerController::SetGameModeOption_Implementation(FCardGameOption Option)
+{
+	Server_SetGameModeOption(Option);
+}
+
 void ACCGPlayerController::GetPlayerDeck_Implementation(TArray<FName>& Deck)
 {
 	Deck=mPlayerDeck;
@@ -1062,6 +1067,15 @@ void ACCGPlayerController::Server_ClearCardsInHand_Implementation()
 {
 	mCardsInHand.Empty();
 	Server_UpdatePlayerState();
+}
+
+void ACCGPlayerController::Server_SetGameModeOption_Implementation(FCardGameOption Option)
+{
+	const UWorld* world=GetWorld();
+	IF_RET_VOID(world);
+	ACCGMode* gameMode=Cast<ACCGMode>(world->GetAuthGameMode());
+	IF_RET_VOID(gameMode);
+	gameMode->mCardGameOption=Option;
 }
 
 void ACCGPlayerController::Client_PostLogin_Implementation()

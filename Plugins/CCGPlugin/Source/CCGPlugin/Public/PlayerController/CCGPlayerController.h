@@ -45,6 +45,7 @@ public:
 	virtual ACard3D* CreatePlayableCard_Implementation(FTransform SpawnTransform) override;
 	virtual bool AddCardToPlayersHand_Implementation(FName CardName) override;
 	virtual int32 CurPlayerNum_Implementation() override;
+	virtual void SetGameModeOption_Implementation(FCardGameOption Option) override;
 
 	/** IDeckInterface */
 	virtual void GetPlayerDeck_Implementation(TArray<FName>& Deck) override;
@@ -335,6 +336,8 @@ public:
 	void Server_ReshuffleDeck();
 	UFUNCTION(BlueprintCallable,Server,Unreliable,Category="Server")
 	void Server_ClearCardsInHand();
+	UFUNCTION(BlueprintCallable,Server,Unreliable,Category="Server")
+	void Server_SetGameModeOption(FCardGameOption Option);
 	
 	UFUNCTION(BlueprintCallable,Client,Reliable,Category="Client")
 	void Client_PostLogin();

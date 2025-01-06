@@ -7,7 +7,7 @@
 #include "BoardPlayer.generated.h"
 
 class ACCGMode;
-class ACCGCamera;
+class ACameraActor;
 class UTimelineComponent;
 class UBoxComponent;
 class UArrowComponent;
@@ -79,7 +79,7 @@ protected:
 	TObjectPtr<UTimelineComponent> mScaleHealthIcon;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category="Player")
-	TObjectPtr<ACCGCamera> mCardGameCamera;
+	TObjectPtr<ACameraActor> mCardGameCamera;
 
 	/** Owning Controller */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Settings")

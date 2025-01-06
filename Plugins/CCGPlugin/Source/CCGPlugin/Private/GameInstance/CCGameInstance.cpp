@@ -12,10 +12,8 @@ UCCGameInstance::UCCGameInstance()
 {
 	mSelectedCardSet = TEXT("Creature Reborn");
 	mCurGameState = ECardGameState::Startup;
-	mChosenCardSet = ECardSet::BasicSet;
 	mArena = EArenaList::ArenaClassic;
 	mPlatform = EPlatform::Windows;
-	bAIOpponent = false;
 
 	mPathToLobby=TEXT("/CCGToolkit/Maps/ExampleArenas/");
 	mNumPublicConnections=4;

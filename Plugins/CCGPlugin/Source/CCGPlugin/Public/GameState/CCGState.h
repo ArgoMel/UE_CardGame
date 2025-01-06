@@ -27,25 +27,22 @@ protected:
 
 protected:
 	/** 인덱스 0이 현재 플레이어 */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	UPROPERTY(BlueprintReadWrite, Category="System")
 	TArray<AController*> mPlayerTurns;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, Category="System")
 	TObjectPtr<UUserWidget> mCardSystem;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	UPROPERTY(BlueprintReadWrite, Category="System")
 	TObjectPtr<ACCGMode> mCardGameMode;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
-	EPlatform mPlatform;
 	/** Seconds the timer will tick. 1 = 1 second. 0.1 = 10 times a second. */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="System")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
 	float mGameSeconds;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
 	bool bGameActive;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="System")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
 	bool bEnableBattleHistory;
 	
 	/** Please add a variable description */
@@ -67,10 +64,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Turn Manager")
 	FTimerHandle mTurnTH;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Turn Manager")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Turn Manager")
 	int32 mTurnDuration_Seconds;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Turn Manager")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Turn Manager")
 	int32 mTurnDuration_Minutes;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Turn Manager", Replicated)

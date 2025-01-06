@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Common/CCGEnum.h"
+#include "Common/CCGStruct.h"
 #include "GameFramework/GameMode.h"
 #include "CCGMode.generated.h"
 
@@ -38,29 +38,11 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
 	double mGameSeconds;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="System")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
 	bool bSkipStartTimer;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, Category="System")
 	bool bGameActive;
-	
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Game Mode Settings")
-	int32 mMana_Min;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Game Mode Settings")
-	int32 mMana_Max;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Game Mode Settings")
-	int32 mPlayerStartingHealth;
-	/** Currently only 2 player is supported by the game mode */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Game Mode Settings")
-	int32 mMaxNumOfPlayers;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Game Mode Settings")
-	bool bSingleClientEnabled;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Game Mode Settings")
-	bool bSpectator;
 
 public:
 	/** Please add a variable description */
@@ -74,6 +56,10 @@ public:
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, Category="System")
 	TArray<ABoardPlayer*> mBoardPlayersArray;
+
+	/** 아레나셀렉션에서 컨트롤러를 통해서 설정 */
+	UPROPERTY(BlueprintReadWrite, Category="Game Mode Settings")
+	FCardGameOption mCardGameOption;
 
 protected:
 	virtual void CollectGameResults(TArray<EEndGameResults>& PlayerResults);
@@ -137,6 +123,4 @@ public:
 
 	FORCEINLINE bool IsGameActive() const { return bGameActive; }
 	FORCEINLINE double GetGameSecond() const { return mGameSeconds; }
-	FORCEINLINE int32 GetPlayerStartingHealth() const { return mPlayerStartingHealth; }
-	FORCEINLINE int32 GetMaxNumOfPlayers() const { return mMaxNumOfPlayers; }
 };

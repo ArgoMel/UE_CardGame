@@ -106,7 +106,7 @@ void ACCGPlayerState::InitAttributes()
 	if (HasAuthority())
 	{
 		mPlayerStat.Mana=0;
-		mPlayerStat.Health=FMath::Clamp(mGameMode->GetPlayerStartingHealth(),0,mPlayerStat.HealthMax);
+		mPlayerStat.Health=FMath::Clamp(mGameMode->mCardGameOption.PlayerStartingHealth,0,mPlayerStat.HealthMax);
 	}
 }
 

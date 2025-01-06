@@ -19,12 +19,6 @@ ACCGMode::ACCGMode()
 , mGameSeconds(1)
 , bSkipStartTimer(true)
 , bGameActive(false)
-, mMana_Min(1)
-, mMana_Max(10)
-, mPlayerStartingHealth(30)
-, mMaxNumOfPlayers(2)
-, bSingleClientEnabled(false)
-, bSpectator(false)
 {
 	bDelayedStart=true;
 }
@@ -38,8 +32,8 @@ void ACCGMode::PostLogin(APlayerController* NewPlayer)
 	{
 		return;
 	}
-	if (mGameControllersArray.Num()>=mMaxNumOfPlayers||
-		bSpectator)
+	if (mGameControllersArray.Num()>=mCardGameOption.MaxNumOfPlayers||
+		mCardGameOption.bSpectator)
 	{
 		SetBoardPlayerReference();
 	}
@@ -133,7 +127,7 @@ void ACCGMode::FinishCountdown()
 
 int32 ACCGMode::CalculateManaForTurn(int32 PlayerTurn)
 {
-	return FMath::Clamp(PlayerTurn+mMana_Min,mMana_Min,mMana_Max);
+	return FMath::Clamp(PlayerTurn+mCardGameOption.Mana.X,mCardGameOption.Mana.X,mCardGameOption.Mana.Y);
 }
 
 int32 ACCGMode::GetTurnMana(AController* Controller)
@@ -227,11 +221,11 @@ void ACCGMode::RemovePlayerFromGame(AController* Controller)
 
 void ACCGMode::CreateCardGameAIOpponent()
 {
-	if (mGameControllersArray.Num()>=mMaxNumOfPlayers)
+	if (mGameControllersArray.Num()>=mCardGameOption.MaxNumOfPlayers)
 	{
 		return;
 	}
-	if (bSpectator)
+	if (mCardGameOption.bSpectator)
 	{
 		CreateAIPawn();
 	}
@@ -240,15 +234,18 @@ void ACCGMode::CreateCardGameAIOpponent()
 
 void ACCGMode::CheckGamePreConditions_Implementation()
 {
-	if (mGameControllersArray.Num()!=mMaxNumOfPlayers&&
-		bSingleClientEnabled)
+	if (mGameControllersArray.Num()<mCardGameOption.MaxNumOfPlayers)
 	{
-		ForceSpawnAIOpponent();
+		if (!mCardGameOption.bSingleClientEnabled)
+		{
+			return;
+		}
+		for (int32 i=mGameControllersArray.Num();i<mCardGameOption.MaxNumOfPlayers;++i)
+		{
+			ForceSpawnAIOpponent();
+		}
 	}
-	else
-	{
-		GetWorldTimerManager().SetTimer(mCountdownTH,this,&ThisClass::GameStartCountdown,mGameSeconds,!bSkipStartTimer);
-	}
+	GetWorldTimerManager().SetTimer(mCountdownTH,this,&ThisClass::GameStartCountdown,mGameSeconds,!bSkipStartTimer);
 }
 
 void ACCGMode::ForceSpawnAIOpponent_Implementation()
@@ -276,7 +273,7 @@ void ACCGMode::GameStartCountdown_Implementation()
 
 void ACCGMode::CheckPlayerState_Implementation()
 {
-	for (int32 i=1;i<=mMaxNumOfPlayers;++i)
+	for (int32 i=1;i<=mCardGameOption.MaxNumOfPlayers;++i)
 	{
 		if (!CheckIsPlayerActive(i))
 		{

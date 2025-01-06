@@ -160,10 +160,10 @@ int32 UControllerBFL::GetControllerIDs(AController* Controller, TArray<int32>& P
 	}
 	if (gameMode->mGameControllersArray.Num()<=1)
 	{
-		Players.Init(1,gameMode->GetMaxNumOfPlayers());
+		Players.Init(1,gameMode->mCardGameOption.MaxNumOfPlayers);
 		return 1;
 	}
-	for (int32 i=0;i<gameMode->GetMaxNumOfPlayers();++i)
+	for (int32 i=0;i<gameMode->mCardGameOption.MaxNumOfPlayers;++i)
 	{
 		Players.Add(i+1);
 	}
