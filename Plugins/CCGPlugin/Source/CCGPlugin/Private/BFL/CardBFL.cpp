@@ -15,7 +15,7 @@ TObjectPtr<UDataTable> UCardBFL::mPreBuildDeckDT;
 
 UCardBFL::UCardBFL()
 {
-	GetObjectAsset(mPreBuildDeckDT,UDataTable,"/CCGPlugin/CCGToolkit/CardGame/DEVELOPER_PrebuildDecks/PreBuildDecks_DataTable.PreBuildDecks_DataTable");
+	GetObjectAsset(mPreBuildDeckDT,UDataTable,"/CCGPlugin/CCGToolkit/CardGame/DEVELOPER_PrebuildDecks/DT_PreBuildDeck.DT_PreBuildDeck");
 }
 
 ACard3D* UCardBFL::SetupCard(ACard3D* CardRef, int32 OwningPlayerID, FName CardName, ECardSet CardSet, FCard CardStruct, bool SetCardDataFromStruct)

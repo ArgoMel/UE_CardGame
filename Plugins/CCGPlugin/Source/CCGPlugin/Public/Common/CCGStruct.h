@@ -582,17 +582,11 @@ struct FCardVisual
 	GENERATED_BODY()
 public:
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	TObjectPtr<UTexture2D> FrameTexture;
+	TObjectPtr<UMaterialInterface> FrameMaterial;
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	TObjectPtr<UTexture2D> ImageTexture;
+	TObjectPtr<UMaterialInterface> ImageMaterial;
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	TObjectPtr<UTexture2D> BackTexture;
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	TObjectPtr<UMaterialExpression> FrameMaterial;
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	TObjectPtr<UMaterialExpression> ImageMaterial;
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	TObjectPtr<UMaterialExpression> BackMaterial;
+	TObjectPtr<UMaterialInterface> BackMaterial;
 
 	FCardVisual()
 	{

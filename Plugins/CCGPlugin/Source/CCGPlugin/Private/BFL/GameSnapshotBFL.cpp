@@ -158,7 +158,7 @@ void UGameSnapshotBFL::GenerateCardSnapshotSimulation(const UObject* WorldContex
 	{
 		if (playerCard->GetPlacementOwner()->GetPlayerIndex()==ControllerID&&
 			playerCard!=Card&&
-			(playerCard->GetCardData()->CardSystemData.InteractionConditions.Contains(EInteractionConditions::CanReceiveSelfInteraction_AIOnly)||playerCard->GetCardData()->CardSystemData.InteractionConditions.Contains(EInteractionConditions::CanReceiveSelfInteractionIfDoesNotRemoveCardFromPlay_AIOnly)))
+			(playerCard->GetCardData()->CardSystemData.InteractionConditions.Contains(EInteractionConditions::CanReceiveSelfInteraction)||playerCard->GetCardData()->CardSystemData.InteractionConditions.Contains(EInteractionConditions::CanReceiveSelfInteractionIfDoesNotRemoveCardFromPlay)))
 		{
 			cardInteraction=FCardInteraction();
 			index=0;

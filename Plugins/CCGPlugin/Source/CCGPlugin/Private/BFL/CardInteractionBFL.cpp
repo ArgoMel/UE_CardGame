@@ -168,9 +168,9 @@ bool UCardInteractionBFL::ValidateCardInteractionConditions(ACard3D* TalkingCard
 		case EInteractionConditions::CannotAttackIfPlayerOwnerCard:
 			valid=UCardConditionBFL::ConditionIsNotOwningPlayer(TalkingCard->GetOwningPlayerID(),ReceivingCard);
 			break;
-		case EInteractionConditions::CanReceiveSelfInteraction_AIOnly:
+		case EInteractionConditions::CanReceiveSelfInteraction:
 			break;
-		case EInteractionConditions::CanReceiveSelfInteractionIfDoesNotRemoveCardFromPlay_AIOnly:
+		case EInteractionConditions::CanReceiveSelfInteractionIfDoesNotRemoveCardFromPlay:
 			break;
 		default: ;
 		}

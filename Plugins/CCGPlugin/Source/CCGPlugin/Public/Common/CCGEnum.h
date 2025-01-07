@@ -90,10 +90,10 @@ enum class ECardPlayConditions : uint8
 	PlayAtEndOfTurn_AIOnly UMETA(DisplayName = "PlayAtEndOfTurn(AIOnly)"),
 	PlayWhenLowHealth_Self UMETA(DisplayName = "PlayWhenLowHealth(Self)"),
 	PlayWhenHighHealth_Self UMETA(DisplayName = "PlayWhenHighHealth(Self)"),
-	PlayWhenCreaturesAreOnTheBoard_Self UMETA(DisplayName = "PlayWhenHighHealth(Self)"),
-	PlayWhenCreaturesAreOnTheBoard_Self_AIOnly UMETA(DisplayName = "PlayWhenHighHealth(Self)(AIOnly)"),
-	PlayWhenCreaturesAreOnTheBoard_Opponent UMETA(DisplayName = "PlayWhenHighHealth(Opponent)"),
-	PlayWhenCreaturesAreOnTheBoard_Opponent_AIOnly UMETA(DisplayName = "PlayWhenHighHealth(Opponent)(AIOnly)"),
+	PlayWhenCreaturesAreOnTheBoard_Self UMETA(DisplayName = "PlayWhenCreaturesAreOnTheBoard(Self)"),
+	PlayWhenCreaturesAreOnTheBoard_Self_AIOnly UMETA(DisplayName = "PlayWhenCreaturesAreOnTheBoard(Self)(AIOnly)"),
+	PlayWhenCreaturesAreOnTheBoard_Opponent UMETA(DisplayName = "PlayWhenCreaturesAreOnTheBoard(Opponent)"),
+	PlayWhenCreaturesAreOnTheBoard_Opponent_AIOnly UMETA(DisplayName = "PlayWhenCreaturesAreOnTheBoard(Opponent)(AIOnly)"),
 	PlayWhenThereAreCardsInTheGraveyard UMETA(DisplayName = "PlayWhenThereAreCardsInTheGraveyard"),
 	PlayWhenThereAreCardsInTheGraveyard_AIOnly UMETA(DisplayName = "PlayWhenThereAreCardsInTheGraveyard(AIOnly)"),
 	PlayWhenLowPlayableCardInHand_AIOnly UMETA(DisplayName = "PlayWhenLowPlayableCardInHand(AIOnly)"),
@@ -199,8 +199,8 @@ enum class EInteractionConditions : uint8
 	CardCanOnlyReceiveInteractionOnAnOpponentsPlacement UMETA(DisplayName = "CardCanOnlyRecieveInteractionOnAnOppenentsPlacement"),
 	CanOnlyAttackCreatures UMETA(DisplayName = "CanOnlyAttackCreatures"),
 	CannotAttackIfPlayerOwnerCard UMETA(DisplayName = "CannotAttackIfPlayerOwnsCard"),
-	CanReceiveSelfInteraction_AIOnly UMETA(DisplayName = "CanRecieveSelfInteraction(AIOnly)"),
-	CanReceiveSelfInteractionIfDoesNotRemoveCardFromPlay_AIOnly UMETA(DisplayName = "CanRecieveSelfInteractionIfDoesNotRemoveCardFromPlay_AIOnly(AIOnly)"),
+	CanReceiveSelfInteraction UMETA(DisplayName = "CanRecieveSelfInteraction(AIOnly)"),
+	CanReceiveSelfInteractionIfDoesNotRemoveCardFromPlay UMETA(DisplayName = "CanRecieveSelfInteractionIfDoesNotRemoveCardFromPlay_AIOnly(AIOnly)"),
 	Max UMETA(Hidden)
 };
 

@@ -12,8 +12,8 @@ TObjectPtr<UDataTable> UDeckBFL::mDebugSet;
 
 UDeckBFL::UDeckBFL()
 {
-	GetObjectAsset(mBasicSet,UDataTable,"/CCGPlugin/CCGToolkit/CardGame/CardSets/Basic_Set/BasicSet_DataTable.BasicSet_DataTable");
-	GetObjectAsset(mDebugSet,UDataTable,"/CCGPlugin/CCGToolkit/CardGame/CardSets/Debug_Set/DebugSet_DataTable.DebugSet_DataTable");
+	GetObjectAsset(mBasicSet,UDataTable,"/CCGPlugin/CCGToolkit/CardGame/CardSets/Basic_Set/DT_BasicSet.DT_BasicSet");
+	GetObjectAsset(mDebugSet,UDataTable,"/CCGPlugin/CCGToolkit/CardGame/CardSets/Debug_Set/DT_DebugSet.DT_DebugSet");
 }
 
 void UDeckBFL::GetChosenDeckArray(int32 Index, const TArray<UDataTable*>& TargetArray, TArray<FName>& OutRowNames)

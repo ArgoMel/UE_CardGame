@@ -19,10 +19,10 @@ class CCGPLUGIN_API IViewCardInterface
 public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Image")
-	void SetCardFrontImage(UTexture2D* Texture);
+	void SetCardFrontImage(UMaterialInterface* Material);
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Image")
-	void SetCardBackImage(UTexture2D* Texture);
+	void SetCardBackImage(UMaterialInterface* Material);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
