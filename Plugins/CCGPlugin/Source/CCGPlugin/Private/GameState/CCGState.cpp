@@ -21,30 +21,21 @@
 #include "SaveGame/RecordGameStateSG.h"
 
 ACCGState::ACCGState()
-: mGameSeconds(1.f)
-, bGameActive(false)
+: bGameActive(false)
 , bEnableBattleHistory(true)
-, mCountdownTimer(4)
-, mGameTime_Seconds(0)
-, mGameTime_Minutes(0)
-, mGameTurnState(EGameTurn::Waiting)
-, mTurnDuration_Seconds(59)
-, mTurnDuration_Minutes(2)
-, mTurnTime_Seconds(0)
-, mTurnTime_Minutes(0)
+, mGameTimeSecond(0)
+, mTurnDurationSecond(179)
+, mTurnTimeSecond(0)
 {
 }
 
 void ACCGState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(ThisClass,mGameTime_Seconds);
-	DOREPLIFETIME(ThisClass,mGameTime_Minutes);
+	DOREPLIFETIME(ThisClass,mGameTimeSecond);
 	DOREPLIFETIME(ThisClass,bGameActive);
-
-	DOREPLIFETIME(ThisClass,mGameTurnState);
-	DOREPLIFETIME(ThisClass,mTurnTime_Seconds);
-	DOREPLIFETIME(ThisClass,mTurnTime_Minutes);
+	
+	DOREPLIFETIME(ThisClass,mTurnTimeSecond);
 	
 	DOREPLIFETIME(ThisClass,mPlayerBoards);
 	DOREPLIFETIME(ThisClass,mPlayerAndAIStates);
@@ -97,38 +88,24 @@ void ACCGState::ResetTurn()
 
 void ACCGState::GameTimer()
 {
-	if (mGameTime_Seconds>=59)
+	++mGameTimeSecond;
+	const int32 minute=mGameTimeSecond/60;
+	//int32 second=mGameTimeSecond%60;
+	
+	if (minute>=30)
 	{
-		++mGameTime_Minutes;
-		mGameTime_Seconds=0;
-	}
-	else
-	{
-		++mGameTime_Seconds;
-		if (mGameTime_Minutes>=30)
-		{
-			IF_RET_VOID(mCardGameMode);
-			const int32 playerCount=mCardGameMode->mGameControllersArray.Num();
-			TArray<EEndGameResults> results;
-			results.Init(EEndGameResults::Draw, playerCount);
-			Server_NotifyEndGameState(results);
-		}
+		IF_RET_VOID(mCardGameMode);
+		const int32 playerCount=mCardGameMode->mGameControllersArray.Num();
+		TArray<EEndGameResults> results;
+		results.Init(EEndGameResults::Draw, playerCount);
+		Server_NotifyEndGameState(results);
 	}
 }
 
 void ACCGState::TurnTimer()
 {
-	if (mTurnTime_Seconds<=0)
-	{
-		--mTurnTime_Minutes;
-		mTurnTime_Seconds=59;
-	}
-	else
-	{
-		--mTurnTime_Seconds;
-	}
-	if (mTurnTime_Minutes==0
-		&&mTurnTime_Seconds==0)
+	--mTurnTimeSecond;
+	if (mTurnTimeSecond<=0)
 	{
 		Server_ForceChangeTurnState();
 	}
@@ -136,13 +113,7 @@ void ACCGState::TurnTimer()
 
 void ACCGState::ResetTurnTimer()
 {
-	mTurnTime_Seconds=mTurnDuration_Seconds;
-	mTurnTime_Minutes=mTurnDuration_Minutes;
-}
-
-bool ACCGState::CheckPlayerTurnState(EGameTurn GameTurnState) const
-{
-	return mGameTurnState==GameTurnState;
+	mTurnTimeSecond=mTurnDurationSecond;
 }
 
 bool ACCGState::RequestChangeTurnState(AController* Controller)

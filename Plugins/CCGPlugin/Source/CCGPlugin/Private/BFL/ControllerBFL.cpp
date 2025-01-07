@@ -189,35 +189,31 @@ AActor* UControllerBFL::GetControllerPlayerState(const UObject* WorldContextObje
 	return controller->GetPawn<ACCGAIPawn>();
 }
 
-bool UControllerBFL::GetReplicatedPlayerState(const UWorld* World,int32 PlayerID,FString& PlayerName,FPlayerStat& PlayerStat)
+AActor* UControllerBFL::GetReplicatedPlayerState(const UObject* WorldContextObject,int32 PlayerID,FString& PlayerName,FPlayerStat& PlayerStat)
 {
 	PlayerName=TEXT("No_Opponent");
-	if (!World)
-	{
-		return false;
-	}
-	ACCGState* gameState=World->GetGameState<ACCGState>();
-	if (!gameState)
-	{
-		return false;
-	}
+	IF_RET_NULL(WorldContextObject);
+	const UWorld* world= WorldContextObject->GetWorld();
+	IF_RET_NULL(world);
+	ACCGState* gameState=world->GetGameState<ACCGState>();
+	IF_RET_NULL(gameState);
 	if (!gameState->mPlayerAndAIStates[PlayerID-1])
 	{
-		return false;
+		return nullptr;
 	}
 	const ACCGPlayerState* playerState=Cast<ACCGPlayerState>(gameState->mPlayerAndAIStates[PlayerID-1]);
 	if (playerState)
 	{
 		PlayerName=playerState->GetPlayerName();
 		PlayerStat=playerState->mPlayerStat;
-		return true;
+		return gameState->mPlayerAndAIStates[PlayerID-1];
 	}
 	const ACCGAIPawn* AIPawn=Cast<ACCGAIPawn>(gameState->mPlayerAndAIStates[PlayerID-1]);
 	if (AIPawn)
 	{
 		PlayerName=AIPawn->GetAIName();
 		PlayerStat=AIPawn->mAIStat;
-		return true;
+		return gameState->mPlayerAndAIStates[PlayerID-1];
 	}
-	return false;
+	return nullptr;
 }

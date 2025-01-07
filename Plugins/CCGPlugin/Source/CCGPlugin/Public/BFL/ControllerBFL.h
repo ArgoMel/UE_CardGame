@@ -51,5 +51,5 @@ class CCGPLUGIN_API UControllerBFL : public UBlueprintFunctionLibrary
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
-	static bool GetReplicatedPlayerState(const UWorld* World,int32 PlayerID,FString& PlayerName,FPlayerStat& PlayerStat);
+	static AActor* GetReplicatedPlayerState(const UObject* WorldContextObject,int32 PlayerID,FString& PlayerName,FPlayerStat& PlayerStat);
 };

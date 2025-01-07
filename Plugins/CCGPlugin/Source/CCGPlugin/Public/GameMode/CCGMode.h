@@ -57,7 +57,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category="System")
 	TArray<ABoardPlayer*> mBoardPlayersArray;
 
-	/** 아레나셀렉션에서 컨트롤러를 통해서 설정 */
+	/** 아레나셀렉션에서 컨트롤러를 통해서 저장 */
 	UPROPERTY(BlueprintReadWrite, Category="Game Mode Settings")
 	FCardGameOption mCardGameOption;
 

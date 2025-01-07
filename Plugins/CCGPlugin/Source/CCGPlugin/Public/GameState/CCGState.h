@@ -31,68 +31,48 @@ protected:
 	TArray<AController*> mPlayerTurns;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, Category="System")
-	TObjectPtr<UUserWidget> mCardSystem;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, Category="System")
 	TObjectPtr<ACCGMode> mCardGameMode;
-	/** Seconds the timer will tick. 1 = 1 second. 0.1 = 10 times a second. */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
-	float mGameSeconds;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
+	UPROPERTY(BlueprintReadWrite, Category="System", Replicated)
 	bool bGameActive;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
 	bool bEnableBattleHistory;
 	
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Game Manager")
+	UPROPERTY(BlueprintReadWrite, Category="Game Manager")
 	FTimerHandle mGameTH;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="GameManager")
-	int32 mCountdownTimer;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="GameManager", Replicated)
-	int32 mGameTime_Seconds;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Game Manager", Replicated)
-	int32 mGameTime_Minutes;
+	UPROPERTY(BlueprintReadWrite, Category="Game Manager", Replicated)
+	int32 mGameTimeSecond;
 	
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Turn Manager", Replicated)
-	EGameTurn mGameTurnState;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Turn Manager")
+	UPROPERTY(BlueprintReadWrite, Category="Turn Manager")
 	FTimerHandle mTurnTH;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Turn Manager")
-	int32 mTurnDuration_Seconds;
+	int32 mTurnDurationSecond;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Turn Manager")
-	int32 mTurnDuration_Minutes;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Turn Manager", Replicated)
-	int32 mTurnTime_Seconds;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Turn Manager", Replicated)
-	int32 mTurnTime_Minutes;
+	UPROPERTY(BlueprintReadWrite, Category="Turn Manager", Replicated)
+	int32 mTurnTimeSecond;
 	
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Board", Replicated)
+	UPROPERTY(BlueprintReadWrite, Category="Board", Replicated)
 	TArray<FPlayerBoard> mPlayerBoards;
 
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Recorded Game Data")
+	UPROPERTY(BlueprintReadWrite, Category="Recorded Game Data")
 	TArray<FGameStateSnapshot> mGameSnapshot;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Recorded Game Data")
+	UPROPERTY(BlueprintReadWrite, Category="Recorded Game Data")
 	TArray<FBattleHistory> mBattleHistory;
 
 public:
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
+	UPROPERTY(BlueprintReadWrite, Category="System", Replicated)
 	TArray<AActor*> mPlayerAndAIStates;
 	
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Recorded Game Data")
+	UPROPERTY(BlueprintReadWrite, Category="Recorded Game Data")
 	TArray<ACard3D*> mCardReferenceArray;
 
 protected:
@@ -101,19 +81,12 @@ protected:
 public:
 	UFUNCTION(BlueprintCallable, Category="System")
 	void GameTimer();
-
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="System")
 	void TurnTimer();
-
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="System")
 	void ResetTurnTimer();
-
-	/** Please add a function description */
-	UFUNCTION(BlueprintPure, Category="System")
-	bool CheckPlayerTurnState(EGameTurn GameTurnState) const;
-
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure, Category="System")
 	bool RequestChangeTurnState(AController* Controller);

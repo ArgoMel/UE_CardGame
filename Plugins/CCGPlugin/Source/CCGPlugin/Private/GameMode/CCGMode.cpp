@@ -13,6 +13,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PlayerController/CCGPlayerController.h"
 #include "PlayerState/CCGPlayerState.h"
+#include "SaveGame/CCGSG.h"
 
 ACCGMode::ACCGMode()
 : mCountdownTimer(4)
@@ -32,6 +33,16 @@ void ACCGMode::PostLogin(APlayerController* NewPlayer)
 	{
 		return;
 	}
+	
+	if (UGameplayStatics::DoesSaveGameExist(CCG_SaveSlotName::CardGameSave,0))
+	{
+		const UCCGSG* saveGame=Cast<UCCGSG>(UGameplayStatics::LoadGameFromSlot(CCG_SaveSlotName::CardGameSave,0));
+		if (saveGame)
+		{
+			mCardGameOption=saveGame->mCardGameOption;
+		}
+	}
+	
 	if (mGameControllersArray.Num()>=mCardGameOption.MaxNumOfPlayers||
 		mCardGameOption.bSpectator)
 	{

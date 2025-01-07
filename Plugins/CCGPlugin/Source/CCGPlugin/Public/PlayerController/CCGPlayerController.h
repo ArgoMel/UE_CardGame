@@ -297,6 +297,9 @@ public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Game Setup")
 	FString LoadClientDeck(TArray<FName>& Deck) const;
+	/** 특정 유저의 프로필 이미지를 가져오는 함수 */
+	UFUNCTION(BlueprintCallable, Category="Game Setup")
+	UTexture2D* GetProfileImg() const;
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Deck / Hand  Functions")
@@ -336,8 +339,6 @@ public:
 	void Server_ReshuffleDeck();
 	UFUNCTION(BlueprintCallable,Server,Unreliable,Category="Server")
 	void Server_ClearCardsInHand();
-	UFUNCTION(BlueprintCallable,Server,Unreliable,Category="Server")
-	void Server_SetGameModeOption(FCardGameOption Option);
 	
 	UFUNCTION(BlueprintCallable,Client,Reliable,Category="Client")
 	void Client_PostLogin();

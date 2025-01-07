@@ -24,6 +24,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "PlayerState/CCGPlayerState.h"
+#include "SaveGame/CCGSG.h"
 
 ACCGPlayerController::ACCGPlayerController()
 	: bCardPlayerStateDirty(false)
@@ -263,7 +264,20 @@ int32 ACCGPlayerController::CurPlayerNum_Implementation()
 
 void ACCGPlayerController::SetGameModeOption_Implementation(FCardGameOption Option)
 {
-	Server_SetGameModeOption(Option);
+	UCCGSG* saveGame;
+	if (UGameplayStatics::DoesSaveGameExist(CCG_SaveSlotName::CardGameSave,0))
+	{
+		saveGame=Cast<UCCGSG>(UGameplayStatics::LoadGameFromSlot(CCG_SaveSlotName::CardGameSave,0));
+	}
+	else
+	{
+		saveGame=Cast<UCCGSG>(UGameplayStatics::CreateSaveGameObject(UCCGSG::StaticClass()));
+	}
+	if (saveGame)
+	{
+		saveGame->mCardGameOption=Option;
+		UGameplayStatics::SaveGameToSlot(saveGame,CCG_SaveSlotName::CardGameSave,0);
+	}
 }
 
 void ACCGPlayerController::GetPlayerDeck_Implementation(TArray<FName>& Deck)
@@ -905,6 +919,13 @@ FString ACCGPlayerController::LoadClientDeck(TArray<FName>& Deck) const
 	return deckName;
 }
 
+UTexture2D* ACCGPlayerController::GetProfileImg() const
+{
+	UCCGSG* saveGame=Cast<UCCGSG>(UGameplayStatics::LoadGameFromSlot(CCG_SaveSlotName::CardGameSave,0));
+	IF_RET_NULL(saveGame);
+	return saveGame->mProfileTexture;
+}
+
 void ACCGPlayerController::ShufflePlayerDeck(TArray<FName>& TargetArray) const
 {
 	UCCGBFL::ShuffleArray(TargetArray);
@@ -1067,15 +1088,6 @@ void ACCGPlayerController::Server_ClearCardsInHand_Implementation()
 {
 	mCardsInHand.Empty();
 	Server_UpdatePlayerState();
-}
-
-void ACCGPlayerController::Server_SetGameModeOption_Implementation(FCardGameOption Option)
-{
-	const UWorld* world=GetWorld();
-	IF_RET_VOID(world);
-	ACCGMode* gameMode=Cast<ACCGMode>(world->GetAuthGameMode());
-	IF_RET_VOID(gameMode);
-	gameMode->mCardGameOption=Option;
 }
 
 void ACCGPlayerController::Client_PostLogin_Implementation()
