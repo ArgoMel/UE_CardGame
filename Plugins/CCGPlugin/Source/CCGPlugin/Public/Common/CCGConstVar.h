@@ -35,6 +35,12 @@ namespace CCG_ZOrder
 	constexpr int32 OpponentUI=1;
 }
 
+namespace CCG_PlayerIndex
+{
+	constexpr int32 InvalidIndex=-1;
+	constexpr int32 NeutralIndex=-2;
+}
+
 namespace CCG_Level
 {
 	const FName MainMenu(TEXT("MainMenu")); 

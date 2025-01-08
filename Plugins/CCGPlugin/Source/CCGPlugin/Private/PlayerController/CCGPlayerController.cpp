@@ -32,6 +32,7 @@ ACCGPlayerController::ACCGPlayerController()
 	, bIsCardSelected(false)
 	, mCardPlayerState(ECardPlayerState::PendingAction)
 	, mCardSet(ECardSet::BasicSet)
+	, mRecentOpponentIndex(-1)
 	, mMaxCardsInHand(7)
 	, mCardsInFirstHand(5)
 	, mCardsToDrawPerTurn(1)
@@ -75,6 +76,7 @@ void ACCGPlayerController::GetLifetimeReplicatedProps(TArray<class FLifetimeProp
 	DOREPLIFETIME(ThisClass,bIsCardSelected);
 
 	DOREPLIFETIME(ThisClass,mCardSet);
+	DOREPLIFETIME(ThisClass,mRecentOpponentIndex);
 	DOREPLIFETIME(ThisClass,mBoardPlayer);
 	DOREPLIFETIME(ThisClass,bTurnActive);
 
@@ -905,7 +907,7 @@ void ACCGPlayerController::SetTimer(int32 Time)
 FString ACCGPlayerController::LoadClientDeck(TArray<FName>& Deck) const
 {
 	const UCCGameInstance* gameInstance= Cast<UCCGameInstance>(GetGameInstance());
-	IF_RET(FString,gameInstance);
+	IF_RET(FString(),gameInstance);
 	FString deckName=gameInstance->GetSelectedCardSet();
 	bool tempBool=false;
 	if (USaveGameBFL::LoadCustomDeck(deckName,Deck,tempBool))
@@ -1141,16 +1143,17 @@ void ACCGPlayerController::Client_EndMatchState_Implementation(EEndGameResults R
 
 void ACCGPlayerController::Client_UpdateGameUI_Implementation(bool ForceCleanUpdate)
 {
+	IF_RET_VOID(mBoardPlayer);
 	IF_RET_VOID(mPlayerGameUI);
 	IF_RET_VOID(mOpponentUI);
 	Server_UpdatePlayerHealth();
 	if (mOpponentUI->Implements<UPlayerUIInterface>())
 	{
-		IPlayerUIInterface::Execute_UpdateUIPlayerStats(mOpponentUI,ForceCleanUpdate);
+		IPlayerUIInterface::Execute_UpdateUIPlayerStats(mOpponentUI,mRecentOpponentIndex,ForceCleanUpdate);
 	}
 	if (mPlayerGameUI->Implements<UPlayerUIInterface>())
 	{
-		IPlayerUIInterface::Execute_UpdateUIPlayerStats(mPlayerGameUI,false);
+		IPlayerUIInterface::Execute_UpdateUIPlayerStats(mPlayerGameUI,mBoardPlayer->mPlayerIndex,false);
 		IPlayerUIInterface::Execute_UpdateUITurnState(mPlayerGameUI,bTurnActive,mTurnState);
 	}
 }

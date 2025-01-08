@@ -110,6 +110,9 @@ protected:
 	ECardPlayerState mCardPlayerState;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Player", Replicated)
 	ECardSet mCardSet;
+	/*최근 상호작용한 적의 인덱스. 다른 사람의 소유물 클릭시 해당 ui 출력용*/
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Player", Replicated)
+	int32 mRecentOpponentIndex;
 	/** The max card the player can hold in their hand at any one time. Note: Not used when 'IgnoreMaxCards?' is enabled on the 'Request Card pickup' event. */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Player")
 	int32 mMaxCardsInHand;
@@ -371,4 +374,6 @@ public:
 	FORCEINLINE UUserWidget* GetPlayerGameUI(){return mPlayerGameUI;}
 	FORCEINLINE TArray<FName> GetPlayerDeck(){return mPlayerDeck;}
 	FORCEINLINE TArray<FName> GetCardsInHand(){return mCardsInHand;}
+	FORCEINLINE int32 GetOpponentIndex() const {return mRecentOpponentIndex;}
+	FORCEINLINE ABoardPlayer* GetBoardPlayer() const {return mBoardPlayer;}
 };

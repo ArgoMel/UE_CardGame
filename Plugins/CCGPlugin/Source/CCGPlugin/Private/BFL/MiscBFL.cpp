@@ -79,9 +79,9 @@ int32 UMiscBFL::ReadInteractingCardDataAttack(ACard3D* ReadCard)
 
 FTransform UMiscBFL::MouseDistanceInWorldSpace(ACCGPlayerController* PlayerController, double Distance)
 {
-	IF_RET(FTransform,PlayerController);
+	IF_RET(FTransform(),PlayerController);
 	const UWorld* world=PlayerController->GetWorld();
-	IF_RET(FTransform,world);
+	IF_RET(FTransform(),world);
 	FTransform spawnTransform;
 	FVector worldLoc;
 	FVector worldDir;
@@ -153,9 +153,9 @@ bool UMiscBFL::GetWorldRotationForPlayer(const UWorld* World, FRotator OverrideR
 
 FVector2D UMiscBFL::GetMousePositionInRange(UWorld* World, FVector2D SizeOffset, double GlobalEdgeOffset, FVector2D EdgeOffset)
 {
-	IF_RET(FVector2D,World);
+	IF_RET(FVector2D::ZeroVector,World);
 	const APlayerController* playerController=World->GetFirstPlayerController();
-	IF_RET(FVector2D,playerController);
+	IF_RET(FVector2D::ZeroVector,playerController);
 
 	FVector2D returnValue;
 	float locX;
@@ -225,9 +225,9 @@ float UMiscBFL::GetWaitTimeWithRandomDeviation(double WaitTime, double RandomDev
 FTransform UMiscBFL::ScreenPositionInWorldSpace(ACCGPlayerController* PlayerController,
 	FVector2D ScreenPosition, double ForwardDistance)
 {
-	IF_RET(FTransform,PlayerController);
+	IF_RET(FTransform(),PlayerController);
 	const UWorld* world=PlayerController->GetWorld();
-	IF_RET(FTransform,world);
+	IF_RET(FTransform(),world);
 	FTransform spawnTransform;
 	const float viewportScale=UWidgetLayoutLibrary::GetViewportScale(PlayerController);
 	FVector worldLoc;

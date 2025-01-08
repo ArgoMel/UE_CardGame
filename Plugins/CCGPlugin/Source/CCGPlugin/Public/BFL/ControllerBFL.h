@@ -52,4 +52,12 @@ class CCGPLUGIN_API UControllerBFL : public UBlueprintFunctionLibrary
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
 	static AActor* GetReplicatedPlayerState(const UObject* WorldContextObject,int32 PlayerID,FString& PlayerName,FPlayerStat& PlayerStat);
+
+	/** Please add a function description */
+	UFUNCTION(BlueprintPure)
+	static int32 GetOpponentIndex(const UObject* WorldContextObject);
+
+	/** Please add a function description */
+	UFUNCTION(BlueprintPure)
+	static int32 GetPlayerIndex(const UObject* WorldContextObject);
 };

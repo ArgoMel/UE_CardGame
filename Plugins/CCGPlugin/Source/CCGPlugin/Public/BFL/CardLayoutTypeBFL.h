@@ -15,9 +15,9 @@ class CCGPLUGIN_API UCardLayoutTypeBFL : public UBlueprintFunctionLibrary
 public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
-	static FWidgetTransform Fanned(FCardLayoutCalculate Cal);
+	static FWidgetTransform Fanned(int32 CardLoopIndex,int32 CardsInHand,FCardLayout Cal);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
-	static FWidgetTransform Horizontal(FCardLayoutCalculate Cal);
+	static FWidgetTransform Horizontal(int32 CardLoopIndex,int32 CardsInHand,FCardLayout Cal);
 };

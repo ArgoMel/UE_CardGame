@@ -364,53 +364,6 @@ public:
 	{
 	}
 };
-
-USTRUCT(BlueprintType)
-struct FCardLayoutCalculate
-{
-	GENERATED_BODY()
-public:
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	FVector2D CardSpacing;
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	FVector2D ScreenOffset;
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	int32 CardLoopIndex; 
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	int32 CardsInHand;
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	int32 MaxCardInHand;
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	double CardOffset;
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	double RotationDistanceScaleFactor;
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	double RadiusOffset;
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	double CardScale;
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	bool FlyInDirection;
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	bool RotateCardsToOffset;
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
-	bool DynamicSpacing;
-
-	FCardLayoutCalculate()
-		: CardSpacing()
-		, ScreenOffset()
-		, CardLoopIndex(0)
-		, CardsInHand(0)
-		, MaxCardInHand(0)
-		, CardOffset(0)
-		, RotationDistanceScaleFactor(0)
-		, RadiusOffset(0)
-		, CardScale(0)
-		, FlyInDirection(false)
-		, RotateCardsToOffset(false)
-		, DynamicSpacing(false)
-	{
-	}
-};
 #pragma endregion
 
 #pragma region CardStruct

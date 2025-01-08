@@ -19,7 +19,7 @@ class CCGPLUGIN_API IPlayerUIInterface
 public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void UpdateUIPlayerStats(bool ForceCleanVisualUpdate);
+	void UpdateUIPlayerStats(int32 PlayerIndex,bool ForceCleanVisualUpdate=false);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
