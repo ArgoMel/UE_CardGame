@@ -282,6 +282,43 @@ void ACCGPlayerController::SetGameModeOption_Implementation(FCardGameOption Opti
 	}
 }
 
+UUserWidget* ACCGPlayerController::GetPlayerUI_Implementation()
+{
+	return mPlayerGameUI;
+}
+
+void ACCGPlayerController::CallCreateCard_Implementation(FName CardName, ECardSet CardSet, int32 CardHandIndex, UUserWidget* CardWidget)
+{
+	IF_RET_VOID(CardWidget);
+	if (!bTurnActive)
+	{
+		return;
+	}
+	const FInputModeGameOnly inputMode;
+	SetInputMode(inputMode);
+	mCardWidget=CardWidget;
+	tCreateCardName=CardName;
+	tChosenCardSet=CardSet;
+	tHandIndex=CardHandIndex;
+	mCardPlayerState=ECardPlayerState::PlacingCard;
+
+	FVector spawnLoc;
+	const UCCGameInstance* gameInstance=Cast<UCCGameInstance>(GetGameInstance());
+	IF_RET_VOID(gameInstance);
+	const bool isMobile= gameInstance->IsMobilePlatform();
+	if (isMobile)
+	{
+		spawnLoc=UMiscBFL::MouseDistanceInWorldSpace(this,mCardHoldDistance).GetLocation();
+	}
+	else
+	{
+		IF_RET_VOID(mCardWidget->Implements<UCardWidgetInterface>());
+		const FVector2D mousePos=ICardWidgetInterface::Execute_GetInitialMousePos(mCardWidget);
+		spawnLoc=UMiscBFL::ScreenPositionInWorldSpace(this,mousePos,1500.f).GetLocation();
+	}
+	Client_CreatePlaceableCard(CardName,CardSet,spawnLoc);
+}
+
 void ACCGPlayerController::GetPlayerDeck_Implementation(TArray<FName>& Deck)
 {
 	Deck=mPlayerDeck;
@@ -353,6 +390,16 @@ void ACCGPlayerController::OnRep_TurnState()
 	Client_UpdateGameUI(false);
 }
 
+// ReSharper disable once CppUE4BlueprintCallableFunctionMayBeConst
+void ACCGPlayerController::OnRep_RecentOpponentIndex()
+{
+	IF_RET_VOID(mOpponentUI);
+	if (mOpponentUI->Implements<UPlayerUIInterface>())
+	{
+		IPlayerUIInterface::Execute_UpdateUIPlayerStats(mOpponentUI,mRecentOpponentIndex,false);
+	}
+}
+
 void ACCGPlayerController::TouchBegin(ETouchIndex::Type FingerIndex, AActor* TouchedActor)
 {
 	CardInteraction();
@@ -408,6 +455,7 @@ void ACCGPlayerController::ClearCardInteractionState()
 	mReceivingPlayer=nullptr;
 	bIsDragging=false;
 	bIsCardSelected=false;
+	mRecentOpponentIndex=-1;
 }
 
 bool ACCGPlayerController::ValidatePlacement(ACardPlacement* PlacementTarget, FCard Card) const
@@ -655,6 +703,7 @@ void ACCGPlayerController::DetectCardInteraction()
 				checkTalkingCard=false;
 				mTalkingCard=mHitCard;
 				mTalkingCard->Selected(mPlayerState->GetCardGamePlayerId());
+				mRecentOpponentIndex=mHitCard->GetOwningPlayerID();
 			}
 		}
 		else
@@ -665,6 +714,7 @@ void ACCGPlayerController::DetectCardInteraction()
 			mCardPlayerState=ECardPlayerState::CardInteraction;
 			mTalkingCard=mHitCard;
 			mTalkingCard->Selected(mPlayerState->GetCardGamePlayerId());
+			mRecentOpponentIndex=mHitCard->GetOwningPlayerID();
 		}
 	}
 	if (checkTalkingCard&&mTalkingCard)
@@ -683,6 +733,7 @@ void ACCGPlayerController::DetectCardInteraction()
 			{
 				mReceivingCard=mHitCard;
 				mReceivingCard->Selected(mPlayerState->GetCardGamePlayerId());
+				mRecentOpponentIndex=mHitCard->GetOwningPlayerID();
 			}
 			else
 			{
@@ -945,38 +996,6 @@ void ACCGPlayerController::NotifyCardsEndTurn() const
 	IF_RET_VOID(mGameState);
 	IF_RET_VOID(mPlayerState);
 	mGameState->EndOfPlayerTurn(mPlayerState->GetCardGamePlayerId());
-}
-
-void ACCGPlayerController::CallCreateCard(FName CardName, ECardSet CardSet, int32 CardHandIndex, UUserWidget* CardWidget)
-{
-	IF_RET_VOID(CardWidget);
-	if (!bTurnActive)
-	{
-		return;
-	}
-	const FInputModeGameOnly inputMode;
-	SetInputMode(inputMode);
-	mCardWidget=CardWidget;
-	tCreateCardName=CardName;
-	tChosenCardSet=CardSet;
-	tHandIndex=CardHandIndex;
-	mCardPlayerState=ECardPlayerState::PlacingCard;
-
-	FVector spawnLoc;
-	const UCCGameInstance* gameInstance=Cast<UCCGameInstance>(GetGameInstance());
-	IF_RET_VOID(gameInstance);
-	const bool isMobile= gameInstance->IsMobilePlatform();
-	if (isMobile)
-	{
-		spawnLoc=UMiscBFL::MouseDistanceInWorldSpace(this,mCardHoldDistance).GetLocation();
-	}
-	else
-	{
-		IF_RET_VOID(mCardWidget->Implements<UCardWidgetInterface>());
-		const FVector2D mousePos=ICardWidgetInterface::Execute_GetInitialMousePos(mCardWidget);
-		spawnLoc=UMiscBFL::ScreenPositionInWorldSpace(this,mousePos,1500.f).GetLocation();
-	}
-	Client_CreatePlaceableCard(CardName,CardSet,spawnLoc);
 }
 
 void ACCGPlayerController::DragCanceled()

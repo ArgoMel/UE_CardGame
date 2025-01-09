@@ -46,6 +46,8 @@ public:
 	virtual bool AddCardToPlayersHand_Implementation(FName CardName) override;
 	virtual int32 CurPlayerNum_Implementation() override;
 	virtual void SetGameModeOption_Implementation(FCardGameOption Option) override;
+	virtual UUserWidget* GetPlayerUI_Implementation() override;
+	virtual void CallCreateCard_Implementation(FName CardName,ECardSet CardSet,int32 CardHandIndex,UUserWidget* CardWidget) override;
 
 	/** IDeckInterface */
 	virtual void GetPlayerDeck_Implementation(TArray<FName>& Deck) override;
@@ -111,7 +113,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Player", Replicated)
 	ECardSet mCardSet;
 	/*최근 상호작용한 적의 인덱스. 다른 사람의 소유물 클릭시 해당 ui 출력용*/
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Player", Replicated)
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Player", ReplicatedUsing="OnRep_RecentOpponentIndex")
 	int32 mRecentOpponentIndex;
 	/** The max card the player can hold in their hand at any one time. Note: Not used when 'IgnoreMaxCards?' is enabled on the 'Request Card pickup' event. */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Player")
@@ -227,6 +229,8 @@ protected:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
 	void OnRep_TurnState();
+	UFUNCTION(BlueprintCallable)
+	void OnRep_RecentOpponentIndex();
 
 	UFUNCTION(Category="Delegate")
 	void TouchBegin(ETouchIndex::Type FingerIndex, AActor* TouchedActor);
@@ -314,9 +318,7 @@ public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Game")
 	void NotifyCardsEndTurn() const;
-
-	UFUNCTION(BlueprintCallable,Category="Event")
-	void CallCreateCard(FName CardName,ECardSet CardSet,int32 CardHandIndex,UUserWidget* CardWidget);
+	
 	UFUNCTION(BlueprintCallable,Category="Event")
 	void DragCanceled();
 

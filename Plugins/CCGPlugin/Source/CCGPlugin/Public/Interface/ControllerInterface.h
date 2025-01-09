@@ -42,7 +42,15 @@ public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Server")
 	int32 CurPlayerNum();
+	
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Server")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Save/Load")
 	void SetGameModeOption(FCardGameOption Option);
+
+	/** CardWidget 에서 사용 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Player")
+	UUserWidget* GetPlayerUI();
+	/** CardWidget 에서 사용 */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Player")
+	void CallCreateCard(FName CardName,ECardSet CardSet,int32 CardHandIndex,UUserWidget* CardWidget);
 };
