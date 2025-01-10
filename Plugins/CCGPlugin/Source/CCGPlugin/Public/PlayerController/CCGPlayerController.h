@@ -47,6 +47,7 @@ public:
 	virtual int32 CurPlayerNum_Implementation() override;
 	virtual void SetGameModeOption_Implementation(FCardGameOption Option) override;
 	virtual UUserWidget* GetPlayerUI_Implementation() override;
+	UTexture2D* GetProfileImg_Implementation() override;
 	virtual void CallCreateCard_Implementation(FName CardName,ECardSet CardSet,int32 CardHandIndex,UUserWidget* CardWidget) override;
 
 	/** IDeckInterface */
@@ -304,9 +305,6 @@ public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Game Setup")
 	FString LoadClientDeck(TArray<FName>& Deck) const;
-	/** 특정 유저의 프로필 이미지를 가져오는 함수 */
-	UFUNCTION(BlueprintCallable, Category="Game Setup")
-	UTexture2D* GetProfileImg() const;
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Deck / Hand  Functions")

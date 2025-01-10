@@ -287,6 +287,13 @@ UUserWidget* ACCGPlayerController::GetPlayerUI_Implementation()
 	return mPlayerGameUI;
 }
 
+UTexture2D* ACCGPlayerController::GetProfileImg_Implementation()
+{
+	UCCGSG* saveGame=Cast<UCCGSG>(UGameplayStatics::LoadGameFromSlot(CCG_SaveSlotName::CardGameSave,0));
+	IF_RET_NULL(saveGame);
+	return saveGame->mProfileTexture;
+}
+
 void ACCGPlayerController::CallCreateCard_Implementation(FName CardName, ECardSet CardSet, int32 CardHandIndex, UUserWidget* CardWidget)
 {
 	IF_RET_VOID(CardWidget);
@@ -970,13 +977,6 @@ FString ACCGPlayerController::LoadClientDeck(TArray<FName>& Deck) const
 	deckName=deckNames[FMath::Rand()%deckNames.Num()].ToString();
 	USaveGameBFL::LoadCustomDeck(deckName,Deck,tempBool);
 	return deckName;
-}
-
-UTexture2D* ACCGPlayerController::GetProfileImg() const
-{
-	UCCGSG* saveGame=Cast<UCCGSG>(UGameplayStatics::LoadGameFromSlot(CCG_SaveSlotName::CardGameSave,0));
-	IF_RET_NULL(saveGame);
-	return saveGame->mProfileTexture;
 }
 
 void ACCGPlayerController::ShufflePlayerDeck(TArray<FName>& TargetArray) const

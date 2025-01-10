@@ -50,6 +50,8 @@ public:
 	/** CardWidget 에서 사용 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Player")
 	UUserWidget* GetPlayerUI();
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Player")
+	UTexture2D* GetProfileImg();
 	/** CardWidget 에서 사용 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Player")
 	void CallCreateCard(FName CardName,ECardSet CardSet,int32 CardHandIndex,UUserWidget* CardWidget);
