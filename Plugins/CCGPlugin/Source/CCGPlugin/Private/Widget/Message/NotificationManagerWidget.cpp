@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Widget/Notification/NotificationManagerWidget.h"
+#include "Widget/Message/NotificationManagerWidget.h"
 
 #include "CCGPlugin.h"
 #include "Animation/UMGSequencePlayer.h"
@@ -28,13 +28,14 @@ void UNotificationManagerWidget::NativeConstruct()
 	}
 }
 
-// ReSharper disable once CppMemberFunctionMayBeConst
 FEventReply UNotificationManagerWidget::OnBorderClicked(FGeometry MyGeometry, const FPointerEvent& MouseEvent)
 {
-	if (MessageBorder)
-	{
-		MessageBorder->SetVisibility(ESlateVisibility::Collapsed);
-	}
+	UnbindFromAnimationFinished(OnLogBegin, mForwardAnimFinishedDel);
+	StopAnimation(OnLogBegin);
+	const UWorld* world = GetWorld();
+	IF_RET(FEventReply(),world);
+	world->GetTimerManager().ClearTimer(mNotificationTH);
+	OnReverseAnimFinished();
 	return FEventReply();
 }
 
@@ -43,8 +44,8 @@ void UNotificationManagerWidget::OnForwardAnimFinished()
 	UnbindFromAnimationFinished(OnLogBegin, mForwardAnimFinishedDel);
 	const UWorld* world = GetWorld();
 	IF_RET_VOID(world);
-	FTimerHandle tempTH;
-	world->GetTimerManager().SetTimer(tempTH,this,&ThisClass::OnReverseAnimStarted,mRecentQueue.Duration);
+	world->GetTimerManager().ClearTimer(mNotificationTH);
+	world->GetTimerManager().SetTimer(mNotificationTH,this,&ThisClass::OnReverseAnimStarted,mRecentQueue.Duration);
 }
 
 void UNotificationManagerWidget::OnReverseAnimStarted()
@@ -56,12 +57,15 @@ void UNotificationManagerWidget::OnReverseAnimStarted()
 void UNotificationManagerWidget::OnReverseAnimFinished()
 {
 	UnbindFromAnimationFinished(OnLogBegin, mReverseAnimFinishedDel);
-	MessageBorder->SetVisibility(ESlateVisibility::Collapsed);
-	mNotificationMap.Remove(mRecentQueue.Message);
-
-	if (!mNotificationQueue.IsEmpty())
+	if (MessageBorder)
 	{
-		mNotificationQueue.Dequeue(mRecentQueue);
+		MessageBorder->SetVisibility(ESlateVisibility::Collapsed);
+	}
+	mMessageMap.Remove(mRecentQueue.Message);
+
+	if (!mMessageQueue.IsEmpty())
+	{
+		mMessageQueue.Dequeue(mRecentQueue);
 		LogMessage(mRecentQueue);
 	}
 }
@@ -78,7 +82,7 @@ void UNotificationManagerWidget::LogMessage(FMessageQueue MessageQueue)
 
 void UNotificationManagerWidget::LogNotificationMessage(FString Message, FLinearColor Color, float Duration)
 {
-	if (mNotificationMap.Contains(Message))
+	if (mMessageMap.Contains(Message))
 	{
 		return;
 	}
@@ -86,12 +90,12 @@ void UNotificationManagerWidget::LogNotificationMessage(FString Message, FLinear
 	messageQueue.Message=Message;
 	messageQueue.Duration=Duration;
 	messageQueue.Color=Color;
-	mNotificationQueue.Enqueue(messageQueue);
-	mNotificationMap.Add(Message,Color);
+	mMessageQueue.Enqueue(messageQueue);
+	mMessageMap.Add(Message,Color);
 
 	if (MessageBorder->GetVisibility()==ESlateVisibility::Collapsed)
 	{
-		mNotificationQueue.Dequeue(mRecentQueue);
+		mMessageQueue.Dequeue(mRecentQueue);
 		LogMessage(mRecentQueue);
 	}
 }

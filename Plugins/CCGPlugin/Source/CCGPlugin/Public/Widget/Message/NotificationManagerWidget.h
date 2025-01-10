@@ -36,8 +36,7 @@ protected:
 	virtual void NativeConstruct() override;
 
 private:
-	FWidgetAnimationDynamicEvent mForwardAnimFinishedDel;
-	FWidgetAnimationDynamicEvent mReverseAnimFinishedDel;
+	FTimerHandle mNotificationTH;
 
 protected:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
@@ -48,19 +47,21 @@ protected:
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	TObjectPtr<UWidgetAnimation> OnLogBegin;
 	
-	TQueue<FMessageQueue> mNotificationQueue;
-	TMap<FString,FLinearColor> mNotificationMap;
+	TQueue<FMessageQueue> mMessageQueue;
+	TMap<FString,FLinearColor> mMessageMap;
+	FWidgetAnimationDynamicEvent mForwardAnimFinishedDel;
+	FWidgetAnimationDynamicEvent mReverseAnimFinishedDel;
 	FMessageQueue mRecentQueue;
 
 protected:
 	UFUNCTION(Category="Delegate")
-	FEventReply OnBorderClicked(FGeometry MyGeometry, const FPointerEvent& MouseEvent);
+	virtual FEventReply OnBorderClicked(FGeometry MyGeometry, const FPointerEvent& MouseEvent);
 	UFUNCTION(Category="Delegate")
 	void OnForwardAnimFinished();
 	UFUNCTION(Category="Delegate")
-	void OnReverseAnimStarted();
+	virtual void OnReverseAnimStarted();
 	UFUNCTION(Category="Delegate")
-	void OnReverseAnimFinished();
+	virtual void OnReverseAnimFinished();
 
 	UFUNCTION(Category="Event")
 	void LogMessage(FMessageQueue MessageQueue);

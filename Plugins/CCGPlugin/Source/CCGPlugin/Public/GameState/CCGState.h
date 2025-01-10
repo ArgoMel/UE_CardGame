@@ -149,4 +149,5 @@ public:
 	void Server_NotifyEndGameState(const TArray<EEndGameResults>& array);
 
 	FORCEINLINE AController* GetCurPlayerTurn() { return mPlayerTurns[0]; }
+	FORCEINLINE int32 GetGameTimeSecond() const { return mGameTimeSecond; }
 };
