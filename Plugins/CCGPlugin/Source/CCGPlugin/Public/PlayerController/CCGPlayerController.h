@@ -11,6 +11,7 @@
 #include "Interface/GameStateInterface.h"
 #include "CCGPlayerController.generated.h"
 
+class UComboBox;
 class ACCGMode;
 class ACCGPlayerState;
 class ACardPlacement;
