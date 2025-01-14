@@ -31,27 +31,20 @@ ACCGPlayerController::ACCGPlayerController()
 	, bIsDragging(false)
 	, bIsCardSelected(false)
 	, mCardPlayerState(ECardPlayerState::PendingAction)
-	, mCardSet(ECardSet::BasicSet)
 	, mRecentOpponentIndex(-1)
 	, mMaxCardsInHand(7)
 	, mCardsInFirstHand(5)
 	, mCardsToDrawPerTurn(1)
 	, bTurnActive(false)
-	, mCardInHandIndex(0)
 	, mCardHoldDistance(1700.)
 	, bEnableInHandMovementRotation(true)
 	, bIsValidClientDrop(false)
-	, bPlayCardSuccess(false)
-	, bEnabledMobileCardPreview(false)
 	, mTurnState()
 	, mPlayerNum(0)
 	, bShuffleDeck(true)
 	, bEnableWeightedCards(true)
-	, tLocation()
 	, tChosenCardSet(ECardSet::BasicSet)
 	, tHandIndex(0)
-	, bCardIsClone(false)
-	, mCardSetRef(ECardSet::BasicSet)
 	, mNumberOfCardsToAdd(0)
 	, mCardPickupDelay(0.2)
 	, bSkipManaCheck(false)
@@ -74,24 +67,18 @@ void ACCGPlayerController::GetLifetimeReplicatedProps(TArray<class FLifetimeProp
 	DOREPLIFETIME(ThisClass,mTargetDragSelectionActor);
 	DOREPLIFETIME(ThisClass,bIsDragging);
 	DOREPLIFETIME(ThisClass,bIsCardSelected);
-
-	DOREPLIFETIME(ThisClass,mCardSet);
+	
 	DOREPLIFETIME(ThisClass,mRecentOpponentIndex);
 	DOREPLIFETIME(ThisClass,mBoardPlayer);
 	DOREPLIFETIME(ThisClass,bTurnActive);
-
-	DOREPLIFETIME(ThisClass,bPlayCardSuccess);
 
 	DOREPLIFETIME(ThisClass,mTurnState);
 	DOREPLIFETIME(ThisClass,mPlayerNum);
 
 	DOREPLIFETIME(ThisClass,mPlayerDeck);
 
-	DOREPLIFETIME(ThisClass,tLocation);
-
 	DOREPLIFETIME(ThisClass,mCardsInHand);
 	DOREPLIFETIME(ThisClass,mCardToAdd);
-	DOREPLIFETIME(ThisClass,mCardSetRef);
 
 	DOREPLIFETIME(ThisClass,bSkipManaCheck);
 }
@@ -247,8 +234,7 @@ ACard3D* ACCGPlayerController::CreatePlayableCard_Implementation(FTransform Spaw
 	spawnParameters.Owner=this;
 	spawnParameters.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	spawnParameters.TransformScaleMethod=ESpawnActorScaleMethod::OverrideRootScale;
-	mPlayCard_Server=world->SpawnActor<ACard3D>(mCard3DClass,SpawnTransform,spawnParameters);
-	return mPlayCard_Server;
+	return world->SpawnActor<ACard3D>(mCard3DClass,SpawnTransform,spawnParameters);
 }
 
 bool ACCGPlayerController::AddCardToPlayersHand_Implementation(FName CardName)
@@ -538,8 +524,7 @@ void ACCGPlayerController::SetCardLocation(ACard3D* Card, FVector HoldLocation, 
 
 bool ACCGPlayerController::ValidateCardPlacement(AActor* HitActor)
 {
-	mCardPlacement=nullptr;
-	mTargetCardPlacement=nullptr;
+	bIsValidClientDrop=false;
 	
 	IF_RET_BOOL(HitActor);
 	ACardPlacement* cardPlacement=Cast<ACardPlacement>(HitActor);
@@ -547,33 +532,31 @@ bool ACCGPlayerController::ValidateCardPlacement(AActor* HitActor)
 	{
 		if (cardPlacement==mTargetCardPlacement)
 		{
-			return false;
+			return bIsValidClientDrop;
 		}
-		mCardPlacement=cardPlacement;
 	}
 	else if (ACard3D* card3D=Cast<ACard3D>(HitActor))
 	{
 		if (card3D->GetPlacementOwner()==mTargetCardPlacement)
 		{
-			return false;
+			return bIsValidClientDrop;
 		}
-		mCardOnBoard=card3D;
-		mCardPlacement=cardPlacement;
 	}
 	else
 	{
-		return false;
+		return bIsValidClientDrop;
 	}
 	IF_RET_BOOL(mPlayerState);
 	const int32 playerID=mPlayerState->GetCardGamePlayerId();
 	const FCard card=UDeckBFL::GetCardData(tCreateCardName,tChosenCardSet);
-	if (!ValidatePlacement(mCardPlacement,card)
-		||!ValidatePlacementOwner(playerID,mCardPlacement->GetPlayerIndex(),card))
+	if (!ValidatePlacement(cardPlacement,card)
+		||!ValidatePlacementOwner(playerID,cardPlacement->GetPlayerIndex(),card))
 	{
-		return false;
+		return bIsValidClientDrop;
 	}
 	mTargetCardPlacement=cardPlacement;
-	return true;
+	bIsValidClientDrop=true;
+	return bIsValidClientDrop;
 }
 
 ACard3D* ACCGPlayerController::Client_CreatePlaceableCard(FName Name, ECardSet CardSet, FVector SpawnTransformLocation)
@@ -608,8 +591,7 @@ ACard3D* ACCGPlayerController::Server_CreatePlaceableCard(FTransform SpawnTransf
 	spawnParameters.Owner=this;
 	spawnParameters.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	spawnParameters.TransformScaleMethod=ESpawnActorScaleMethod::OverrideRootScale;
-	mPlayCard_Server=world->SpawnActor<ACard3D>(mCard3DClass,SpawnTransform,spawnParameters);
-	return mPlayCard_Server;
+	return world->SpawnActor<ACard3D>(mCard3DClass,SpawnTransform,spawnParameters);
 }
 
 ACardPlacement* ACCGPlayerController::ServerValidateCardPlacement(ACardPlacement* CardPlacement, FCard CardStruct) const
@@ -691,8 +673,8 @@ void ACCGPlayerController::DetectCardInteraction()
 	IF_RET_VOID(mPlayerState);
 	FHitResult result;
 	UMiscBFL::MouseToWorldLocation(this,result);
-	const ACard3D* card3d=Cast<ACard3D>(result.GetActor());
-	if (!card3d)
+	mHitCard=Cast<ACard3D>(result.GetActor());
+	if (!mHitCard)
 	{
 		ClearCardInteractionState();
 		mCardPlayerState=ECardPlayerState::PendingAction;
@@ -700,7 +682,7 @@ void ACCGPlayerController::DetectCardInteraction()
 	}
 	bool checkTalkingCard=true;
 	bool checkMobile=true;
-	if (card3d->GetOwningPlayerID()==mPlayerState->GetCardGamePlayerId())
+	if (mHitCard->GetOwningPlayerID()==mPlayerState->GetCardGamePlayerId())
 	{
 		if (bIsCardSelected)
 		{
@@ -798,7 +780,8 @@ void ACCGPlayerController::DetectInteractionOnMove()
 	FHitResult result;
 	UMiscBFL::MouseToWorldLocation(this,result);
 	IF_RET_VOID(mReceivingCard);
-	if (Cast<ACard3D>(result.GetActor()))
+	mHitCard=Cast<ACard3D>(result.GetActor());
+	if (mHitCard)
 	{
 		IF_RET_VOID(mTalkingCard);
 		IF_RET_VOID(mPlayerState);
@@ -815,12 +798,12 @@ void ACCGPlayerController::DetectInteractionOnMove()
 			}
 		}
 	}
-	else if (ABoardPlayer* boardPlayer=Cast<ABoardPlayer>(result.GetActor()))
+	else if (ABoardPlayer* hitPlayer=Cast<ABoardPlayer>(result.GetActor()))
 	{
 		IF_RET_VOID(mTalkingCard);
 		if (mTalkingCard->CanAttackPlayer())
 		{
-			mReceivingPlayer=boardPlayer;
+			mReceivingPlayer=hitPlayer;
 		}
 		mReceivingCard->Deselected();
 		mReceivingCard=nullptr;

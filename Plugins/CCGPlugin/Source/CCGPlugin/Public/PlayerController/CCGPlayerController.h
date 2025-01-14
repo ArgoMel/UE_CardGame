@@ -48,7 +48,7 @@ public:
 	virtual int32 CurPlayerNum_Implementation() override;
 	virtual void SetGameModeOption_Implementation(FCardGameOption Option) override;
 	virtual UUserWidget* GetPlayerUI_Implementation() override;
-	UTexture2D* GetProfileImg_Implementation() override;
+	virtual UTexture2D* GetProfileImg_Implementation() override;
 	virtual void CallCreateCard_Implementation(FName CardName,ECardSet CardSet,int32 CardHandIndex,UUserWidget* CardWidget) override;
 
 	/** IDeckInterface */
@@ -80,12 +80,6 @@ protected:
 	
 	UPROPERTY(BlueprintReadWrite, Category="Game Interaction", Replicated)
 	TObjectPtr<ACard3D> mHitCard;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, Category="Game Interaction")
-	TObjectPtr<ABoardPlayer> mHitPlayer;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, Category="Game Interaction")
-	TObjectPtr<AActor> mHitActor;
 	/** The card which is sending the interaction event */
 	UPROPERTY(BlueprintReadWrite, Category="Game Interaction")
 	TObjectPtr<ACard3D> mTalkingCard ;
@@ -102,78 +96,63 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category="Game Interaction", Replicated)
 	bool bIsCardSelected;
 	
-	UPROPERTY(BlueprintReadWrite, Category="Player")
+	UPROPERTY(BlueprintReadWrite, Category="UI")
 	TObjectPtr<UUserWidget> mPlayerGameUI;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, Category="Player")
+	UPROPERTY(BlueprintReadWrite, Category="UI")
 	TObjectPtr<UUserWidget> mOpponentUI;
+	UPROPERTY(BlueprintReadWrite, Category="UI")
+	TObjectPtr<UUserWidget> mCountdownTimerWidget;
+	
 	UPROPERTY(BlueprintReadWrite, Category="Player", Replicated)
 	TObjectPtr<ABoardPlayer> mBoardPlayer;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Player")
+	UPROPERTY(BlueprintReadWrite, Category="Player")
 	ECardPlayerState mCardPlayerState;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Player", Replicated)
-	ECardSet mCardSet;
 	/*최근 상호작용한 적의 인덱스. 다른 사람의 소유물 클릭시 해당 ui 출력용*/
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Player", ReplicatedUsing="OnRep_RecentOpponentIndex")
+	UPROPERTY(BlueprintReadWrite, Category="Player", ReplicatedUsing="OnRep_RecentOpponentIndex")
 	int32 mRecentOpponentIndex;
 	/** The max card the player can hold in their hand at any one time. Note: Not used when 'IgnoreMaxCards?' is enabled on the 'Request Card pickup' event. */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Player")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Player")
 	int32 mMaxCardsInHand;
 	/** The number of the cards the player will pick up when the game begins. */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Player")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Player")
 	int32 mCardsInFirstHand;
 	/** The number of cards the player can draw at the beginning of their turn.  */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Player")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Player")
 	int32 mCardsToDrawPerTurn;
 	UPROPERTY(BlueprintReadWrite, Category="Player", ReplicatedUsing="OnRep_bTurnActive")
 	bool bTurnActive;
-
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, Category="Card Placement")
-	TObjectPtr<ACard3D> mPlayCard_Server;
+	
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, Category="Card Placement")
 	TObjectPtr<ACard3D> mPlayCard_Client;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, Category="Card Placement")
-	TObjectPtr<ACard3D> mCardOnBoard;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, Category="Card Placement")
 	TObjectPtr<ACardPlacement> mTargetCardPlacement;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, Category="Card Placement")
-	TObjectPtr<ACardPlacement> mCardPlacement;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, Category="Card Placement")
 	TObjectPtr<UUserWidget> mCardWidget;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Placement")
-	int32 mCardInHandIndex;
 	/** Distance the player will hold a card from the camera when placing on the board */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Card Placement")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Placement")
 	double mCardHoldDistance;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Card Placement")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Placement")
 	bool bEnableInHandMovementRotation;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Placement")
+	UPROPERTY(BlueprintReadWrite, Category="Card Placement")
 	bool bIsValidClientDrop;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Placement", Replicated)
-	bool bPlayCardSuccess;
 
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, Category="Mobile")
 	TObjectPtr<ACard3D> mEnabledMobilePreview;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Mobile")
-	bool bEnabledMobileCardPreview;
 
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	UPROPERTY(BlueprintReadWrite, Category="System")
 	TObjectPtr<ACCGState> mGameState;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	UPROPERTY(BlueprintReadWrite, Category="System")
 	TObjectPtr<ACCGPlayerState> mPlayerState;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", ReplicatedUsing="OnRep_TurnState")
+	UPROPERTY(BlueprintReadWrite, Category="System", ReplicatedUsing="OnRep_TurnState")
 	EGameTurn mTurnState;
 	UPROPERTY(BlueprintReadWrite, Category="System", Replicated)
 	int32 mPlayerNum;
@@ -181,44 +160,30 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category="Deck", Replicated)
 	TArray<FName> mPlayerDeck;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Deck")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Deck")
 	bool bShuffleDeck;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Deck")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Deck")
 	bool bEnableWeightedCards;
-
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Temp Variables")
-	TObjectPtr<UDragDropOperation> tDragDropOperation;
+	
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Temp Variables")
+	UPROPERTY(BlueprintReadWrite, Category="Temp Variables")
 	FName tCreateCardName;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Temp Variables", Replicated)
-	FVector tLocation;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Temp Variables")
+	UPROPERTY(BlueprintReadWrite, Category="Temp Variables")
 	ECardSet tChosenCardSet;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Temp Variables")
+	UPROPERTY(BlueprintReadWrite, Category="Temp Variables")
 	int32 tHandIndex;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Temp Variables")
-	bool bCardIsClone;
 	
-	UPROPERTY(BlueprintReadWrite, Category="Game")
-	TObjectPtr<UUserWidget> mCountdownTimerWidget;
-
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Manager")
-	TArray<UUserWidget*> mCardSelection;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Manager", Replicated)
+	UPROPERTY(BlueprintReadWrite, Category="Card Manager", Replicated)
 	TArray<FName> mCardsInHand;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Manager", Replicated)
+	UPROPERTY(BlueprintReadWrite, Category="Card Manager", Replicated)
 	FName mCardToAdd;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Manager", Replicated)
-	ECardSet mCardSetRef;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Manager")
+	UPROPERTY(BlueprintReadWrite, Category="Card Manager")
 	int32 mNumberOfCardsToAdd;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Card Manager")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Manager")
 	double mCardPickupDelay;
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Developer", Replicated)

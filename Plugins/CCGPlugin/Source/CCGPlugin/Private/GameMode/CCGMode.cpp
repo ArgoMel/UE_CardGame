@@ -81,6 +81,10 @@ void ACCGMode::Tick(float DeltaTime)
 	if (!mGameState)
 	{
 		mGameState=GetGameState<ACCGState>();
+		if (mGameState)
+		{
+			mGameState->mPlayerAndAIStates=mPlayerAndAIStates;
+		}
 	}
 }
 
@@ -160,7 +164,7 @@ void ACCGMode::SetBoardPlayerReference()
 		ABoardPlayer* boardPlayer=Cast<ABoardPlayer>(board);
 		if (boardPlayer)
 		{
-			mBoardPlayersArray[boardPlayer->mPlayerIndex-1]=boardPlayer;
+			mBoardPlayersArray[boardPlayer->mPlayerIndex]=boardPlayer;
 		}
 	}
 }
@@ -187,12 +191,16 @@ AController* ACCGMode::AddPlayerToArray(AActor* PlayerState, AController* Player
 	{
 		mGameControllersArray.AddUnique(playerController);
 	}
+	const int32 controllerNum=mGameControllersArray.Num();
 	for (const auto& gameController:mGameControllersArray)
 	{
-		gameController->mPlayerNum=mGameControllersArray.Num();
+		gameController->mPlayerNum=controllerNum;
 	}
-	
-	mGameState->mPlayerAndAIStates=mPlayerAndAIStates;
+
+	if (mGameState)
+	{
+		mGameState->mPlayerAndAIStates=mPlayerAndAIStates;
+	}
 	return PlayerController;
 }
 
