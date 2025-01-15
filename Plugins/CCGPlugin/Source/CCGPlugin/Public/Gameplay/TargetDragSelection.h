@@ -28,6 +28,6 @@ protected:
 	TObjectPtr<UStaticMeshComponent> NarrowCapsule;
 
 public:
-	UFUNCTION(Category="Event")
+	UFUNCTION(BlueprintCallable,Category="Event")
 	void SetSelectionProperties(FVector Loc,bool ValidTarget) const;
 };

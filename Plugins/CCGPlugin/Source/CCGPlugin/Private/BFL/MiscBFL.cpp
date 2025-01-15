@@ -88,8 +88,7 @@ FTransform UMiscBFL::MouseDistanceInWorldSpace(ACCGPlayerController* PlayerContr
 	PlayerController->DeprojectMousePositionToWorld(worldLoc,worldDir);
 	spawnTransform.SetLocation(worldLoc+worldDir*Distance);
 
-	FRotator worldRot;
-	GetWorldRotationForPlayer(world,FRotator::ZeroRotator,worldRot);
+	const FRotator worldRot=GetWorldRotationForPlayer(world,FRotator::ZeroRotator);
 	spawnTransform.SetRotation(worldRot.Quaternion());
 	spawnTransform.SetScale3D(FVector(1.f));
 	return spawnTransform;
@@ -124,31 +123,33 @@ void UMiscBFL::AddMsgToLog(ACCGPlayerController* CallingPlayer, const FString& M
 	}
 }
 
-bool UMiscBFL::GetWorldRotationForPlayer(const UWorld* World, FRotator OverrideRotationAxis, FRotator& ReturnRotation)
+FRotator UMiscBFL::GetWorldRotationForPlayer(const UObject* WorldContextObject, FRotator OverrideRotationAxis)
 {
-	IF_RET_BOOL(World);
-	IF_RET_BOOL(World->GetFirstPlayerController());
-	const APlayerCameraManager* cameraManager=World->GetFirstPlayerController()->PlayerCameraManager;
-	IF_RET_BOOL(cameraManager);
-	ReturnRotation=FRotator::ZeroRotator;
+	FRotator returnRot=FRotator::ZeroRotator;
+	IF_RET(returnRot,WorldContextObject);
+	const UWorld* world=WorldContextObject->GetWorld();
+	IF_RET(returnRot,world);
+	IF_RET(returnRot,world->GetFirstPlayerController());
+	const APlayerCameraManager* cameraManager=world->GetFirstPlayerController()->PlayerCameraManager;
+	IF_RET(returnRot,cameraManager);
 
 	if (OverrideRotationAxis.Roll>0.f)
 	{
-		ReturnRotation.Roll=OverrideRotationAxis.Roll;
+		returnRot.Roll=OverrideRotationAxis.Roll;
 	}
 	if (OverrideRotationAxis.Pitch>0.f)
 	{
-		ReturnRotation.Pitch=OverrideRotationAxis.Pitch;
+		returnRot.Pitch=OverrideRotationAxis.Pitch;
 	}
 	if (OverrideRotationAxis.Yaw>0.f)
 	{
-		ReturnRotation.Yaw=OverrideRotationAxis.Yaw;
+		returnRot.Yaw=OverrideRotationAxis.Yaw;
 	}
 	else
 	{
-		ReturnRotation.Yaw=cameraManager->GetCameraRotation().Yaw;
+		returnRot.Yaw=cameraManager->GetCameraRotation().Yaw;
 	}
-	return true;
+	return returnRot;
 }
 
 FVector2D UMiscBFL::GetMousePositionInRange(UWorld* World, FVector2D SizeOffset, double GlobalEdgeOffset, FVector2D EdgeOffset)
@@ -233,8 +234,7 @@ FTransform UMiscBFL::ScreenPositionInWorldSpace(ACCGPlayerController* PlayerCont
 	FVector worldLoc;
 	FVector worldDir;
 	UGameplayStatics::DeprojectScreenToWorld(PlayerController,ScreenPosition*viewportScale,worldLoc,worldDir);
-	FRotator worldRot;
-	GetWorldRotationForPlayer(world,FRotator::ZeroRotator,worldRot);
+	const FRotator worldRot= GetWorldRotationForPlayer(world,FRotator::ZeroRotator);
 
 	spawnTransform.SetLocation(worldLoc+worldDir*ForwardDistance);
 	spawnTransform.SetRotation(worldRot.Quaternion());

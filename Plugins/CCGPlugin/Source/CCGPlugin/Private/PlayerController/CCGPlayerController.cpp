@@ -135,9 +135,8 @@ void ACCGPlayerController::Tick(float DeltaTime)
 		if (bTurnActive)
 		{
 			const FTransform transform=UMiscBFL::MouseDistanceInWorldSpace(this,mCardHoldDistance);
-			FRotator rotator;
-			UMiscBFL::GetWorldRotationForPlayer(GetWorld(),FRotator::ZeroRotator,rotator);
-			SetCardLocation(mPlayCard_Client,transform.GetLocation(),rotator);
+			const FRotator rot = UMiscBFL::GetWorldRotationForPlayer(GetWorld(),FRotator::ZeroRotator);
+			SetCardLocation(mPlayCard_Client,transform.GetLocation(),rot);
 			FHitResult hit;
 			UMiscBFL::MouseToWorldLocation(this,hit);
 			ValidateCardPlacement(hit.GetActor());
@@ -563,8 +562,7 @@ ACard3D* ACCGPlayerController::Client_CreatePlaceableCard(FName Name, ECardSet C
 	UWorld* world=GetWorld();
 	IF_RET_NULL(world);
 	IF_RET_NULL(mCard3DClass);
-	FRotator cardRot;
-	UMiscBFL::GetWorldRotationForPlayer(world,FRotator::ZeroRotator,cardRot);
+	const FRotator cardRot= UMiscBFL::GetWorldRotationForPlayer(world,FRotator::ZeroRotator);
 	FActorSpawnParameters spawnParameters;
 	spawnParameters.Owner=this;
 	spawnParameters.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;

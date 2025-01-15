@@ -47,7 +47,7 @@ public:
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
-	static bool GetWorldRotationForPlayer(const UWorld* World,FRotator OverrideRotationAxis, FRotator& ReturnRotation);
+	static FRotator GetWorldRotationForPlayer(const UObject* WorldContextObject,FRotator OverrideRotationAxis);
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
