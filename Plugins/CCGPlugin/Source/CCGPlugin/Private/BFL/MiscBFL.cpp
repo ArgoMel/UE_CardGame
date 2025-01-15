@@ -194,22 +194,9 @@ float UMiscBFL::ModifyDPIScaling(UObject* WorldContextObject, double Value, bool
 ACameraActor* UMiscBFL::GetCardGamePlayerCamera(ACCGPlayerController* PlayerController)
 {
 	IF_RET_NULL(PlayerController);
-	const ACCGPlayerState* playerState=PlayerController->GetPlayerState<ACCGPlayerState>();
-	IF_RET_NULL(playerState);
-	TArray<AActor*> allActors;
-	UGameplayStatics::GetAllActorsOfClass(PlayerController,ACameraActor::StaticClass(),allActors);
-
-	for (const auto& actor : allActors)
-	{
-		ACameraActor* camera=Cast<ACameraActor>(actor);
-		if (camera
-			&&camera->ActorHasTag(CCG_TAG::Camera)
-			&&camera->GetAutoActivatePlayerIndex()+1==playerState->GetCardGamePlayerId())
-		{
-			return camera;	
-		}
-	}
-	return nullptr;	
+	ABoardPlayer* boardPlayer= PlayerController->GetBoardPlayer();
+	IF_RET_NULL(boardPlayer);
+	return boardPlayer->GetCardGameCamera();
 }
 
 float UMiscBFL::CalculateFloatPrecision(double Float)

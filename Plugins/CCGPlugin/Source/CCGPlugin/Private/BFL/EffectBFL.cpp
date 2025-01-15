@@ -27,23 +27,7 @@ UParticleSystem* UEffectBFL::GetCardEffectForState(ECardEffects Effect, FCard Ca
 	return nullptr;
 }
 
-UParticleSystem* UEffectBFL::GetPlayerEffectForState(EBoardPlayerEffects Effect, USoundCue*& SoundCue)
-{
-	switch (Effect)
-	{
-	case EBoardPlayerEffects::DecreasedHealth:
-		break;
-	case EBoardPlayerEffects::IncreasedHealth:
-		break;
-	case EBoardPlayerEffects::Death:
-		break;
-	default: ;
-	}
-	SoundCue=nullptr;
-	return nullptr;
-}
-
-void UEffectBFL::SpawnParticleAndSoundEffect(const UObject* WorldContextObject, UParticleSystem* ParticleToSpawn, FVector Location, AActor* ActorForLocation, FVector Scale, bool bAutoDestroy, USoundCue* SoundCueToSpawn, double Volume)
+void UEffectBFL::SpawnParticleAndSoundEffect(const UObject* WorldContextObject, UParticleSystem* ParticleToSpawn, FVector Location, AActor* ActorForLocation, FVector Scale, bool bAutoDestroy, USoundBase* SoundCueToSpawn, double Volume)
 {
 	if (ActorForLocation)
 	{

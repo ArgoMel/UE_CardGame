@@ -13,14 +13,14 @@ ATargetDragSelection::ATargetDragSelection()
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(RootComponent);
 
-	ToLocation=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ToLocation"));
-	ToLocation->SetupAttachment(RootComponent);
+	mToLocation=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ToLocation"));
+	mToLocation->SetupAttachment(RootComponent);
 
-	Target=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Target"));
-	Target->SetupAttachment(ToLocation);
+	mTarget=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Target"));
+	mTarget->SetupAttachment(mToLocation);
 
-	NarrowCapsule=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("NarrowCapsule"));
-	NarrowCapsule->SetupAttachment(RootComponent);
+	mNarrowCapsule=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("NarrowCapsule"));
+	mNarrowCapsule->SetupAttachment(RootComponent);
 }
 
 void ATargetDragSelection::BeginPlay()
@@ -33,12 +33,12 @@ void ATargetDragSelection::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ATargetDragSelection::SetSelectionProperties(FVector Loc, bool ValidTarget) const
+void ATargetDragSelection::SetSelectionProperties(FVector Location, bool ValidTarget) const
 {
-	Target->SetVisibility(ValidTarget);
+	mTarget->SetVisibility(ValidTarget);
 
 	const FVector actorLoc=GetActorLocation();
-	const float length=(Loc-actorLoc).Length();
+	const float length=(Location-actorLoc).Length();
 	APlayerController* playerController=Cast<APlayerController>(GetOwner());
 	FHitResult hitResult;
 	UMiscBFL::MouseToWorldLocation(playerController,hitResult);
@@ -50,10 +50,10 @@ void ATargetDragSelection::SetSelectionProperties(FVector Loc, bool ValidTarget)
 	newTransform.SetRotation(newRot.Quaternion());
 	newTransform.SetScale3D(FVector(1.5f,length/195.f,length/500.f));
 	
-	NarrowCapsule->SetWorldTransform(newTransform);
+	mNarrowCapsule->SetWorldTransform(newTransform);
 	
-	newTransform.SetLocation(Loc);
+	newTransform.SetLocation(Location);
     newTransform.SetScale3D(FVector(2.f));
-	ToLocation->SetWorldTransform(newTransform);
+	mToLocation->SetWorldTransform(newTransform);
 }
 

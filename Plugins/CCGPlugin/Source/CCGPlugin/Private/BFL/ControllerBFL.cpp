@@ -238,5 +238,5 @@ int32 UControllerBFL::GetPlayerIndex(const UObject* WorldContextObject)
 	IF_RET(CCG_PlayerIndex::InvalidIndex,playerController);
 	const ABoardPlayer* boardPlayer= playerController->GetBoardPlayer();
 	IF_RET(CCG_PlayerIndex::InvalidIndex,boardPlayer);
-	return boardPlayer->mPlayerIndex;
+	return boardPlayer->GetPlayerIndex();
 }

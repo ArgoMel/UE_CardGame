@@ -272,11 +272,11 @@ UUserWidget* ACCGPlayerController::GetPlayerUI_Implementation()
 	return mPlayerGameUI;
 }
 
-UTexture2D* ACCGPlayerController::GetProfileImg_Implementation()
+UMaterialInterface* ACCGPlayerController::GetProfileImg_Implementation()
 {
 	UCCGSG* saveGame=Cast<UCCGSG>(UGameplayStatics::LoadGameFromSlot(CCG_SaveSlotName::CardGameSave,0));
 	IF_RET_NULL(saveGame);
-	return saveGame->mProfileTexture;
+	return saveGame->mProfileMaterial;
 }
 
 void ACCGPlayerController::CallCreateCard_Implementation(FName CardName, ECardSet CardSet, int32 CardHandIndex, UUserWidget* CardWidget)
@@ -1160,7 +1160,7 @@ void ACCGPlayerController::Client_UpdateGameUI_Implementation(bool ForceCleanUpd
 	}
 	if (mPlayerGameUI->Implements<UPlayerUIInterface>())
 	{
-		IPlayerUIInterface::Execute_UpdateUIPlayerStats(mPlayerGameUI,mBoardPlayer->mPlayerIndex,false);
+		IPlayerUIInterface::Execute_UpdateUIPlayerStats(mPlayerGameUI,mBoardPlayer->GetPlayerIndex(),false);
 		IPlayerUIInterface::Execute_UpdateUITurnState(mPlayerGameUI,bTurnActive,mTurnState);
 	}
 }

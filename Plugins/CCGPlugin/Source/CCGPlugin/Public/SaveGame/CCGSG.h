@@ -25,7 +25,7 @@ public:
 
 	/** 컨트롤러를 통해서 저장 */
 	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly, Category="Player Setting")
-	TObjectPtr<UTexture2D> mProfileTexture;
+	TObjectPtr<UMaterialInterface> mProfileMaterial;
 
 public:
 	UFUNCTION(BlueprintPure)

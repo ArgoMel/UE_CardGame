@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Common/CCGEnum.h"
 #include "GameFramework/Actor.h"
 #include "BoardPlayer.generated.h"
 
@@ -23,99 +24,89 @@ public:
 	ABoardPlayer();
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
 protected:
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<UStaticMeshComponent> mPlayerTile;
-
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<UAutoRotateToPlayer> mAutoRotateToPlayer;
-
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<UStaticMeshComponent> mOutline;
-
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<UTextRenderComponent> mHealthText;
-
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<UStaticMeshComponent> mHeartIcon;
-
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<UArrowComponent> mArrow;
-
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<USceneComponent> mScene;
-
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
 	TObjectPtr<UBillboardComponent> mBillboard;
-
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
 	TObjectPtr<UTextRenderComponent> mPlayer;
-
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
 	TObjectPtr<UBoxComponent> mBox;
-
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
 	TObjectPtr<UStaticMeshComponent> mCube;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="디폴트")
-	TObjectPtr<UMaterialInstanceDynamic> mMaterialInstance;
-
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
+	TObjectPtr<UStaticMeshComponent> mPlayerTile;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Player")
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
+	TObjectPtr<UStaticMeshComponent> mOutline;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
+	TObjectPtr<USceneComponent> mScene;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
+	TObjectPtr<UArrowComponent> mArrow;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
+	TObjectPtr<UStaticMeshComponent> mHeartIcon;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
+	TObjectPtr<UTextRenderComponent> mHealthText;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
+	TObjectPtr<UAutoRotateToPlayer> mAutoRotateToPlayer;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
 	TObjectPtr<UTimelineComponent> mScaleHealthIcon;
+	
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category="Player")
 	TObjectPtr<ACameraActor> mCardGameCamera;
-
-	/** Owning Controller */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Settings")
-	TObjectPtr<AController> mOwningController;
-	/** Player Health  */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Settings", ReplicatedUsing="OnRep_Health")
-	int32 mPlayerHealth;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Settings")
-	FVector tHealthIconRelativeScale;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Settings")
-	bool bScalingHealthIcon;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Settings")
-	FLinearColor tHealthTextColour;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Settings")
-	FLinearColor tDecreaseColour;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Settings")
-	FLinearColor mHealthIncreaseColour;
-
-public:
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Player", Replicated)
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category="Player", Replicated)
 	FText mPlayerName;
 	/** The Player Index  */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Player", Replicated)
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category="Player", Replicated)
 	int32 mPlayerIndex;
-
-public:
+	
+	/** Player Health  */
+	UPROPERTY(BlueprintReadWrite, Category="Settings", ReplicatedUsing="OnRep_Health")
+	int32 mPlayerHealth;
+	
+	/** 파티클 에셋 */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Asset")
+	TArray<UParticleSystem*> mParticles;
+	/** 사운드 에셋 */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Asset")
+	TArray<USoundBase*> mSounds;
+	/** 커브 에셋 */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Asset")
+	TObjectPtr<UCurveFloat> mCurve;
+	
+protected:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
 	void OnRep_Health();
 
+	UFUNCTION(Category="Timeline")
+	void TimelineProgress(float Value);
+	UFUNCTION(Category="Bind")
+	void TimelineFinished();
+	
+public:
+	UFUNCTION(BlueprintCallable, Category="Multicast")
+	void Multicast_BoardPlayerEffect(EBoardPlayerEffects Effect);
+	
 	UFUNCTION(BlueprintCallable,Server,Reliable)
 	void Server_UpdateHealth(int32 Health);
+
+	FORCEINLINE int32 GetPlayerIndex() const { return mPlayerIndex; }
+	FORCEINLINE ACameraActor* GetCardGameCamera() { return mCardGameCamera; }
 };

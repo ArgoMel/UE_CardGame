@@ -6,7 +6,7 @@
 
 UCCGSG::UCCGSG()
 {
-	GetObjectAsset(mProfileTexture,UTexture2D,"/CCGPlugin/CCGToolkit/CardGame/CardSets/Textures/Character_1.Character_1");
+	GetObjectAsset(mProfileMaterial,UMaterialInterface,"/CCGPlugin/CCGToolkit/CardGame/CardSets/Materials/Card_Mat_Parent.Card_Mat_Parent");
 }
 
 void UCCGSG::GetDeckListByName(TArray<FName>& Names) const

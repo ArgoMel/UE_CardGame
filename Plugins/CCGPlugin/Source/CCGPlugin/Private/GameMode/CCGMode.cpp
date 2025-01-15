@@ -211,7 +211,7 @@ void ACCGMode::SetBoardPlayerReferences(AController* Controller)
 	if (playerController)
 	{
 		playerController->mBoardPlayer=boardPlayer;
-		boardPlayer->mOwningController=playerController;
+		boardPlayer->SetOwner(playerController);
 	}
 	else
 	{
@@ -219,7 +219,7 @@ void ACCGMode::SetBoardPlayerReferences(AController* Controller)
 		if (AIController)
 		{
 			AIController->mBoardPlayer=boardPlayer;
-			boardPlayer->mOwningController=AIController;
+			boardPlayer->SetOwner(AIController);
 			mAIControllersArray.Add(AIController);
 		}
 	}

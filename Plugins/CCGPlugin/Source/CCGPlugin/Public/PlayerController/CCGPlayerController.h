@@ -48,7 +48,7 @@ public:
 	virtual int32 CurPlayerNum_Implementation() override;
 	virtual void SetGameModeOption_Implementation(FCardGameOption Option) override;
 	virtual UUserWidget* GetPlayerUI_Implementation() override;
-	virtual UTexture2D* GetProfileImg_Implementation() override;
+	virtual UMaterialInterface* GetProfileImg_Implementation() override;
 	virtual void CallCreateCard_Implementation(FName CardName,ECardSet CardSet,int32 CardHandIndex,UUserWidget* CardWidget) override;
 
 	/** IDeckInterface */

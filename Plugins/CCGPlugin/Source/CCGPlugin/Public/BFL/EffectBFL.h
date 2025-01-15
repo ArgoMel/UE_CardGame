@@ -17,11 +17,7 @@ public:
 	static UParticleSystem* GetCardEffectForState(ECardEffects Effect, FCard CardStruct, int32 WildcardIndex, USoundCue*& SoundCue);
 
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable,DisplayName="Get Player Effects for State")
-	static UParticleSystem* GetPlayerEffectForState(EBoardPlayerEffects Effect,  USoundCue*& SoundCue);
-
-	/** Please add a function description */
 	UFUNCTION(BlueprintCallable,DisplayName="Spawn Particle and Sound Effects")
-	static void SpawnParticleAndSoundEffect(const UObject* WorldContextObject,UParticleSystem* ParticleToSpawn, FVector Location, AActor* ActorForLocation=nullptr, FVector Scale=FVector(1.), bool bAutoDestroy=true, USoundCue* SoundCueToSpawn=nullptr, double Volume=1.);
+	static void SpawnParticleAndSoundEffect(const UObject* WorldContextObject,UParticleSystem* ParticleToSpawn, FVector Location, AActor* ActorForLocation=nullptr, FVector Scale=FVector(1.), bool bAutoDestroy=true, USoundBase* SoundCueToSpawn=nullptr, double Volume=1.);
 
 };

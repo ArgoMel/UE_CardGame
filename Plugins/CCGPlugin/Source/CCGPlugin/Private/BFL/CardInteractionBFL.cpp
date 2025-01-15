@@ -71,7 +71,7 @@ bool UCardInteractionBFL::DealDamageToPlayer(bool SimpleDamage, ACard3D* Talking
 		TalkingCard->MultiCast_Attacking(BoardPlayer);
 	}
 
-	AActor* playerState= UControllerBFL::GetControllerPlayerState(BoardPlayer,BoardPlayer->mPlayerIndex);
+	AActor* playerState= UControllerBFL::GetControllerPlayerState(BoardPlayer,BoardPlayer->GetPlayerIndex());
 	IF_RET_BOOL(playerState);
 	if (playerState->Implements<UPlayerStateInterface>())
 	{
@@ -90,7 +90,7 @@ bool UCardInteractionBFL::DealDamageToPlayer(bool SimpleDamage, ACard3D* Talking
 	battleHistory.OwningControllerID=TalkingCard->GetOwningPlayerID();
 	battleHistory.InteractionType=EPlayType::AttackPlayer;
 	battleHistory.TalkingCard=*TalkingCard->GetCardData();
-	battleHistory.ReceivingPlayerID=BoardPlayer->mPlayerIndex;
+	battleHistory.ReceivingPlayerID=BoardPlayer->GetPlayerIndex();
 	gameState->RecordBattleHistory(battleHistory);
 	return true;
 }
@@ -131,7 +131,7 @@ bool UCardInteractionBFL::ValidatePlayerInteraction(ACard3D* TalkingCard, ABoard
 	IF_RET_BOOL(TalkingCard);
 	IF_RET_BOOL(ReceivingBoardPlayer);
 	FPlayerStat playerStat;
-	UControllerBFL::GetControllersStateStat(TalkingCard,ReceivingBoardPlayer->mPlayerIndex,playerStat);
+	UControllerBFL::GetControllersStateStat(TalkingCard,ReceivingBoardPlayer->GetPlayerIndex(),playerStat);
 	return TalkingCard->GetTurnPoint()>0
 	&&TalkingCard->GetAttack()>0
 	&&!TalkingCard->IsInGraveyard()

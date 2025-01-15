@@ -19,15 +19,15 @@ protected:
 protected:
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
-	TObjectPtr<UStaticMeshComponent> ToLocation;
+	TObjectPtr<UStaticMeshComponent> mToLocation;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
-	TObjectPtr<UStaticMeshComponent> Target;
+	TObjectPtr<UStaticMeshComponent> mTarget;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
-	TObjectPtr<UStaticMeshComponent> NarrowCapsule;
+	TObjectPtr<UStaticMeshComponent> mNarrowCapsule;
 
 public:
 	UFUNCTION(BlueprintCallable,Category="Event")
-	void SetSelectionProperties(FVector Loc,bool ValidTarget) const;
+	void SetSelectionProperties(FVector Location,bool ValidTarget) const;
 };
