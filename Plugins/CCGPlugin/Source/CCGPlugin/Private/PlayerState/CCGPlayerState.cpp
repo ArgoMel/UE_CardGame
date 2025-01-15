@@ -8,9 +8,7 @@
 #include "PlayerController/CCGPlayerController.h"
 
 ACCGPlayerState::ACCGPlayerState()
-: mMaxCardsInDeck(0)
-, mCardGamePlayerId(0)
-, bForceUIUpdateOnReplication(false)
+: mCardGamePlayerId(0)
 {
 	SetNetUpdateFrequency(100.f);
 	SetMinNetUpdateFrequency(3.f);
@@ -20,10 +18,8 @@ void ACCGPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ThisClass, mPlayerStat);
-
-	DOREPLIFETIME(ThisClass, mCardsInHandArray);
+	
 	DOREPLIFETIME(ThisClass, mCardGamePlayerId);
-	DOREPLIFETIME(ThisClass, bForceUIUpdateOnReplication);
 }
 
 void ACCGPlayerState::BeginPlay()
@@ -73,15 +69,6 @@ void ACCGPlayerState::OnRep_PlayerStat()
 	UpdateUI();
 	if (mPlayerStat.Health<0||
 		!mPlayerStat.CheckCardState())
-	{
-		Server_NotifyPlayerStateChange();
-	}
-}
-
-void ACCGPlayerState::OnRep_CardsInHandArray()
-{
-	UpdateUI();
-	if (!mPlayerStat.CheckCardState())
 	{
 		Server_NotifyPlayerStateChange();
 	}

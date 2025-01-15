@@ -33,31 +33,21 @@ public:
 	virtual int32 GetManaForTurn_Implementation() override;
 	
 protected:
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="디폴트", ReplicatedUsing="OnRep_CardsInHandArray")
-	TArray<UUserWidget*> mCardsInHandArray;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="디폴트")
+	UPROPERTY(BlueprintReadWrite, Category="디폴트")
 	TObjectPtr<ACCGMode> mGameMode;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="디폴트")
+	UPROPERTY(BlueprintReadWrite, Category="디폴트")
 	TObjectPtr<ACCGPlayerController> mOwningPlayerController;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="디폴트")
-	int32 mMaxCardsInDeck;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="디폴트", Replicated)
+	UPROPERTY(BlueprintReadWrite, Category="디폴트", Replicated)
 	int32 mCardGamePlayerId;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="디폴트", Replicated)
-	bool bForceUIUpdateOnReplication;
 
 public:
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Attributes", ReplicatedUsing="OnRep_PlayerStat")
+	UPROPERTY(BlueprintReadWrite, Category="Attributes", ReplicatedUsing="OnRep_PlayerStat")
 	FPlayerStat mPlayerStat;
 
 protected:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
 	void OnRep_PlayerStat();
-
-	/** Please add a function description */
-	UFUNCTION(BlueprintCallable)
-	void OnRep_CardsInHandArray();
 
 	void UpdateUI();
 
@@ -83,6 +73,4 @@ public:
 	void Multicast_ForceUpdateUI();
 
 	FORCEINLINE int32 GetCardGamePlayerId() const { return mCardGamePlayerId; }
-	
-	FORCEINLINE void SetMaxCardsInDeck(int32 MaxCards) { mMaxCardsInDeck=MaxCards; }
 };

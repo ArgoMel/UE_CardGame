@@ -437,11 +437,10 @@ void ACCGPlayerController::ClearCardInteractionState()
 	}
 	if (mTargetDragSelectionActor)
 	{
-		mTargetDragSelectionActor->Destroy();
+		mTargetDragSelectionActor->SetHidden(true);
 	}
 	DisableCardSelection(mReceivingCard);
 	DisableCardSelection(mTalkingCard);
-	mTargetDragSelectionActor=nullptr;
 	mReceivingCard=nullptr;
 	mTalkingCard=nullptr;
 	mHitCard=nullptr;
@@ -865,12 +864,12 @@ void ACCGPlayerController::RunCardInteraction(ACard3D* InteractionTalkingCard, A
 
 bool ACCGPlayerController::CreateDragActorVisual(bool UseActorLocation)
 {
-	if (mTargetDragSelectionActor
-		||!mTalkingCard)
+	if (!mTalkingCard)
 	{
-		return mTalkingCard!=nullptr;
+		return false;
 	}
 	IF_RET_BOOL(mDragSelectionClass);
+	
 	UWorld* world=GetWorld();
 	IF_RET_BOOL(world);
 	FVector spawnLoc;
@@ -884,10 +883,20 @@ bool ACCGPlayerController::CreateDragActorVisual(bool UseActorLocation)
 		UMiscBFL::MouseToWorldLocation(this,hitResult);
 		spawnLoc=hitResult.Location;
 	}
-	FActorSpawnParameters spawnParams;
-	spawnParams.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	mTargetDragSelectionActor=world->SpawnActor<ATargetDragSelection>(mDragSelectionClass,spawnLoc,FRotator::ZeroRotator,spawnParams);
-	return mTalkingCard!=nullptr;
+
+	if (!mTargetDragSelectionActor)
+	{
+		FActorSpawnParameters spawnParams;
+		spawnParams.Owner=this;
+		spawnParams.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+		mTargetDragSelectionActor=world->SpawnActor<ATargetDragSelection>(mDragSelectionClass,spawnLoc,FRotator::ZeroRotator,spawnParams);
+	}
+	else
+	{
+		mTargetDragSelectionActor->SetHidden(false);
+		mTargetDragSelectionActor->SetActorLocation(spawnLoc);
+	}
+	return true;
 }
 
 void ACCGPlayerController::SetupGameUI()
@@ -919,8 +928,6 @@ void ACCGPlayerController::SetupDeck(FString DeckName, TArray<FName>& PlayerDeck
 	{
 		UDeckBFL::FilterWeightedCardsInDeck(PlayerDeck);
 	}
-	IF_RET_VOID(mPlayerState);
-	mPlayerState->SetMaxCardsInDeck(PlayerDeck.Num());
 	mPlayerDeck=PlayerDeck;
 }
 

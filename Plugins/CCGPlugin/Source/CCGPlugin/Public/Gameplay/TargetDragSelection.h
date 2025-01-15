@@ -16,7 +16,18 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
+protected:
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
+	TObjectPtr<UStaticMeshComponent> ToLocation;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
+	TObjectPtr<UStaticMeshComponent> Target;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
+	TObjectPtr<UStaticMeshComponent> NarrowCapsule;
+
 public:
 	UFUNCTION(Category="Event")
-	void SetSelectionProperties(FVector Loc,bool ValidTarget);
+	void SetSelectionProperties(FVector Loc,bool ValidTarget) const;
 };
