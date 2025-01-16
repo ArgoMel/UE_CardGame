@@ -31,28 +31,16 @@ protected:
 protected:
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
-	TObjectPtr<UBillboardComponent> mBillboard;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
 	TObjectPtr<UTextRenderComponent> mPlayer;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
 	TObjectPtr<UBoxComponent> mBox;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
-	TObjectPtr<UStaticMeshComponent> mCube;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
 	TObjectPtr<UStaticMeshComponent> mPlayerTile;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
 	TObjectPtr<UStaticMeshComponent> mOutline;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
-	TObjectPtr<USceneComponent> mScene;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
-	TObjectPtr<UArrowComponent> mArrow;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
 	TObjectPtr<UStaticMeshComponent> mHeartIcon;

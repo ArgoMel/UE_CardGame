@@ -21,6 +21,8 @@ ABoardPlayer::ABoardPlayer()
 , mPlayerHealth(0)
 {
 	PrimaryActorTick.bCanEverTick = true;
+	SetReplicates(true);
+	SetNetUpdateFrequency(20.f);
 	
 	mParticles.Init(nullptr,static_cast<int32>(EBoardPlayerEffects::Max));
 	mSounds.Init(nullptr,static_cast<int32>(EBoardPlayerEffects::Max));
@@ -29,29 +31,17 @@ ABoardPlayer::ABoardPlayer()
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(RootComponent);
 
-	mBillboard=CreateDefaultSubobject<UBillboardComponent>(TEXT("Billboard"));
-	mBillboard->SetupAttachment(RootComponent);
-
 	mPlayer=CreateDefaultSubobject<UTextRenderComponent>(TEXT("Player"));
 	mPlayer->SetupAttachment(RootComponent);
 
 	mBox=CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
 	mBox->SetupAttachment(RootComponent);
 
-	mCube=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Cube"));
-	mCube->SetupAttachment(RootComponent);
-
 	mPlayerTile=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerTile"));
 	mPlayerTile->SetupAttachment(RootComponent);
 
 	mOutline=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Outline"));
 	mOutline->SetupAttachment(RootComponent);
-
-	mScene=CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
-	mScene->SetupAttachment(RootComponent);
-
-	mArrow=CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
-	mArrow->SetupAttachment(mScene);
 
 	mHeartIcon=CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HeartIcon"));
 	mHeartIcon->SetupAttachment(RootComponent);
