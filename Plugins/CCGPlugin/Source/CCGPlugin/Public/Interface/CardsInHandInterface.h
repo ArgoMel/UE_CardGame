@@ -18,6 +18,10 @@ class CCGPLUGIN_API ICardsInHandInterface
 public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	bool AddCardToPlayersHand(FName CardName);
+	
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	bool RemoveCardFromHand(FName Card, int32 Index, bool RemoveAll);
 
 	/** Please add a function description */

@@ -20,39 +20,30 @@ class CCGPLUGIN_API IControllerInterface
 	GENERATED_BODY()
 public:
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Common")
 	ACard3D* CreatePlayableCard(FTransform SpawnTransform);
-
-	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	bool AddCardToPlayersHand(FName CardName);
-
-	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void BeginPlayerTurn();
-
-	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void EndPlayerTurn();
-
-	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void UpdateUI();
-
-	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Server")
-	int32 CurPlayerNum();
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Common")
+	UMaterialInterface* GetProfileImg();
 	
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Save/Load")
-	void SetGameModeOption(FCardGameOption Option);
-
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Player")
+	void BeginPlayerTurn();
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Player")
+	void EndPlayerTurn();
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Player")
+	void UpdateUI();
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Player")
+	int32 CurPlayerNum();
 	/** CardWidget 에서 사용 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Player")
 	UUserWidget* GetPlayerUI();
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Player")
-	UMaterialInterface* GetProfileImg();
 	/** CardWidget 에서 사용 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Player")
 	void CallCreateCard(FName CardName,ECardSet CardSet,int32 CardHandIndex,UUserWidget* CardWidget);
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Player|Save/Load")
+	void SetGameModeOption(FCardGameOption Option);
 };

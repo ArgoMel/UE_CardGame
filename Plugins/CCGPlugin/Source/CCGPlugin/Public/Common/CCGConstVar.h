@@ -26,6 +26,11 @@ namespace CCG_TAG
 	const FName Camera(TEXT("CardGameCamera")); 
 }
 
+namespace CCG_AIPersonality
+{
+	const FName Default(TEXT("Personality_1")); 
+}
+
 namespace CCG_ZOrder
 {
 	constexpr int32 MainMenu=5;
@@ -61,6 +66,13 @@ namespace CCG_BB
 {
 	const FName Loop(TEXT("Loop"));
 	const FName FinalLoop(TEXT("bFinalLoop"));
+	
+	const FName PlaySpeed(TEXT("PlaySpeed"));
+	const FName Awareness(TEXT("Awareness"));
+	const FName Difficulty(TEXT("Difficulty"));
+	const FName Risk(TEXT("Risk"));
+	const FName TurnState(TEXT("TurnState"));
+	const FName TurnActive(TEXT("bTurnActive"));
 }
 
 UCLASS()

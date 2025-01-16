@@ -112,11 +112,6 @@ void UDeckBFL::RemoveCardFromDeck(int32 IndexToRemove, TArray<FName>& Deck,bool 
 	}
 }
 
-int32 UDeckBFL::CountCardsInDeck(TArray<FName>& Deck)
-{
-	return Deck.Num();
-}
-
 void UDeckBFL::FilterWeightedCardsInDeck(TArray<FName>& CardsInDeck)
 {
 	TArray<FName> tempDeck=CardsInDeck;

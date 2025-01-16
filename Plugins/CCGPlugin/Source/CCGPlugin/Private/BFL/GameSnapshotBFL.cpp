@@ -82,7 +82,7 @@ void UGameSnapshotBFL::GenerateCardSnapshotSimulation(const UObject* WorldContex
 	IF_RET_VOID(Card);
 	AController* controller=UControllerBFL::GetControllerReferenceFromID(WorldContextObject,ControllerID);
 	IF_RET_VOID(controller);
-	const ACCGAIController* AIController=Cast<ACCGAIController>(controller);
+	ACCGAIController* AIController=Cast<ACCGAIController>(controller);
 	IF_RET_VOID(AIController);
 
 	if (Card->GetTurnPoint()<=0||
@@ -107,6 +107,7 @@ void UGameSnapshotBFL::GenerateCardSnapshotSimulation(const UObject* WorldContex
 	TArray<ACard3D*> opponentCards;
 	gameState->GetActivePlayerCards(randOpponentID,opponentCards);
 	UCCGBFL::ShuffleArray(opponentCards,FMath::Rand()%9999);
+	const FPointAllocation* pointAllocation=AIController->GetAIPointAllocation();
 	for (const auto& opponentCard:opponentCards)
 	{
 		FCardInteraction cardInteraction;
@@ -114,8 +115,7 @@ void UGameSnapshotBFL::GenerateCardSnapshotSimulation(const UObject* WorldContex
 		bool canSimulate=false;
 		for (const auto& interaction:ReturnInteractionArray)
 		{
-			canSimulate=SimulateAttackCards(ControllerID,Card,opponentCard,AIController->GetAIPointAllocation().Calculation.CardDamaged,AIController->GetAIPointAllocation().Calculation.CardRemovedFromPlay,
-				AIController->GetAIPointAllocation().Calculation.bIncludeAIPointPerCard,cardInteraction);
+			canSimulate=SimulateAttackCards(ControllerID,Card,opponentCard,pointAllocation->Calculation.CardDamaged,pointAllocation->Calculation.CardRemovedFromPlay, pointAllocation->Calculation.bIncludeAIPointPerCard,cardInteraction);
 			if (canSimulate&&
 				cardInteraction.Value>interaction.Value)
 			{
@@ -137,7 +137,7 @@ void UGameSnapshotBFL::GenerateCardSnapshotSimulation(const UObject* WorldContex
 	bool canSimulate=false;
 	for (const auto& interaction:ReturnInteractionArray)
 	{
-		canSimulate=SimulateAttackPlayer(ControllerID,Card,randOpponentID,AIController->GetAIPointAllocation().Calculation.PerDamagePointToPlayer,AIController->GetAIPointAllocation().Calculation.PlayerRemovedFromPlay,cardInteraction);
+		canSimulate=SimulateAttackPlayer(ControllerID,Card,randOpponentID,pointAllocation->Calculation.PerDamagePointToPlayer,pointAllocation->Calculation.PlayerRemovedFromPlay,cardInteraction);
 		if (canSimulate&&
 			cardInteraction.Value>interaction.Value)
 		{
@@ -165,7 +165,7 @@ void UGameSnapshotBFL::GenerateCardSnapshotSimulation(const UObject* WorldContex
 			canSimulate=false;
 			for (const auto& interaction:ReturnInteractionArray)
 			{
-				canSimulate=SimulateAttackOwnedCard(ControllerID,Card,playerCard,AIController->GetAIPointAllocation().Calculation.AttackOwnedCardWithValue,cardInteraction);
+				canSimulate=SimulateAttackOwnedCard(ControllerID,Card,playerCard,pointAllocation->Calculation.AttackOwnedCardWithValue,cardInteraction);
 				if (canSimulate&&
 					cardInteraction.Value>interaction.Value)
 				{

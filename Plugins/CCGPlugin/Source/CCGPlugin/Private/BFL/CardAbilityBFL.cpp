@@ -450,12 +450,9 @@ void UCardAbilityBFL::ChangeInHandCardOwner(ACard3D* CallingCard, int32 AbilityI
 	if (playerController->Implements<UCardsInHandInterface>())
 	{
 		ICardsInHandInterface::Execute_RemoveCardFromHand(playerController,FName(),0,true);
-	}
-	if (playerController->Implements<UControllerInterface>())
-	{
 		for (const auto& card : opponentCardsInHand)
 		{
-			IControllerInterface::Execute_AddCardToPlayersHand(playerController,card);
+			ICardsInHandInterface::Execute_AddCardToPlayersHand(playerController,card);
 		}
 	}
 	
@@ -464,12 +461,9 @@ void UCardAbilityBFL::ChangeInHandCardOwner(ACard3D* CallingCard, int32 AbilityI
 	if (opponentController->Implements<UCardsInHandInterface>())
 	{
 		ICardsInHandInterface::Execute_RemoveCardFromHand(opponentController,FName(),0,true);
-	}
-	if (opponentController->Implements<UControllerInterface>())
-	{
 		for (const auto& card : playerCardsInHand)
 		{
-			IControllerInterface::Execute_AddCardToPlayersHand(opponentController,card);
+			ICardsInHandInterface::Execute_AddCardToPlayersHand(opponentController,card);
 		}
 	}
 }

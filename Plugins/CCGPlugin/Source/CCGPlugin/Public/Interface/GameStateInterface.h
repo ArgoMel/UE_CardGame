@@ -18,19 +18,18 @@ class CCGPLUGIN_API IGameStateInterface
 	GENERATED_BODY()
 public:
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Common")
 	void MatchEnd(EEndGameResults Result);
-
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Common")
 	void MatchBegin();
-
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Common")
 	void ChangeActivePlayerTurn(bool TurnActive);
-
+	
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="AI")
 	void RequestChangePlayerTurn();
+
 
 };

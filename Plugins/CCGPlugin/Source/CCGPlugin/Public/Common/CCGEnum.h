@@ -398,6 +398,7 @@ enum class EAIPersonalityFocus : uint8
 	OpponentHindrance UMETA(DisplayName = "Opponent Hindrance"),
 	Max UMETA(Hidden)
 };
+ENUM_RANGE_BY_COUNT(EAIPersonalityFocus, EAIPersonalityFocus::Max);
 
 UENUM(BlueprintType)
 enum class EAIRisk : uint8

@@ -157,6 +157,14 @@ void ACCGPlayerController::Tick(float DeltaTime)
 	}
 }
 
+bool ACCGPlayerController::AddCardToPlayersHand_Implementation(FName CardName)
+{
+	mCardsInHand.Add(CardName);
+	Client_AddCardToCardManager(UCardsInHandBFL::GetCardInHand(mCardsInHand,0,true),ECardSet::Empty);
+	Server_UpdatePlayerState();
+	return true;
+}
+
 bool ACCGPlayerController::RemoveCardFromHand_Implementation(FName Card, int32 Index, bool RemoveAll)
 {
 	if (!HasAuthority())
@@ -190,7 +198,7 @@ void ACCGPlayerController::DrawCard_Implementation(FName CardName, bool IgnoreMa
 		return;
 	}
 	mCardToAdd=CardName;
-	const int32 cardCount=UDeckBFL::CountCardsInDeck(mPlayerDeck);
+	const int32 cardCount=mPlayerDeck.Num();
 	if (cardCount-mNumberOfCardsToAdd<=0)
 	{
 		return;	
@@ -236,12 +244,11 @@ ACard3D* ACCGPlayerController::CreatePlayableCard_Implementation(FTransform Spaw
 	return world->SpawnActor<ACard3D>(mCard3DClass,SpawnTransform,spawnParameters);
 }
 
-bool ACCGPlayerController::AddCardToPlayersHand_Implementation(FName CardName)
+UMaterialInterface* ACCGPlayerController::GetProfileImg_Implementation()
 {
-	mCardsInHand.Add(CardName);
-	Client_AddCardToCardManager(UCardsInHandBFL::GetCardInHand(mCardsInHand,0,true),ECardSet::Empty);
-	Server_UpdatePlayerState();
-	return true;
+	UCCGSG* saveGame=Cast<UCCGSG>(UGameplayStatics::LoadGameFromSlot(CCG_SaveSlotName::CardGameSave,0));
+	IF_RET_NULL(saveGame);
+	return saveGame->mProfileMaterial;
 }
 
 int32 ACCGPlayerController::CurPlayerNum_Implementation()
@@ -249,34 +256,9 @@ int32 ACCGPlayerController::CurPlayerNum_Implementation()
 	return mPlayerNum;
 }
 
-void ACCGPlayerController::SetGameModeOption_Implementation(FCardGameOption Option)
-{
-	UCCGSG* saveGame;
-	if (UGameplayStatics::DoesSaveGameExist(CCG_SaveSlotName::CardGameSave,0))
-	{
-		saveGame=Cast<UCCGSG>(UGameplayStatics::LoadGameFromSlot(CCG_SaveSlotName::CardGameSave,0));
-	}
-	else
-	{
-		saveGame=Cast<UCCGSG>(UGameplayStatics::CreateSaveGameObject(UCCGSG::StaticClass()));
-	}
-	if (saveGame)
-	{
-		saveGame->mCardGameOption=Option;
-		UGameplayStatics::SaveGameToSlot(saveGame,CCG_SaveSlotName::CardGameSave,0);
-	}
-}
-
 UUserWidget* ACCGPlayerController::GetPlayerUI_Implementation()
 {
 	return mPlayerGameUI;
-}
-
-UMaterialInterface* ACCGPlayerController::GetProfileImg_Implementation()
-{
-	UCCGSG* saveGame=Cast<UCCGSG>(UGameplayStatics::LoadGameFromSlot(CCG_SaveSlotName::CardGameSave,0));
-	IF_RET_NULL(saveGame);
-	return saveGame->mProfileMaterial;
 }
 
 void ACCGPlayerController::CallCreateCard_Implementation(FName CardName, ECardSet CardSet, int32 CardHandIndex, UUserWidget* CardWidget)
@@ -309,6 +291,24 @@ void ACCGPlayerController::CallCreateCard_Implementation(FName CardName, ECardSe
 		spawnLoc=UMiscBFL::ScreenPositionInWorldSpace(this,mousePos,1500.f).GetLocation();
 	}
 	Client_CreatePlaceableCard(CardName,CardSet,spawnLoc);
+}
+
+void ACCGPlayerController::SetGameModeOption_Implementation(FCardGameOption Option)
+{
+	UCCGSG* saveGame;
+	if (UGameplayStatics::DoesSaveGameExist(CCG_SaveSlotName::CardGameSave,0))
+	{
+		saveGame=Cast<UCCGSG>(UGameplayStatics::LoadGameFromSlot(CCG_SaveSlotName::CardGameSave,0));
+	}
+	else
+	{
+		saveGame=Cast<UCCGSG>(UGameplayStatics::CreateSaveGameObject(UCCGSG::StaticClass()));
+	}
+	if (saveGame)
+	{
+		saveGame->mCardGameOption=Option;
+		UGameplayStatics::SaveGameToSlot(saveGame,CCG_SaveSlotName::CardGameSave,0);
+	}
 }
 
 void ACCGPlayerController::GetPlayerDeck_Implementation(TArray<FName>& Deck)

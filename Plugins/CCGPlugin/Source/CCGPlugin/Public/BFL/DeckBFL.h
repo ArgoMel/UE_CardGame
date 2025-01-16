@@ -49,10 +49,6 @@ public:
 	static void RemoveCardFromDeck(int32 IndexToRemove, TArray<FName>& Deck,bool RemoveAll=false);
 
 	/** Please add a function description */
-	UFUNCTION(BlueprintPure)
-	static int32 CountCardsInDeck(TArray<FName>& Deck);
-
-	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
 	static void FilterWeightedCardsInDeck(TArray<FName>& CardsInDeck);
 };

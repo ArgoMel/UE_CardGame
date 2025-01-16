@@ -71,13 +71,13 @@ AActor* UControllerBFL::GetControllersStateProfile(const UObject* WorldContextOb
 		CardsInHand=playerController->GetCardsInHand();
 		return playerState;
 	}
-	ACCGAIController* AIController=Cast<ACCGAIController>(controller);
+	const ACCGAIController* AIController=Cast<ACCGAIController>(controller);
 	ACCGAIPawn* AIPawn=controller->GetPawn<ACCGAIPawn>();
 	if (AIController&&AIPawn)
 	{
 		PlayerStat=AIPawn->mAIStat;
-		Deck=AIController->GetAIDeck();
-		CardsInHand=AIController->GetAICardsInHand();
+		Deck=AIController->mAIDeck;
+		CardsInHand=AIController->mAICardsInHand;
 		return AIPawn;
 	}
 	return nullptr;
@@ -117,7 +117,7 @@ AActor* UControllerBFL::GetControllersStateDeck(const UObject* WorldContextObjec
 	ACCGAIController* AIController=Cast<ACCGAIController>(controller);
 	if (AIController)
 	{
-		Deck=AIController->GetAIDeck();
+		Deck=AIController->mAIDeck;
 		return AIController->GetPawn();
 	}
 	return nullptr;
@@ -134,10 +134,10 @@ AActor* UControllerBFL::GetControllersStateCardsInHand(const UObject* WorldConte
 		CardsInHand=playerController->GetCardsInHand();
 		return playerController->PlayerState;
 	}
-	ACCGAIController* AIController=Cast<ACCGAIController>(controller);
+	const ACCGAIController* AIController=Cast<ACCGAIController>(controller);
 	if (AIController)
 	{
-		CardsInHand=AIController->GetAICardsInHand();
+		CardsInHand=AIController->mAICardsInHand;
 		return AIController->GetPawn();
 	}
 	return nullptr;

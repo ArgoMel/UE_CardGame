@@ -123,7 +123,7 @@ public:
 	float PlaySpeed;
 
 	FAIPersonality()
-	: Difficulty()
+	: Difficulty(EAIDifficulty::Easy)
 	, PlaySpeed(1.f)
 	{
 		PlayableDecks.Add(TEXT("CloneDeck"));

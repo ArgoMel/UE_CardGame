@@ -39,17 +39,17 @@ protected:
 	
 public:
 	/** ICardsInHandInterface */
+	virtual bool AddCardToPlayersHand_Implementation(FName CardName) override;
 	virtual bool RemoveCardFromHand_Implementation(FName Card, int32 Index, bool RemoveAll) override;
 	virtual void DrawCard_Implementation(FName CardName, bool IgnoreMaxCards, int32 NumberOfCardsToDraw) override;
 
 	/** IControllerInterface */
 	virtual ACard3D* CreatePlayableCard_Implementation(FTransform SpawnTransform) override;
-	virtual bool AddCardToPlayersHand_Implementation(FName CardName) override;
-	virtual int32 CurPlayerNum_Implementation() override;
-	virtual void SetGameModeOption_Implementation(FCardGameOption Option) override;
-	virtual UUserWidget* GetPlayerUI_Implementation() override;
 	virtual UMaterialInterface* GetProfileImg_Implementation() override;
+	virtual int32 CurPlayerNum_Implementation() override;
+	virtual UUserWidget* GetPlayerUI_Implementation() override;
 	virtual void CallCreateCard_Implementation(FName CardName,ECardSet CardSet,int32 CardHandIndex,UUserWidget* CardWidget) override;
+	virtual void SetGameModeOption_Implementation(FCardGameOption Option) override;
 
 	/** IDeckInterface */
 	virtual void GetPlayerDeck_Implementation(TArray<FName>& Deck) override;
