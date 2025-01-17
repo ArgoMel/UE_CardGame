@@ -5,6 +5,7 @@
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "GameInstance/CCGameInstance.h"
+#include "GameState/CCGState.h"
 #include "Interface/ControllerInterface.h"
 
 void UServerSelectionRowWidget::NativeOnInitialized()
@@ -28,9 +29,10 @@ void UServerSelectionRowWidget::Init(const FOnlineSessionSearchResult& Result)
 	MaxNumPlayerText->SetText(FText::AsNumber(mSearchResult.Session.NumOpenPublicConnections));
 
 	//서버에서 현재 인원수 받아오기
-	if (GetOwningPlayer()->Implements<UControllerInterface>())
-	{
-		 const int32 curPlayerNum=IControllerInterface::Execute_CurPlayerNum(GetOwningPlayer());
-		CurNumPlayerText->SetText(FText::AsNumber(curPlayerNum));
-	}
+	const UWorld* world=GetWorld();
+	IF_RET_VOID(world);
+	const ACCGState* gameState=world->GetGameState<ACCGState>();
+	IF_RET_VOID(gameState);
+	const int32 curPlayerNum=gameState->mPlayerAndAIStates.Num();
+	CurNumPlayerText->SetText(FText::AsNumber(curPlayerNum));
 }

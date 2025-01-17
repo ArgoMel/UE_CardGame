@@ -191,14 +191,6 @@ float UMiscBFL::ModifyDPIScaling(UObject* WorldContextObject, double Value, bool
 	return Value/invertValue;
 }
 
-ACameraActor* UMiscBFL::GetCardGamePlayerCamera(ACCGPlayerController* PlayerController)
-{
-	IF_RET_NULL(PlayerController);
-	ABoardPlayer* boardPlayer= PlayerController->GetBoardPlayer();
-	IF_RET_NULL(boardPlayer);
-	return boardPlayer->GetCardGameCamera();
-}
-
 float UMiscBFL::CalculateFloatPrecision(double Float)
 {
 	const int32 tempInt=static_cast<int32>(Float * 10);

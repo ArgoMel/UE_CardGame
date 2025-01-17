@@ -32,9 +32,9 @@ void UCardsInHandBFL::FindPlayableCardsInHand(AController* Controller, TArray<FN
 	PlayableCardsInHand.Empty();
 	const int32 playerID=UControllerBFL::GetControllerID(Controller);
 	FPlayerStat playerStat;
-	TArray<FName> deck;
 	TArray<FName> cardsInHand;
-	UControllerBFL::GetControllersStateProfile(Controller,playerID,playerStat,deck,cardsInHand);
+	UControllerBFL::GetControllersStateStat(Controller,playerID,playerStat);
+	UControllerBFL::GetControllersStateCardsInHand(Controller,playerID,cardsInHand);
 
 	for (auto& cardInHand : cardsInHand)
 	{

@@ -4,12 +4,12 @@
 
 const TArray<float> RandomWeight={0.f,65.f,80.f,90.f,100.f};
 
-float UMathBFL::PercentageOf(double Percentage, double Total)
+float UMathBFL::PercentageOf(float Percentage, float Total)
 {
 	return Percentage / (Percentage+Total);
 }
 
-int32 UMathBFL::PercentageOfInt32(int32 Percentage, int32 Total)
+float UMathBFL::PercentageOfInt32(int32 Percentage, int32 Total)
 {
 	if (Percentage<=0)
 	{

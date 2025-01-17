@@ -13,11 +13,11 @@ class CCGPLUGIN_API UMathBFL : public UBlueprintFunctionLibrary
 public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure,DisplayName="PercentageOf(Float)")
-	static float PercentageOf(double Percentage, double Total);
+	static float PercentageOf(float Percentage, float Total);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure,DisplayName="PercentageOf(Int)")
-	static int32 PercentageOfInt32(int32 Percentage, int32 Total);
+	static float PercentageOfInt32(int32 Percentage, int32 Total);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)

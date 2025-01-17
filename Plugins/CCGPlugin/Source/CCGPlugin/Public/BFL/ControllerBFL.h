@@ -24,10 +24,6 @@ class CCGPLUGIN_API UControllerBFL : public UBlueprintFunctionLibrary
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure,DisplayName="GetControllerReferenceFromID(ServerOnly)")
 	static AController* GetControllerReferenceFromID(const UObject* WorldContextObject,int32 ControllerID);
-	
-	/** Please add a function description */
-	UFUNCTION(BlueprintPure,DisplayName="Get Controllers State Profile(Server Only)")
-	static AActor* GetControllersStateProfile(const UObject* WorldContextObject,int32 ControllerID,FPlayerStat& PlayerStat,TArray<FName>& Deck,TArray<FName>& CardsInHand);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
@@ -52,11 +48,10 @@ class CCGPLUGIN_API UControllerBFL : public UBlueprintFunctionLibrary
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
 	static AActor* GetReplicatedPlayerState(const UObject* WorldContextObject,int32 PlayerID,FString& PlayerName,FPlayerStat& PlayerStat);
-
-	/** Please add a function description */
+	
+	/** 플레이어만 호출 */
 	UFUNCTION(BlueprintPure)
 	static int32 GetOpponentIndex(const UObject* WorldContextObject);
-
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
 	static int32 GetPlayerIndex(const UObject* WorldContextObject);

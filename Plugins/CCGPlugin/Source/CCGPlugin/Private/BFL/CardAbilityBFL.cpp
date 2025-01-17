@@ -76,7 +76,7 @@ void UCardAbilityBFL::CloneCard(ACard3D* CallingCard, int32 AbilityIndex, bool R
 		newTransform.AddToTranslation(FVector(0.f,0.0f,600.0f));
 		ACard3D* card=IControllerInterface::Execute_CreatePlayableCard(controller,newTransform);
 		IF_RET_VOID(card);
-		card=UCardBFL::SetupCard(card,playerID,CallingCard->GetCardDataTableName(),CallingCard->GetCardSet(),FCard(),false);
+		card=UCardBFL::SetupCard(card,playerID,CallingCard->GetCardDataTableName(),CallingCard->GetCardSet());
 		UCardBFL::SetCustomCardData(card,false,0);
 		UCardBFL::AddCardToBoardPlacement(card,goalPlacement,playerID);
 	}
@@ -152,7 +152,7 @@ void UCardAbilityBFL::SpawnRandomCardFromDeck(ACard3D* CallingCard, int32 Abilit
 		newTransform.AddToTranslation(FVector(0.f,0.0f,600.0f));
 		ACard3D* card=IControllerInterface::Execute_CreatePlayableCard(controller,newTransform);
 		IF_RET_VOID(card);
-		UCardBFL::SetupCard(card,CallingCard->GetOwningPlayerID(),cardName,ECardSet::Empty,FCard(),false);
+		UCardBFL::SetupCard(card,CallingCard->GetOwningPlayerID(),cardName,ECardSet::Empty);
 		UCardBFL::AddCardToBoardPlacement(card,goalPlacement,CallingCard->GetOwningPlayerID());
 		IDeckInterface::Execute_RemoveCardFromDeck(controller,false,cardIndex);
 	}
@@ -242,7 +242,7 @@ void UCardAbilityBFL::DiscardRandomCardFromHand(ACard3D* CallingCard, int32 Abil
 			newTransform.AddToTranslation(FVector(0.f,0.0f,500.0f));
 			ACard3D* card=IControllerInterface::Execute_CreatePlayableCard(controller,newTransform);
 			IF_RET_VOID(card);
-			card=UCardBFL::SetupCard(card,ID,cardsInHand[randCardIndex],ECardSet::Empty,FCard(),false);
+			card=UCardBFL::SetupCard(card,ID,cardsInHand[randCardIndex],ECardSet::Empty);
 			graveyard->Server_AddToGraveyard(card);
 			card->ForceMoveCardDirectlyToGraveyard(graveyard);
 		}
@@ -322,7 +322,7 @@ void UCardAbilityBFL::PickupCardFromGraveyard(ACard3D* CallingCard, int32 Abilit
 		const FCard card=UDeckBFL::GetCardData(cardName,ECardSet::Empty);
 		FCard graveyardCard=graveyard->mGraveyardStructList[index];
 		graveyardCard.Health=card.Health;
-		card3D=UCardBFL::SetupCard(card3D,CallingCard->GetOwningPlayerID(),cardName,ECardSet::Empty,graveyardCard,true);
+		card3D=UCardBFL::SetupCard(card3D,CallingCard->GetOwningPlayerID(),cardName,ECardSet::Empty);
 		UCardBFL::SetCustomCardData(card3D,true,0);
 		
 		if (!UCardBFL::AddCardToBoardPlacement(card3D,goalPlacement,CallingCard->GetOwningPlayerID()))

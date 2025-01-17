@@ -39,9 +39,11 @@ void UGameSnapshotBFL::GetGameStateSnapshot(const UObject* WorldContextObject, F
 			cardIDs.Add(playerCard->GetCardID());
 		}
 		FPlayerStat playerStat;
+		UControllerBFL::GetControllersStateStat(WorldContextObject,id,playerStat);
 		TArray<FName> deck;
+		UControllerBFL::GetControllersStateDeck(WorldContextObject,id,deck);
 		TArray<FName> cardsInHand;
-		UControllerBFL::GetControllersStateProfile(WorldContextObject,id,playerStat,deck,cardsInHand);
+		UControllerBFL::GetControllersStateCardsInHand(WorldContextObject,id,cardsInHand);
 		FPlayerStateSnapshot playerSnapshot;
 		playerSnapshot.PlayerID=id;
 		playerSnapshot.CardArray=cards;
@@ -196,14 +198,13 @@ bool UGameSnapshotBFL::SimulateAttackCards(int32 CallingPlayerID, ACard3D* Calli
 	}
 
 	const int32 add=UEvaluationRuleBFL::RuleCalculateAdditionalAbilityPointOffset(CallingCard,ReceivingCard);
-	int32 ruleTotal=0;
-	const int32 total=UEvaluationRuleBFL::RuleCalculateAttackPoints(add,PtsForDamage,PtsForRemovingCardFromPlay,CallingCard->GetCardData()->Attack.Damage,ReceivingCard->GetCardData()->Health.Health,ReceivingCard->GetCardData()->CardSystemData.CardValue,IncludeCardValue,ruleTotal);
+	const FAITotalScore score=UEvaluationRuleBFL::RuleCalculateAttackPoints(add,PtsForDamage,PtsForRemovingCardFromPlay,CallingCard->GetCardData()->Attack.Damage,ReceivingCard->GetCardData()->Health.Health,ReceivingCard->GetCardData()->CardSystemData.CardValue,IncludeCardValue);
 
 	ReturnInteraction.OwningControllerID=CallingPlayerID;
 	ReturnInteraction.InteractionType=EPlayType::AttackCard;
 	ReturnInteraction.TalkingCard=CallingCard;
 	ReturnInteraction.ReceivingActor=ReceivingCard;
-	ReturnInteraction.Value=total;
+	ReturnInteraction.Value=score.Total;
 	return true;
 }
 
@@ -226,8 +227,7 @@ bool UGameSnapshotBFL::SimulateAttackPlayer(int32 CallingPlayerID, ACard3D* Call
 	IF_RET_BOOL(AIController);
 	const int32 add=AIController->mPriorityFocusList.Contains(EAIPersonalityFocus::DamageOpponentPlayer);
 	UControllerBFL::GetControllersStateStat(CallingCard,ReceivingPlayerID,playerStat);
-	int32 ruleTotal=0;
-	const int32 total=UEvaluationRuleBFL::RuleCalculateDamageToPlayerPoints(add,PtsForPlayerDamage,PtsForRemovingPlayer,CallingCard->GetCardData()->Attack.Damage,playerStat.Health,ruleTotal);
+	const FAITotalScore score=UEvaluationRuleBFL::RuleCalculateDamageToPlayerPoints(add,PtsForPlayerDamage,PtsForRemovingPlayer,CallingCard->GetCardData()->Attack.Damage,playerStat.Health);
 
 	const UWorld* world=CallingCard->GetWorld();
 	IF_RET_BOOL(world);
@@ -237,7 +237,7 @@ bool UGameSnapshotBFL::SimulateAttackPlayer(int32 CallingPlayerID, ACard3D* Call
 	ReturnInteraction.InteractionType=EPlayType::AttackPlayer;
 	ReturnInteraction.TalkingCard=CallingCard;
 	ReturnInteraction.ReceivingActor=gameMode->mBoardPlayersArray[ReceivingPlayerID-1];
-	ReturnInteraction.Value=total;
+	ReturnInteraction.Value=score.Total;
 	return true;
 }
 

@@ -6,11 +6,6 @@
 #include "UObject/Object.h"
 #include "CCGConstVar.generated.h"
 
-namespace CCG
-{
-	constexpr int32 MaxManaCost=10;
-}
-
 namespace CCG_MSG
 {
 	const FString GameStart(TEXT("Game has Started")); 
@@ -21,14 +16,10 @@ namespace CCG_MSG
 	const FString DeckCreated(TEXT("Deck Created!")); 
 }
 
-namespace CCG_TAG
+namespace CCG_Default
 {
-	const FName Camera(TEXT("CardGameCamera")); 
-}
-
-namespace CCG_AIPersonality
-{
-	const FName Default(TEXT("Personality_1")); 
+	const FName DefaultAIPersonality(TEXT("Personality_1"));
+	constexpr int32 MaxManaCost=10;
 }
 
 namespace CCG_ZOrder
@@ -38,6 +29,7 @@ namespace CCG_ZOrder
 	constexpr int32 Countdown=5;
 	constexpr int32 PlayerGameUI=2;
 	constexpr int32 OpponentUI=1;
+	constexpr int32 AIBar=11;
 }
 
 namespace CCG_PlayerIndex

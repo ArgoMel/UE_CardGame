@@ -42,6 +42,7 @@ protected:
 	/** IControllerInterface */
 	virtual ACard3D* CreatePlayableCard_Implementation(FTransform SpawnTransform) override;
 	virtual UMaterialInterface* GetProfileImg_Implementation() override;
+	virtual int32 GetCurrentPlayerIndex_Implementation() const override;
 
 	/** IDeckInterface */
 	virtual void GetPlayerDeck_Implementation(TArray<FName>& Deck) override;
@@ -62,142 +63,88 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Asset")
 	TObjectPtr<UBehaviorTree> mBehaviorTree;
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Asset")
-	TSubclassOf<ACard3D> mCard3D;
+	TObjectPtr<UDataTable> mAIPersonalityData;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Asset")
+	TObjectPtr<UDataTable> mAIPointAllocationData;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Asset")
+	TSubclassOf<ACard3D> mCard3DClass;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Asset")
+	TSubclassOf<UUserWidget> mAIBarClass;
 	
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="AIPersonality")
-	TArray<EAIPersonalityFocus> mPersonalityFocuses;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="AIPersonality")
-	FName mPersonalityName;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="AIPersonality")
+	UPROPERTY(BlueprintReadWrite, Category="AIPersonality")
 	FPointAllocation mAIPointAllocation;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="AIPersonality")
+	UPROPERTY(BlueprintReadWrite, Category="AIPersonality")
 	FAIPersonality mAIPersonality;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="AIPersonality")
-	EAIDifficulty mDifficulty;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="AIPersonality")
-	EAIRisk mRisk;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="AIPersonality")
-	int32 mAwareness;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="AIPersonality")
-	double mPlaySpeed;
 
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	UPROPERTY(BlueprintReadWrite, Category="System")
 	TObjectPtr<ACCGMode> mGameMode;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	UPROPERTY(BlueprintReadWrite, Category="System")
 	TObjectPtr<ACCGState> mGameState;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	UPROPERTY(BlueprintReadWrite, Category="System")
 	TObjectPtr<ACCGAIPawn> mControlledPawn;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	UPROPERTY(BlueprintReadWrite, Category="System")
 	TObjectPtr<ABoardPlayer> mBoardPlayer;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
-	FName mSelectedDeck;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="System")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
 	int32 mMaxCardsInHand;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
-	bool bAIReady;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
 	bool bShuffleDeck;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
-	bool bPrintAIDebugLogs;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	UPROPERTY(BlueprintReadWrite, Category="System")
 	bool bTurnActive;
 	/** ONLY ON NONE DEDICATED SERVERS */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="System")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
 	bool bShowDebugUI;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="System")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
 	bool bEnableWeightedCards;
 	
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Manager")
+	UPROPERTY(BlueprintReadWrite, Category="Card Manager")
 	int32 mNumberOfCardsToAdd;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Card Manager")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Manager")
 	int32 mCardsInFirstHand;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Card Manager")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Manager")
 	double mCardPickupDelay;
 	
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="AIPlayer")
-	TArray<FName> mTempDeck;
-	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, Category="AIPlayer")
 	TObjectPtr<UUserWidget> mAIBarWidget;
-
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Play Data")
-	TArray<FPlaySubStruct> mPlayList;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Play Data")
-	TArray<FName> mPlayableCardsInHandList;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Play Data")
-	TArray<FCardInteraction> mValidPlaysForTurn;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Play Data")
-	TArray<ACard3D*> mCardsOnBoardWithTurnPoints;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Play Data")
-	TArray<EAIPersonalityFocus> tAIFocusPriorities;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Play Data")
-	FEvaluationState mEvaluationStateTotal;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Play Data")
-	FAIState mEvaluationStateSelf;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Play Data")
-	FAIState EvaluationStateOpponent;
 	
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Priority |Arrays")
-	TArray<EPriority> mPriorityList;
+	UPROPERTY(BlueprintReadWrite, Category="Play Data")
+	TArray<FName> mPlayableCardsInHandList;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Priority |Arrays")
-	TArray<EPriority> tPriorityList;
+	UPROPERTY(BlueprintReadWrite, Category="Play Data")
+	TArray<ACard3D*> mCardsOnBoardWithTurnPoints;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Priority |Arrays")
-	TArray<EPriority> tPriorityArray;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Priority |Arrays")
-	TArray<double> mPriorityValues;
+	UPROPERTY(BlueprintReadWrite, Category="Play Data")
+	FEvaluationState mEvaluationStateTotal;
 
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Priority | StateValues")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Priority")
 	double mHealth_Low;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Priority | StateValues")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Priority")
 	double mCardsInHand_Low;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Priority | StateValues")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Priority")
 	double mBoardState_Low;
 
 public:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Card Manager", ReplicatedUsing="OnRep_AICardsInHand")
+	UPROPERTY(BlueprintReadWrite, Category="Card Manager", ReplicatedUsing="OnRep_AICardsInHand")
 	TArray<FName> mAICardsInHand;
 	
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="AIPlayer")
-	TArray<FName> mAIPlayableDecks;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="AIPlayer", Replicated)
+	UPROPERTY(BlueprintReadWrite, Category="AIPlayer", Replicated)
 	TArray<FName> mAIDeck;
 	
 	/** Please add a variable description */
@@ -205,15 +152,16 @@ public:
 	TArray<ECardType> mValidInteractionTypes;
 
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Priority |Arrays")
+	UPROPERTY(BlueprintReadWrite, Category="Priority")
 	TArray<EAIPersonalityFocus> mPriorityFocusList;
 
 private:
 	void StartDrawCard(FName CardName);
+	FAIState GetAISate(int32 PlayerIndex) const;
 	
 protected:
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void OnRep_AICardsInHand();
 
 	UFUNCTION(BlueprintCallable, Category="Timer")
@@ -229,7 +177,7 @@ public:
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="AI State")
-	void UpdateAIPlayerState();
+	void UpdateAIPlayerState() const;
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="AI State")
 	bool EvaluateBoardState();
@@ -251,11 +199,8 @@ public:
 	void SetupAI();
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Setup")
-	void SetupAIDeck();
-	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, Category="Setup")
 	void CreateAIDebugUI();
-
-	FORCEINLINE ABoardPlayer* GetBoardPlayer() const {return mBoardPlayer;};
+	
+	FORCEINLINE FAIPersonality* GetAIPersonality() {return &mAIPersonality;}
 	FORCEINLINE FPointAllocation* GetAIPointAllocation() {return &mAIPointAllocation;}
 };

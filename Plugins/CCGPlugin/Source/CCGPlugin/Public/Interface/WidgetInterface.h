@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Common/CCGEnum.h"
+#include "Common/CCGStruct.h"
 #include "UObject/Interface.h"
 #include "WidgetInterface.generated.h"
 
@@ -21,4 +21,9 @@ class CCGPLUGIN_API IWidgetInterface
 public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void DisplayMessage(const FString& Message, FLinearColor SpecifiedColor, double Duration);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="AIBar")
+	void SetValue(FEvaluationState EvaluationState);
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="AIBar")
+	void SetParent(AActor* Parent);
 };

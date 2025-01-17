@@ -122,6 +122,21 @@ bool ACCGState::RequestChangeTurnState(AController* Controller)
 	return Controller==mPlayerTurns[0];
 }
 
+int32 ACCGState::GetRandomOpponentIndex(AActor* ExceptionController) const
+{
+	TArray<AActor*> tempArray=mPlayerAndAIStates;
+	if (ExceptionController)
+	{
+		tempArray.Remove(ExceptionController);
+	}
+	const AActor* randomController=tempArray[FMath::Rand()%tempArray.Num()];
+	if (randomController->Implements<UControllerInterface>())
+	{
+		return IControllerInterface::Execute_GetCurrentPlayerIndex(randomController);
+	}
+	return CCG_PlayerIndex::InvalidIndex;
+}
+
 void ACCGState::AddCardToBoard(ACard3D* CardReference, int32 PlayerID)
 {
 	if (HasAuthority())

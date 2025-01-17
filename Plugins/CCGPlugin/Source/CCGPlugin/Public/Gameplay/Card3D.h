@@ -304,7 +304,7 @@ public:
 	void Deselected();
 
 	UFUNCTION(Server,Reliable)
-	void Server_SetCardData(const FName& CardTableName,ECardSet CardRace,FCard CardStruct,bool SetCardDataFromStruct);
+	void Server_SetCardData(const FName& CardTableName,ECardSet CardRace);
 	
 	UFUNCTION(NetMulticast,Reliable)
 	void MultiCast_Attacking(AActor* board_player);

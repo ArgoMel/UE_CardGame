@@ -24,6 +24,8 @@ public:
 	ACard3D* CreatePlayableCard(FTransform SpawnTransform);
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Common")
 	UMaterialInterface* GetProfileImg();
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Common")
+	int32 GetCurrentPlayerIndex() const;
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Player")
@@ -34,9 +36,6 @@ public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Player")
 	void UpdateUI();
-	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Player")
-	int32 CurPlayerNum();
 	/** CardWidget 에서 사용 */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent,Category="Player")
 	UUserWidget* GetPlayerUI();

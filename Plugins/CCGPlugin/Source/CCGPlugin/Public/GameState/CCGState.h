@@ -90,23 +90,22 @@ public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure, Category="System")
 	bool RequestChangeTurnState(AController* Controller);
+	/** ai만 사용 */
+	UFUNCTION(BlueprintPure, Category="System")
+	int32 GetRandomOpponentIndex(AActor* ExceptionController=nullptr) const;
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Board")
 	void AddCardToBoard(ACard3D* CardReference, int32 PlayerID);
-
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Board")
 	void RemoveCardOnBoard(ACard3D* CardReference, int32 PlayerID);
-
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Board")
 	void CompilePlacementsPerPlayer();
-
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Board")
 	void GetGraveyardReferencesPerPlayer();
-
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure, Category="Board")
 	AGraveyard* GetGraveyardReference(int32 PlayerID);
@@ -122,11 +121,9 @@ public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Gameplay")
 	void RotatePlayerTurn();
-
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Gameplay")
 	void EndOfPlayerTurn(int32 PlayerID);
-
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Gameplay")
 	void BeginPlayerTurn(int32 PlayerID);
@@ -134,7 +131,6 @@ public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Recorded Game Data")
 	void RecordGameStateSnapshot();
-
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Recorded Game Data")
 	void RecordBattleHistory(FBattleHistory BattleHistoryStruct);

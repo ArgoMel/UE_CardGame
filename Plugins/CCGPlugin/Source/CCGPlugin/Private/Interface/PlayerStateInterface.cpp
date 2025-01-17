@@ -2,4 +2,3 @@
 
 #include "Interface/PlayerStateInterface.h"
 
-// Add default functionality here for any IPlayerStateInterface functions that are not pure virtual.

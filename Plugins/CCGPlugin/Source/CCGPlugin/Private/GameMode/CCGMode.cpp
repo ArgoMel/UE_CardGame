@@ -185,18 +185,12 @@ void ACCGMode::SetCardGamePlayerId(AController* Controller)
 
 AController* ACCGMode::AddPlayerToArray(AActor* PlayerState, AController* PlayerController)
 {
-	mPlayerAndAIStates.AddUnique(PlayerState);
 	ACCGPlayerController* playerController=Cast<ACCGPlayerController>(PlayerController);
 	if (playerController)
 	{
 		mGameControllersArray.AddUnique(playerController);
 	}
-	const int32 controllerNum=mGameControllersArray.Num();
-	for (const auto& gameController:mGameControllersArray)
-	{
-		gameController->mPlayerNum=controllerNum;
-	}
-
+	mPlayerAndAIStates.AddUnique(PlayerState);
 	if (mGameState)
 	{
 		mGameState->mPlayerAndAIStates=mPlayerAndAIStates;
@@ -232,9 +226,10 @@ void ACCGMode::RemovePlayerFromGame(AController* Controller)
 	{
 		mGameControllersArray.Remove(playerController);
 	}
-	for (const auto& gameController:mGameControllersArray)
+	mPlayerAndAIStates.Remove(Controller);
+	if (mGameState)
 	{
-		gameController->mPlayerNum=mGameControllersArray.Num();
+		mGameState->mPlayerAndAIStates=mPlayerAndAIStates;
 	}
 }
 

@@ -40,7 +40,6 @@ ACCGPlayerController::ACCGPlayerController()
 	, bEnableInHandMovementRotation(true)
 	, bIsValidClientDrop(false)
 	, mTurnState()
-	, mPlayerNum(0)
 	, bShuffleDeck(true)
 	, bEnableWeightedCards(true)
 	, tChosenCardSet(ECardSet::BasicSet)
@@ -73,7 +72,6 @@ void ACCGPlayerController::GetLifetimeReplicatedProps(TArray<class FLifetimeProp
 	DOREPLIFETIME(ThisClass,bTurnActive);
 
 	DOREPLIFETIME(ThisClass,mTurnState);
-	DOREPLIFETIME(ThisClass,mPlayerNum);
 
 	DOREPLIFETIME(ThisClass,mPlayerDeck);
 
@@ -251,9 +249,10 @@ UMaterialInterface* ACCGPlayerController::GetProfileImg_Implementation()
 	return saveGame->mProfileMaterial;
 }
 
-int32 ACCGPlayerController::CurPlayerNum_Implementation()
+int32 ACCGPlayerController::GetCurrentPlayerIndex_Implementation() const
 {
-	return mPlayerNum;
+	IF_RET(CCG_PlayerIndex::InvalidIndex,mBoardPlayer);
+	return mBoardPlayer->GetPlayerIndex();
 }
 
 UUserWidget* ACCGPlayerController::GetPlayerUI_Implementation()
@@ -640,7 +639,7 @@ void ACCGPlayerController::PlayCard(FName CardName, ECardSet CardSet, ACardPlace
 					if (Execute_RemoveCardFromHand(this,CardName,CardHandIndex,false))
 					{
 						ACard3D* card3d=Server_CreatePlaceableCard(SpawnTransform);
-						card3d=UCardBFL::SetupCard(card3d,mPlayerState->GetCardGamePlayerId(),CardName,CardSet,FCard(),false);
+						card3d=UCardBFL::SetupCard(card3d,mPlayerState->GetCardGamePlayerId(),CardName,CardSet);
 						UCardBFL::AddCardToBoardPlacement(card3d,CardPlacement,mPlayerState->GetCardGamePlayerId());
 						cardPlayed=true;
 					}

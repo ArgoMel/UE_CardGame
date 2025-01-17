@@ -61,10 +61,6 @@ public:
 	UFUNCTION(BlueprintPure)
 	static float ModifyDPIScaling(UObject* WorldContextObject,double Value, bool InvertDPIScaling);
 	
-	/** 플레이어 스테이트가 들고있는게 나은듯 */
-	UFUNCTION(BlueprintCallable)
-	static ACameraActor* GetCardGamePlayerCamera(ACCGPlayerController* PlayerController);
-	
 	/** 2.213= 2.2 */
 	UFUNCTION(BlueprintPure)
 	static float CalculateFloatPrecision(double Float);

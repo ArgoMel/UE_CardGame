@@ -45,10 +45,20 @@ void ACCGAIPawn::OnRep_AIStat()
 {
 }
 
+void ACCGAIPawn::IncreaseTurn()
+{
+	Execute_GetManaForTurn(this);
+	++mPlayerTurn;
+}
+
 void ACCGAIPawn::UpdateAIState(int32 CardsInHand, int32 CardsInDeck)
 {
 }
 
 void ACCGAIPawn::InitAttributes()
+{
+}
+
+void ACCGAIPawn::Multicast_ForceUIUpdate_Implementation(int32 CardsInHand, int32 CardsInDeck)
 {
 }

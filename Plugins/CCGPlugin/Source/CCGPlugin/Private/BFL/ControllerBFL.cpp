@@ -8,7 +8,6 @@
 #include "PlayerController/CCGPlayerController.h"
 #include "PlayerState/CCGPlayerState.h"
 #include "GameMode/CCGMode.h"
-#include "Gameplay/BoardPlayer.h"
 #include "GameState/CCGState.h"
 
 int32 UControllerBFL::GetControllerID(AController* Controller)
@@ -55,32 +54,6 @@ AController* UControllerBFL::GetControllerReferenceFromID(const UObject* WorldCo
 		return nullptr;
 	}
 	return gameMode->mGameControllersArray[ControllerID-1];
-}
-
-AActor* UControllerBFL::GetControllersStateProfile(const UObject* WorldContextObject,int32 ControllerID,FPlayerStat& PlayerStat,TArray<FName>& Deck,TArray<FName>& CardsInHand)
-{
-	IF_RET_NULL(WorldContextObject);
-	AController* controller= GetControllerReferenceFromID(WorldContextObject,ControllerID);
-	IF_RET_NULL(controller);
-	ACCGPlayerController* playerController=Cast<ACCGPlayerController>(controller);
-	ACCGPlayerState* playerState=controller->GetPlayerState<ACCGPlayerState>();
-	if (playerController&&playerState)
-	{
-		PlayerStat=playerState->mPlayerStat;
-		Deck=playerController->GetPlayerDeck();
-		CardsInHand=playerController->GetCardsInHand();
-		return playerState;
-	}
-	const ACCGAIController* AIController=Cast<ACCGAIController>(controller);
-	ACCGAIPawn* AIPawn=controller->GetPawn<ACCGAIPawn>();
-	if (AIController&&AIPawn)
-	{
-		PlayerStat=AIPawn->mAIStat;
-		Deck=AIController->mAIDeck;
-		CardsInHand=AIController->mAICardsInHand;
-		return AIPawn;
-	}
-	return nullptr;
 }
 
 AActor* UControllerBFL::GetControllersStateStat(const UObject* WorldContextObject, int32 ControllerID, FPlayerStat& PlayerStat)
@@ -221,11 +194,11 @@ AActor* UControllerBFL::GetReplicatedPlayerState(const UObject* WorldContextObje
 
 int32 UControllerBFL::GetOpponentIndex(const UObject* WorldContextObject)
 {
-	IF_RET(-1,WorldContextObject);
+	IF_RET(CCG_PlayerIndex::InvalidIndex,WorldContextObject);
 	const UWorld* world= WorldContextObject->GetWorld();
-	IF_RET(-1,world);
+	IF_RET(CCG_PlayerIndex::InvalidIndex,world);
 	const ACCGPlayerController* playerController=world->GetFirstPlayerController<ACCGPlayerController>();
-	IF_RET(-1,playerController);
+	IF_RET(CCG_PlayerIndex::InvalidIndex,playerController);
 	return playerController->GetOpponentIndex();
 }
 
@@ -234,9 +207,14 @@ int32 UControllerBFL::GetPlayerIndex(const UObject* WorldContextObject)
 	IF_RET(CCG_PlayerIndex::InvalidIndex,WorldContextObject);
 	const UWorld* world= WorldContextObject->GetWorld();
 	IF_RET(CCG_PlayerIndex::InvalidIndex,world);
-	const ACCGPlayerController* playerController=world->GetFirstPlayerController<ACCGPlayerController>();
-	IF_RET(CCG_PlayerIndex::InvalidIndex,playerController);
-	const ABoardPlayer* boardPlayer= playerController->GetBoardPlayer();
-	IF_RET(CCG_PlayerIndex::InvalidIndex,boardPlayer);
-	return boardPlayer->GetPlayerIndex();
+	ACCGState* gameState=world->GetGameState<ACCGState>();
+	IF_RET(CCG_PlayerIndex::InvalidIndex,gameState);
+	const AController* controller= gameState->GetCurPlayerTurn();
+	IF_RET(CCG_PlayerIndex::InvalidIndex,controller);
+	
+	if (controller->Implements<UControllerInterface>())
+	{
+		return IControllerInterface::Execute_GetCurrentPlayerIndex(controller);
+	}
+	return CCG_PlayerIndex::InvalidIndex;
 }

@@ -18,12 +18,12 @@ UCardBFL::UCardBFL()
 	GetObjectAsset(mPreBuildDeckDT,UDataTable,"/CCGPlugin/CCGToolkit/CardGame/DEVELOPER_PrebuildDecks/DT_PreBuildDeck.DT_PreBuildDeck");
 }
 
-ACard3D* UCardBFL::SetupCard(ACard3D* CardRef, int32 OwningPlayerID, FName CardName, ECardSet CardSet, FCard CardStruct, bool SetCardDataFromStruct)
+ACard3D* UCardBFL::SetupCard(ACard3D* CardRef, int32 OwningPlayerID, FName CardName, ECardSet CardSet)
 {
 	IF_RET_NULL(CardRef);
 	CardRef->SetOwningPlayerID(OwningPlayerID);
 	CardRef->SetReplicates(true);
-	CardRef->Server_SetCardData(CardName,CardSet,CardStruct,SetCardDataFromStruct);
+	CardRef->Server_SetCardData(CardName,CardSet);
 	return CardRef;
 }
 

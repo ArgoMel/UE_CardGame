@@ -141,13 +141,7 @@ bool UCardConditionBFL::ConditionIfPlayerHasCardsInGraveyard(AController* Contro
 bool UCardConditionBFL::ConditionIfLowPlayableCardsInHand(UObject* WorldContextObject, int32 PlayerID, int32 LowValue)
 {
 	IF_RET_BOOL(WorldContextObject);
-	AController* controller=UControllerBFL::GetControllerReferenceFromID(WorldContextObject,PlayerID);
-	IF_RET_BOOL(controller);
-	const ACCGAIController* AIController=Cast<ACCGAIController>(controller);
-	if (!AIController)
-	{
-		return true;
-	}
-
-	return AIController->mAIPlayableDecks.Num()<=LowValue;
+	ACCGAIController* AIController=Cast<ACCGAIController>(UControllerBFL::GetControllerReferenceFromID(WorldContextObject,PlayerID));
+	IF_RET_BOOL(AIController);
+	return AIController->GetAIPersonality()->PlayableDecks.Num()<=LowValue;
 }

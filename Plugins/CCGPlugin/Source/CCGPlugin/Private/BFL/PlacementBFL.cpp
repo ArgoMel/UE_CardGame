@@ -7,10 +7,12 @@
 #include "Gameplay/CardPlacement.h"
 #include "GameState/CCGState.h"
 
-bool UPlacementBFL::GetPlayersAvailablePlacementsForCard(const UWorld* World,int32 PlayerID, FName CardName, TArray<ACardPlacement*>& ReturnAvailablePlacements)
+bool UPlacementBFL::GetPlayersAvailablePlacementsForCard(const UObject* WorldContextObject,int32 PlayerID, FName CardName, TArray<ACardPlacement*>& ReturnAvailablePlacements)
 {
-	IF_RET_BOOL(World);
-	ACCGState* gameState=Cast<ACCGState>(World->GetGameState());
+	IF_RET_BOOL(WorldContextObject);
+	const UWorld* world=WorldContextObject->GetWorld();
+	IF_RET_BOOL(world);
+	ACCGState* gameState=Cast<ACCGState>(world->GetGameState());
 	IF_RET_BOOL(gameState);
 	TArray<ACardPlacement*> tempPlacements;
 	gameState->GetCardPlacements(PlayerID,tempPlacements);

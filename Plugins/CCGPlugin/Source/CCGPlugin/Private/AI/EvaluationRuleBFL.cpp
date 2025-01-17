@@ -95,55 +95,66 @@ int32 UEvaluationRuleBFL::OwnedCardDamageAllCardsOnBoard(int32 Point,FCard* Talk
 	return Point;
 }
 
-int32 UEvaluationRuleBFL::RuleCalculateActiveCardPoints(int32 Add, int32 PtsPerActiveCard, TArray<ACard3D*>& CardsActive, bool IncludePlayValue, int32& RuleTotal)
+FAITotalScore UEvaluationRuleBFL::RuleCalculateActiveCardPoints(int32 Add, int32 PtsPerActiveCard, TArray<ACard3D*>& CardsActive, bool IncludePlayValue)
 {
+	FAITotalScore total;
 	if (IncludePlayValue)
 	{
-		RuleTotal=PtsPerActiveCard*CardsActive.Num();
-		return Add+RuleTotal;
+		total.RuleTotal=PtsPerActiveCard*CardsActive.Num();
+		total.Total= Add+total.RuleTotal;
+		return total;
 	}
 	int32 tempCardValueTotal=0;
 	for (const auto& card : CardsActive)
 	{
 		tempCardValueTotal+=card->GetCardData()->CardSystemData.CardValue;
 	}
-	RuleTotal=tempCardValueTotal+Add+PtsPerActiveCard*CardsActive.Num();
-	return RuleTotal;
+	total.RuleTotal=tempCardValueTotal+Add+PtsPerActiveCard*CardsActive.Num();
+	total.Total= total.RuleTotal;
+	return total;
 }
 
-int32 UEvaluationRuleBFL::RuleCalculateCardsInHandPoints(int32 Add, int32 PtsPerCardInHand, int32 CardsInHand, int32& RuleTotal)
+FAITotalScore UEvaluationRuleBFL::RuleCalculateCardsInHandPoints(int32 Add, int32 PtsPerCardInHand, int32 CardsInHand)
 {
-	RuleTotal=PtsPerCardInHand*CardsInHand;
-	return RuleTotal+Add;
+	FAITotalScore total;
+	total.RuleTotal=PtsPerCardInHand*CardsInHand;
+	total.Total= total.RuleTotal+Add;
+	return total;
 }
 
-int32 UEvaluationRuleBFL::RuleCalculateHealthPoints(int32 Add, int32 PtsPerHealthPoint, int32 PlayerHealth, int32& RuleTotal)
+FAITotalScore UEvaluationRuleBFL::RuleCalculateHealthPoints(int32 Add, int32 PtsPerHealthPoint, int32 PlayerHealth)
 {
-	RuleTotal=PtsPerHealthPoint*PlayerHealth;
-	return RuleTotal+Add;
+	FAITotalScore total;
+	total.RuleTotal=PtsPerHealthPoint*PlayerHealth;
+	total.Total= total.RuleTotal+Add;
+	return total;
 }
 
-int32 UEvaluationRuleBFL::RuleCalculateAttackPoints(int32 Add, int32 PtsForDamage, int32 PtsForRemovingCardFromPlay, int32 Attack, int32 Health, int32 CardValue, bool IncludeCardValue, int32& RuleTotal)
+FAITotalScore UEvaluationRuleBFL::RuleCalculateAttackPoints(int32 Add, int32 PtsForDamage, int32 PtsForRemovingCardFromPlay, int32 Attack, int32 Health, int32 CardValue, bool IncludeCardValue)
 {
-	RuleTotal=PtsForDamage;
+	FAITotalScore total;
+	total.RuleTotal=PtsForDamage;
 	if (Health-Attack<=0)
 	{
-		RuleTotal=PtsForRemovingCardFromPlay;
+		total.RuleTotal=PtsForRemovingCardFromPlay;
 	}
 	const int32 damage=FMath::Max(Health-Attack,0);
 	if (IncludeCardValue)
 	{
-		RuleTotal+=CardValue;	
+		total.RuleTotal+=CardValue;	
 	}
-	RuleTotal-=damage;
-	return Add+RuleTotal;
+	total.RuleTotal-=damage;
+	total.Total= Add+total.RuleTotal;
+	return total;
 }
 
-int32 UEvaluationRuleBFL::RuleCalculateDamageToPlayerPoints(int32 Add, int32 PtsForPlayerDamage, int32 PtsForRemovingPlayer, int32 CardAttack, int32 PlayerHealth,  int32& RuleTotal)
+FAITotalScore UEvaluationRuleBFL::RuleCalculateDamageToPlayerPoints(int32 Add, int32 PtsForPlayerDamage, int32 PtsForRemovingPlayer, int32 CardAttack, int32 PlayerHealth)
 {
+	FAITotalScore total;
 	const bool removedFromPlay=PlayerHealth-CardAttack<=0;
-	RuleTotal=removedFromPlay?PtsForRemovingPlayer:PtsForPlayerDamage*CardAttack;
-	return Add+RuleTotal;
+	total.RuleTotal=removedFromPlay?PtsForRemovingPlayer:PtsForPlayerDamage*CardAttack;
+	total.Total= Add+total.RuleTotal;
+	return total;
 }
 
 int32 UEvaluationRuleBFL::RuleCalculateAdditionalAbilityPointOffset(ACard3D* TalkingCard, ACard3D* ReceivingCard)

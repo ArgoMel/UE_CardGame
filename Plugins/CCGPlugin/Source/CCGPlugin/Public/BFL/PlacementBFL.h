@@ -16,7 +16,7 @@ class CCGPLUGIN_API UPlacementBFL : public UBlueprintFunctionLibrary
 public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
-	static bool GetPlayersAvailablePlacementsForCard(const UWorld* World,int32 PlayerID, FName CardName, TArray<ACardPlacement*>& ReturnAvailablePlacements);
+	static bool GetPlayersAvailablePlacementsForCard(const UObject* WorldContextObject,int32 PlayerID, FName CardName, TArray<ACardPlacement*>& ReturnAvailablePlacements);
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)

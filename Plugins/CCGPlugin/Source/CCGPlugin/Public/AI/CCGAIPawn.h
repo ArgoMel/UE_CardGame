@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CCGAIController.h"
 #include "Common/CCGStruct.h"
 #include "GameFramework/Pawn.h"
 #include "Interface/PlayerStateInterface.h"
@@ -40,6 +41,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
 	int32 mCardGameAiID;
 
+	int32 mPlayerTurn;
+
 public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="AIData", ReplicatedUsing="OnRep_AIStat")
 	FPlayerStat mAIStat;
@@ -50,6 +53,8 @@ protected:
 	void OnRep_AIStat();
 	
 public:
+	void IncreaseTurn();
+	
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
 	void UpdateAIState(int32 CardsInHand, int32 CardsInDeck);
@@ -58,6 +63,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void InitAttributes();
 
+	UFUNCTION(Server, Reliable)
+	void Multicast_ForceUIUpdate(int32 CardsInHand, int32 CardsInDeck);
+	
 	FORCEINLINE FString GetAIName() const{return mAIName;}
 	FORCEINLINE int32 GetPlayerId() const { return mPlayerID; }
+	
+	FORCEINLINE void SetAIName(FString Name){mAIName=Name;}
 };

@@ -218,6 +218,23 @@ public:
 };
 
 USTRUCT(BlueprintType)
+struct FAITotalScore
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	int32 Total;
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	int32 RuleTotal;
+
+	FAITotalScore()
+	: Total(0)
+	, RuleTotal(0)
+	{
+	}
+};
+
+USTRUCT(BlueprintType)
 struct FCalculationPoint
 {
 	GENERATED_BODY()

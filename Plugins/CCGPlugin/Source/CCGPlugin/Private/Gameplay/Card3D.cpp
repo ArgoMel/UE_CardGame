@@ -106,7 +106,7 @@ void ACard3D::MultiCast_UpdateCardVisual_Implementation(bool IsVisual)
 {
 }
 
-void ACard3D::Server_SetCardData_Implementation(const FName& CardTableName, ECardSet CardRace, FCard CardStruct, bool SetCardDataFromStruct)
+void ACard3D::Server_SetCardData_Implementation(const FName& CardTableName, ECardSet CardRace)
 {
 }
 

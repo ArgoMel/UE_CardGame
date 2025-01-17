@@ -22,7 +22,7 @@ private:
 public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
-	static ACard3D* SetupCard(ACard3D* CardRef, int32 OwningPlayerID, FName CardName, ECardSet CardSet, FCard CardStruct, bool SetCardDataFromStruct);
+	static ACard3D* SetupCard(ACard3D* CardRef, int32 OwningPlayerID, FName CardName, ECardSet CardSet);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)

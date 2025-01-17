@@ -389,7 +389,6 @@ enum class EAIDifficulty : uint8
 UENUM(BlueprintType)
 enum class EAIPersonalityFocus : uint8
 {
-	None UMETA(DisplayName = "None"),
 	IncreasePlayerHealth UMETA(DisplayName = "Increase Player Health"),
 	DamageCards UMETA(DisplayName = "Damage Cards"),
 	DamageOpponentPlayer UMETA(DisplayName = "Damage Opponent Player"),

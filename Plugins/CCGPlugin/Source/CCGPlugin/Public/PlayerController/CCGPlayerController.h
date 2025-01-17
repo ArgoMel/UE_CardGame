@@ -46,7 +46,7 @@ public:
 	/** IControllerInterface */
 	virtual ACard3D* CreatePlayableCard_Implementation(FTransform SpawnTransform) override;
 	virtual UMaterialInterface* GetProfileImg_Implementation() override;
-	virtual int32 CurPlayerNum_Implementation() override;
+	virtual int32 GetCurrentPlayerIndex_Implementation() const override;
 	virtual UUserWidget* GetPlayerUI_Implementation() override;
 	virtual void CallCreateCard_Implementation(FName CardName,ECardSet CardSet,int32 CardHandIndex,UUserWidget* CardWidget) override;
 	virtual void SetGameModeOption_Implementation(FCardGameOption Option) override;
@@ -154,8 +154,6 @@ protected:
 	TObjectPtr<ACCGPlayerState> mPlayerState;
 	UPROPERTY(BlueprintReadWrite, Category="System", ReplicatedUsing="OnRep_TurnState")
 	EGameTurn mTurnState;
-	UPROPERTY(BlueprintReadWrite, Category="System", Replicated)
-	int32 mPlayerNum;
 	
 	UPROPERTY(BlueprintReadWrite, Category="Deck", Replicated)
 	TArray<FName> mPlayerDeck;
@@ -341,5 +339,4 @@ public:
 	FORCEINLINE TArray<FName> GetPlayerDeck(){return mPlayerDeck;}
 	FORCEINLINE TArray<FName> GetCardsInHand(){return mCardsInHand;}
 	FORCEINLINE int32 GetOpponentIndex() const {return mRecentOpponentIndex;}
-	FORCEINLINE ABoardPlayer* GetBoardPlayer() const {return mBoardPlayer;}
 };

@@ -23,23 +23,23 @@ private:
 public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
-	static int32 RuleCalculateActiveCardPoints(int32 Add, int32 PtsPerActiveCard, TArray<ACard3D*>& CardsActive, bool IncludePlayValue, int32& RuleTotal);
+	static FAITotalScore RuleCalculateActiveCardPoints(int32 Add, int32 PtsPerActiveCard, TArray<ACard3D*>& CardsActive, bool IncludePlayValue);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
-	static int32 RuleCalculateCardsInHandPoints(int32 Add, int32 PtsPerCardInHand, int32 CardsInHand, int32& RuleTotal);
+	static FAITotalScore RuleCalculateCardsInHandPoints(int32 Add, int32 PtsPerCardInHand, int32 CardsInHand);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
-	static int32 RuleCalculateHealthPoints(int32 Add, int32 PtsPerHealthPoint, int32 PlayerHealth, int32& RuleTotal);
+	static FAITotalScore RuleCalculateHealthPoints(int32 Add, int32 PtsPerHealthPoint, int32 PlayerHealth);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
-	static int32 RuleCalculateAttackPoints(int32 Add, int32 PtsForDamage, int32 PtsForRemovingCardFromPlay, int32 Attack, int32 Health, int32 CardValue, bool IncludeCardValue, int32& RuleTotal);
+	static FAITotalScore RuleCalculateAttackPoints(int32 Add, int32 PtsForDamage, int32 PtsForRemovingCardFromPlay, int32 Attack, int32 Health, int32 CardValue, bool IncludeCardValue);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
-	static int32 RuleCalculateDamageToPlayerPoints(int32 Add, int32 PtsForPlayerDamage, int32 PtsForRemovingPlayer, int32 CardAttack, int32 PlayerHealth, int32& RuleTotal);
+	static FAITotalScore RuleCalculateDamageToPlayerPoints(int32 Add, int32 PtsForPlayerDamage, int32 PtsForRemovingPlayer, int32 CardAttack, int32 PlayerHealth);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
