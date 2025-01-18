@@ -130,6 +130,12 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category="Play Data")
 	FEvaluationState mEvaluationStateTotal;
 
+	/** AIInfoBar에서 사용 */
+	UPROPERTY(BlueprintReadWrite, Category="Priority")
+	TArray<EPriority> mPriorityArray;
+	/** AIInfoBar에서 사용 */
+	UPROPERTY(BlueprintReadWrite, Category="Priority")
+	TArray<float> mPriorityValueArray;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Priority")
 	double mHealth_Low;

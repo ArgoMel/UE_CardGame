@@ -49,7 +49,7 @@ public:
 
 protected:
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void OnRep_AIStat();
 	
 public:

@@ -95,10 +95,10 @@ void UArrayFilterBFL::FilterCardArrayByManaCost(TArray<FName>& FilterArray, TArr
 	switch (Method)
 	{
 	case EManaCostSorting::LowestToHighest:
-		validCheck=FMath::Clamp(ManaMin,0,CCG::MaxManaCost);
+		validCheck=FMath::Clamp(ManaMin,0,CCG_Default::MaxManaCost);
 		break;
 	case EManaCostSorting::HighestToLowest:
-		validCheck=FMath::Clamp(ManaMax,0,CCG::MaxManaCost);
+		validCheck=FMath::Clamp(ManaMax,0,CCG_Default::MaxManaCost);
 		break;
 	default: ;
 	}
@@ -144,7 +144,7 @@ void UArrayFilterBFL::FilterIncludedCards(TArray<FName>& FilterArray, TArray<boo
 
 float UArrayFilterBFL::GetManaInDeck(const TArray<FName>& Array, TArray<int32>& ReturnArray)
 {
-	ReturnArray.Init(0,CCG::MaxManaCost+1);
+	ReturnArray.Init(0,CCG_Default::MaxManaCost+1);
 	if (Array.IsEmpty())
 	{
 		return 0.f;
@@ -157,7 +157,7 @@ float UArrayFilterBFL::GetManaInDeck(const TArray<FName>& Array, TArray<int32>& 
 	}
 
 	int32 average=0.f;
-	for (int32 i=0;i<=CCG::MaxManaCost;++i)
+	for (int32 i=0;i<=CCG_Default::MaxManaCost;++i)
 	{
 		average+=ReturnArray[i]*i;
 	}
@@ -171,7 +171,7 @@ int32 UArrayFilterBFL::CalculateDeckStatMana(TArray<FName>& FilterArray, TArray<
 	{
 		return cardAbility;
 	}
-	ManaStats.Init(0,CCG::MaxManaCost+1);
+	ManaStats.Init(0,CCG_Default::MaxManaCost+1);
 
 	for (const auto& name : FilterArray)
 	{

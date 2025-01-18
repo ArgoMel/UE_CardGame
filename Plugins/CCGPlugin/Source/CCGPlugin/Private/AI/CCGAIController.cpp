@@ -481,9 +481,9 @@ EPriority ACCGAIController::GetFocusPriority(EAIPersonalityFocus Focus, float& R
 
 void ACCGAIController::CalculatePriorityFocus()
 {
-	TArray<EAIPersonalityFocus> tempAIFocusPriority;
-	TArray<EPriority> tempPriorityListArray;
-	TArray<float> priorityValueArray;
+	mPriorityFocusList.Empty();
+	mPriorityArray.Empty();
+	mPriorityValueArray.Empty();
 
 	for (const EAIPersonalityFocus focus : TEnumRange<EAIPersonalityFocus>())
 	{
@@ -492,36 +492,35 @@ void ACCGAIController::CalculatePriorityFocus()
 		if (focus!=EAIPersonalityFocus::IncreasePlayerHealth)
 		{
 			int32 i;
-			for (i=0;i< tempAIFocusPriority.Num();++i)
+			for (i=0;i< mPriorityFocusList.Num();++i)
 			{
 				priority=GetFocusPriority(focus,priorityValue);
-				if ((tempPriorityListArray[i]==priority
-					&&priorityValue<=priorityValueArray[i])
-					||tempPriorityListArray[i]>priority)
+				if ((mPriorityArray[i]==priority
+					&&priorityValue<=mPriorityValueArray[i])
+					||mPriorityArray[i]>priority)
 				{
-					tempAIFocusPriority.Insert(focus,i);
-					tempPriorityListArray.Insert(priority,i);
-					priorityValueArray.Insert(priorityValue,i);
+					mPriorityFocusList.Insert(focus,i);
+					mPriorityArray.Insert(priority,i);
+					mPriorityValueArray.Insert(priorityValue,i);
 					break;
 				}
 			}
-			if (i==tempAIFocusPriority.Num()-1)
+			if (i==mPriorityFocusList.Num()-1)
 			{
-				tempAIFocusPriority.Add(focus);
+				mPriorityFocusList.Add(focus);
 				priority=GetFocusPriority(focus,priorityValue);
-				tempPriorityListArray.Add(priority);
-				priorityValueArray.Add(priorityValue);
+				mPriorityArray.Add(priority);
+				mPriorityValueArray.Add(priorityValue);
 			}
 		}
 		else
 		{
-			tempAIFocusPriority.Add(focus);
+			mPriorityFocusList.Add(focus);
 			priority=GetFocusPriority(focus,priorityValue);
-			tempPriorityListArray.Add(priority);
-			priorityValueArray.Add(priorityValue);
+			mPriorityArray.Add(priority);
+			mPriorityValueArray.Add(priorityValue);
 		}
 	}
-	mPriorityFocusList=tempAIFocusPriority;
 }
 
 void ACCGAIController::LoadAIPersonality(FName RowName)

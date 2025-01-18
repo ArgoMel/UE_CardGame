@@ -189,12 +189,12 @@ protected:
 
 protected:
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void OnRep_bTurnActive();
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void OnRep_TurnState();
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void OnRep_RecentOpponentIndex();
 
 	UFUNCTION(Category="Delegate")
