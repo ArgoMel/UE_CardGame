@@ -7,6 +7,7 @@
 #include "GameFramework/GameMode.h"
 #include "CCGMode.generated.h"
 
+class ACCGAIPawn;
 class ACCGPlayerController;
 class AAIController;
 class ABoardPlayer;
@@ -28,6 +29,9 @@ private:
 	FTimerHandle mCountdownTH;
 
 protected:
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Asset")
+	TSubclassOf<ACCGAIPawn> mAIPawnClass;
+	
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, Category="System")
 	TObjectPtr<ACCGState> mGameState;

@@ -121,16 +121,16 @@ bool ACCGMode::CheckIsPlayerActive(int32 ControllerID) const
 
 void ACCGMode::CreateAIPawn()
 {
+	IF_RET_VOID(mAIPawnClass);
 	FActorSpawnParameters spawnParams;
 	const FVector spawnLocation=mBoardPlayersArray[mGameControllersArray.Num()]->GetActorLocation();
 	spawnParams.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	ACCGAIPawn* AIPawn=GetWorld()->SpawnActor<ACCGAIPawn>(ACCGAIPawn::StaticClass(),spawnLocation,FRotator::ZeroRotator,spawnParams);
+	ACCGAIPawn* AIPawn=GetWorld()->SpawnActor<ACCGAIPawn>(mAIPawnClass,spawnLocation,FRotator::ZeroRotator,spawnParams);
 	IF_RET_VOID(AIPawn);
 
 	AddPlayerToArray(AIPawn,AIPawn->GetController());
 	SetBoardPlayerReferences(AIPawn->GetController());
 	AIPawn->mPlayerID=mGameControllersArray.Num();
-	AIPawn->mCardGameAiID=mAIControllersArray.Num();
 }
 
 void ACCGMode::FinishCountdown()

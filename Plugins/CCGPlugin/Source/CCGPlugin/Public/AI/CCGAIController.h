@@ -209,4 +209,5 @@ public:
 	
 	FORCEINLINE FAIPersonality* GetAIPersonality() {return &mAIPersonality;}
 	FORCEINLINE FPointAllocation* GetAIPointAllocation() {return &mAIPointAllocation;}
+	FORCEINLINE ABoardPlayer* GetBoardPlayer() {return mBoardPlayer;}
 };
