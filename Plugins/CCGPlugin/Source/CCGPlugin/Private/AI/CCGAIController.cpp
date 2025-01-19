@@ -529,7 +529,6 @@ void ACCGAIController::LoadAIPersonality(FName RowName)
 	IF_RET_VOID(mControlledPawn);
 	mControlledPawn->SetAIName(mAIPersonality.AIName.ToString());
 	mAIPointAllocation=*mAIPointAllocationData->FindRow<FPointAllocation>(mAIPersonality.AIPointAllocation,nullptr);
-	GetBlackboardComponent()->SetValueAsEnum(CCG_BB::Difficulty,static_cast<uint8>(mAIPersonality.Difficulty));
 	GetBlackboardComponent()->SetValueAsFloat(CCG_BB::PlaySpeed,mAIPersonality.PlaySpeed);
 	GetBlackboardComponent()->SetValueAsEnum(CCG_BB::TurnState,static_cast<uint8>(ETurnState::TurnActive));
 }
