@@ -58,11 +58,8 @@ namespace CCG_BB
 {
 	const FName Loop(TEXT("Loop"));
 	const FName FinalLoop(TEXT("bFinalLoop"));
-	
 	const FName PlaySpeed(TEXT("PlaySpeed"));
-	const FName Awareness(TEXT("Awareness"));
 	const FName Difficulty(TEXT("Difficulty"));
-	const FName Risk(TEXT("Risk"));
 	const FName TurnState(TEXT("TurnState"));
 	const FName TurnActive(TEXT("bTurnActive"));
 }
