@@ -35,7 +35,7 @@ void UCardAbilityBFL::IncreaseAttack(ACard3D* CallingCard, int32 AbilityIndex)
 	IF_RET_VOID(CallingCard);
 	const int32 value=CallingCard->GetAttack()+CallingCard->mAbilities[AbilityIndex].AbilityInt;
 	CallingCard->SetAttack(value);
-	CallingCard->MultiCast_UpdateVisualStats();
+	CallingCard->Multicast_UpdateVisualStats();
 }
 
 void UCardAbilityBFL::CloneCard(ACard3D* CallingCard, int32 AbilityIndex, bool RandomPlacement)
@@ -171,7 +171,7 @@ void UCardAbilityBFL::GiveTurnPointsToAllActiveCards(ACard3D* CallingCard, int32
 	for (const auto& card : cards)
 	{
 		card->SetTurnPoint(card->GetTurnPoint()+CallingCard->mAbilities[AbilityIndex].AbilityInt);
-		card->MultiCast_UpdateCardVisual(true);
+		card->Multicast_UpdateCardVisual(true);
 	}
 }
 
@@ -244,7 +244,7 @@ void UCardAbilityBFL::DiscardRandomCardFromHand(ACard3D* CallingCard, int32 Abil
 			IF_RET_VOID(card);
 			card=UCardBFL::SetupCard(card,ID,cardsInHand[randCardIndex],ECardSet::Empty);
 			graveyard->Server_AddToGraveyard(card);
-			card->ForceMoveCardDirectlyToGraveyard(graveyard);
+			card->Multicast_ForceMoveCardDirectlyToGraveyard(graveyard);
 		}
 	}
 }
@@ -320,7 +320,7 @@ void UCardAbilityBFL::PickupCardFromGraveyard(ACard3D* CallingCard, int32 Abilit
 		ACard3D* card3D=IControllerInterface::Execute_CreatePlayableCard(controller,FTransform(graveyard->GetCardInGraveyardLoc()));
 		IF_RET_VOID(card3D);
 		const FCard card=UDeckBFL::GetCardData(cardName,ECardSet::Empty);
-		FCard graveyardCard=graveyard->mGraveyardStructList[index];
+		FCard graveyardCard=UDeckBFL::GetCardData(graveyard->mGraveyardList[index],ECardSet::Empty);
 		graveyardCard.Health=card.Health;
 		card3D=UCardBFL::SetupCard(card3D,CallingCard->GetOwningPlayerID(),cardName,ECardSet::Empty);
 		UCardBFL::SetCustomCardData(card3D,true,0);

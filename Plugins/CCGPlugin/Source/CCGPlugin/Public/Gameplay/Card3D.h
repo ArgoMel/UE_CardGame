@@ -225,31 +225,31 @@ public:
 
 protected:
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void OnRep_Attack();
 	
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void OnRep_Health();
 	
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void OnRep_TurnsAlive();
 	
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void OnRep_bCardActive();
 	
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void OnRep_OwningPlayerID();
 
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void OnRep_ManaCostPlacement();
 	
 	/** Please add a function description */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void OnRep_CardType();
 	
 public:
@@ -305,18 +305,22 @@ public:
 
 	UFUNCTION(Server,Reliable)
 	void Server_SetCardData(const FName& CardTableName,ECardSet CardRace);
+	UFUNCTION(Server,Reliable)
+	void Server_RemoveCardActor();
 	
 	UFUNCTION(NetMulticast,Reliable)
-	void MultiCast_Attacking(AActor* board_player);
+	void Multicast_Attacking(AActor* board_player);
 
 	UFUNCTION(NetMulticast,Reliable)
-	void MultiCast_UpdateCardVisual(bool IsVisual);
+	void Multicast_UpdateCardVisual(bool IsVisual);
 	
 	UFUNCTION(NetMulticast,Reliable)
-	void MultiCast_UpdateVisualStats();
+	void Multicast_UpdateVisualStats();
 
 	UFUNCTION(NetMulticast,Reliable)
-	void ForceMoveCardDirectlyToGraveyard(AGraveyard* graveyard);
+	void Multicast_ForceMoveCardDirectlyToGraveyard(AGraveyard* Graveyard);
+	UFUNCTION(NetMulticast,Reliable)
+	void Multicast_SetCardHiddenState(bool IsHidden);
 
 	FORCEINLINE ACardPlacement* GetPlacementOwner()  {return mPlacementOwner;}
 	FORCEINLINE FCard* GetCardData()  {return &mCardData;}

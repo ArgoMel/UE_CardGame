@@ -7,6 +7,8 @@
 #include "GameFramework/Actor.h"
 #include "Graveyard.generated.h"
 
+class UAutoRotateToPlayer;
+
 UCLASS()
 class CCGPLUGIN_API AGraveyard : public AActor
 {
@@ -20,79 +22,55 @@ protected:
 
 protected:
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<UStaticMeshComponent> mOutline;
-
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
+	TObjectPtr<UBoxComponent> mCollisionBox;
 	/** Please add a variable description */
-// 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-// 	TObjectPtr<UAutoRotateToPlayer_C> PlayerRotationActor;
-//
-// 	/** Please add a variable description */
-// 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-// 	TObjectPtr<UArrowComponent> CardPlacementPoint;
-//
-// 	/** Please add a variable description */
-// 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-// 	TObjectPtr<UStaticMeshComponent> SM_GraveyardMesh;
-//
-// 	/** Please add a variable description */
-// 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-// 	TObjectPtr<UTextRenderComponent> Graveyard_Text;
-//
-// 	/** Please add a variable description */
-// 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-// 	TObjectPtr<UBoxComponent> CollisionBox;
-	
-// 	/** Scene decal Mat Instance.  */
-// 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="디폴트")
-// 	TObjectPtr<UMaterialInstanceDynamic> OutlineDecal_MaterialInstance;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
+	TObjectPtr<UTextRenderComponent> mGraveyardText;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
+	TObjectPtr<UStaticMeshComponent> mGraveyardMesh;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
+	TObjectPtr<UStaticMeshComponent> mOutline;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
+	TObjectPtr<UAutoRotateToPlayer> mPlayerRotation;
 
+	/** An Array which holds all 3D Cards which have been sent to the graveyard. */
+	UPROPERTY(BlueprintReadWrite, Category="Graveyard", Replicated)
+	TArray<ACard3D*> mActorsInGraveyard;
 	/** Which player index this graveyard belongs to.  */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="디폴트")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Graveyard")
 	int32 mPlayerIndex;
 
-// 	/** An Array which holds all 3D Cards which have been sent to the graveyard. */
-// 	static_assert(false, "You will need to add DOREPLIFETIME(AGraveyard, ActorsInGraveyard) to GetLifetimeReplicatedProps");
-// 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="디폴트", Replicated)
-// 	TArray<A3DCard_C*> ActorsInGraveyard;
-
-// 	/** Please add a variable description */
-// 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="디폴트")
-// 	int32 RemoveIndex;
-
 public:
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="디폴트", Replicated)
+	UPROPERTY(BlueprintReadWrite, Category="Graveyard", Replicated)
 	TArray<FName> mGraveyardList;
-
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="디폴트")
-	TArray<FCard> mGraveyardStructList;
 	
 public:
-// 	/** Please add a function description */
-// 	UFUNCTION(BlueprintCallable)
-// 	void ScaleCardGraveyardStaticMesh();
-//
-// 	/** Please add a function description */
-// 	UFUNCTION(BlueprintCallable)
-// 	void HideUnseenCardsInGraveyard();
-
 	/** Please add a function description */
-	UFUNCTION(BlueprintPure)
-	FVector GetCardInGraveyardLoc(int32 Add=0);
+	UFUNCTION(BlueprintCallable,Category="Graveyard")
+	void ScaleCardGraveyardStaticMesh();
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable,Category="Graveyard")
+	void HideUnseenCardsInGraveyard();
+	/** Please add a function description */
+	UFUNCTION(BlueprintPure,Category="Graveyard")
+	FVector GetCardInGraveyardLoc(int32 Add=0) const;
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable,Category="Graveyard")
+	void RecreateTopGraveyardCardActor();
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable,Category="Graveyard")
+	void RemoveCardFromGraveyard(FName CardName, int32 Index);
 
-// 	/** Please add a function description */
-// 	UFUNCTION(BlueprintCallable)
-// 	void RecreateTopGraveyardCardActor();
-//
-// 	/** Please add a function description */
-// 	UFUNCTION(BlueprintCallable)
-// 	void RemoveCardFromGraveyard(FName CardName, int32 Index);
-
+	UFUNCTION(NetMulticast,Unreliable)
+	void MultiCast_AddToGraveyardVisual();
+	
 	UFUNCTION(Server,Reliable)
 	void Server_AddToGraveyard(ACard3D* Card,FName Name=FName());
-
 	UFUNCTION(Server,Reliable)
 	void Server_RemoveCardFromGraveyard(FName Card, int32 Index);
 

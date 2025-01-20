@@ -98,11 +98,19 @@ void ACard3D::Deselected()
 {
 }
 
-void ACard3D::ForceMoveCardDirectlyToGraveyard_Implementation(AGraveyard* graveyard)
+void ACard3D::Multicast_SetCardHiddenState_Implementation(bool IsHidden)
 {
 }
 
-void ACard3D::MultiCast_UpdateCardVisual_Implementation(bool IsVisual)
+void ACard3D::Server_RemoveCardActor_Implementation()
+{
+}
+
+void ACard3D::Multicast_ForceMoveCardDirectlyToGraveyard_Implementation(AGraveyard* Graveyard)
+{
+}
+
+void ACard3D::Multicast_UpdateCardVisual_Implementation(bool IsVisual)
 {
 }
 
@@ -110,10 +118,10 @@ void ACard3D::Server_SetCardData_Implementation(const FName& CardTableName, ECar
 {
 }
 
-void ACard3D::MultiCast_Attacking_Implementation(AActor* board_player)
+void ACard3D::Multicast_Attacking_Implementation(AActor* board_player)
 {
 }
 
-void ACard3D::MultiCast_UpdateVisualStats_Implementation()
+void ACard3D::Multicast_UpdateVisualStats_Implementation()
 {
 }
