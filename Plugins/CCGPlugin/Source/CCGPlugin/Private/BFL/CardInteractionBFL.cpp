@@ -27,7 +27,7 @@ bool UCardInteractionBFL::DealDamageToCard(bool SimpleDamage, ACard3D* TalkingCa
 		{
 			return false;
 		}
-		TalkingCard->MultiCast_Attacking(ReceivingCard);
+		TalkingCard->Multicast_Attacking(ReceivingCard);
 	}
 	
 	if (ReceivingCard->Implements<UCardInteractionInterface>())
@@ -68,7 +68,7 @@ bool UCardInteractionBFL::DealDamageToPlayer(bool SimpleDamage, ACard3D* Talking
 		{
 			return false;
 		}
-		TalkingCard->MultiCast_Attacking(BoardPlayer);
+		TalkingCard->Multicast_Attacking(BoardPlayer);
 	}
 
 	AActor* playerState= UControllerBFL::GetControllerPlayerState(BoardPlayer,BoardPlayer->GetPlayerIndex());

@@ -133,6 +133,7 @@ enum class ECardType : uint8
 	Booster UMETA(DisplayName = "Booster"),
 	Max UMETA(Hidden)
 };
+ENUM_RANGE_BY_COUNT(ECardType, ECardType::Max);
 
 UENUM(BlueprintType)
 enum class ECardUseState : uint8

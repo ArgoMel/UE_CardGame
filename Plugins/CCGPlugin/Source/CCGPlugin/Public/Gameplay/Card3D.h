@@ -321,6 +321,8 @@ public:
 	void Multicast_ForceMoveCardDirectlyToGraveyard(AGraveyard* Graveyard);
 	UFUNCTION(NetMulticast,Reliable)
 	void Multicast_SetCardHiddenState(bool IsHidden);
+	UFUNCTION(NetMulticast,Reliable)
+	void Multicast_PlaceCardOnBoard(const FTransform& Destination);
 
 	FORCEINLINE ACardPlacement* GetPlacementOwner()  {return mPlacementOwner;}
 	FORCEINLINE FCard* GetCardData()  {return &mCardData;}

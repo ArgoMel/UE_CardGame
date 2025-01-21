@@ -98,6 +98,10 @@ void ACard3D::Deselected()
 {
 }
 
+void ACard3D::Multicast_PlaceCardOnBoard_Implementation(const FTransform& Destination)
+{
+}
+
 void ACard3D::Multicast_SetCardHiddenState_Implementation(bool IsHidden)
 {
 }

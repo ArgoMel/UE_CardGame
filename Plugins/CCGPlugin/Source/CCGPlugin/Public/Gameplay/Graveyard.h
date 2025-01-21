@@ -67,7 +67,7 @@ public:
 	void RemoveCardFromGraveyard(FName CardName, int32 Index);
 
 	UFUNCTION(NetMulticast,Unreliable)
-	void MultiCast_AddToGraveyardVisual();
+	void Multicast_AddToGraveyardVisual();
 	
 	UFUNCTION(Server,Reliable)
 	void Server_AddToGraveyard(ACard3D* Card,FName Name=FName());

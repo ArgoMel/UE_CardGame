@@ -122,7 +122,7 @@ void AGraveyard::RemoveCardFromGraveyard(FName CardName, int32 Index)
 	mGraveyardList.RemoveAt(Index);
 }
 
-void AGraveyard::MultiCast_AddToGraveyardVisual_Implementation()
+void AGraveyard::Multicast_AddToGraveyardVisual_Implementation()
 {
 	ScaleCardGraveyardStaticMesh();
 }
