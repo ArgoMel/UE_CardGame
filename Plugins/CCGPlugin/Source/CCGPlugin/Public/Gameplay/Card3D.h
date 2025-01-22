@@ -26,6 +26,14 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
+public:
+	virtual void TakesDamage_Implementation(ACard3D* DealingCard, int32 DamageAttack, int32 DamageHealth) override;
+	virtual void OnActivePlayerTurn_Implementation() override;
+	virtual void OnEndActivePlayerTurn_Implementation() override;
+
+private:
+	bool bUseGate;
+
 protected:
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
@@ -216,114 +224,133 @@ protected:
 
 public:
 	/** Please add a variable description */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	TObjectPtr<ACard3D> mDamageDealingCard;
+	
+	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Abilities")
 	TArray<FCardAbility> mAbilities;
 
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
-	TObjectPtr<ACard3D> mDamageDealingCard;
-
 protected:
-	/** Please add a function description */
 	UFUNCTION()
 	void OnRep_Attack();
-	
-	/** Please add a function description */
 	UFUNCTION()
 	void OnRep_Health();
-	
-	/** Please add a function description */
 	UFUNCTION()
 	void OnRep_TurnsAlive();
-	
-	/** Please add a function description */
 	UFUNCTION()
 	void OnRep_bCardActive();
-	
-	/** Please add a function description */
 	UFUNCTION()
 	void OnRep_OwningPlayerID();
-
-	/** Please add a function description */
 	UFUNCTION()
 	void OnRep_ManaCostPlacement();
-	
-	/** Please add a function description */
 	UFUNCTION()
 	void OnRep_CardType();
-	
+
+	UFUNCTION(Category="Delegate")
+	void OnCardBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
+	UFUNCTION(Category="Delegate")
+	void OnCardEndOverlap(AActor* OverlappedActor, AActor* OtherActor);
+
+	UFUNCTION(Category="Macro")
+	void ChangeTurnStateVisual(ECardGameState CardGameState);
+	UFUNCTION(Category="Macro")
+	void RemoveMouseOverPreview();
+	UFUNCTION(Category="Macro")
+	void SaveCardStateToStruct();
+	UFUNCTION(Category="Macro")
+	bool ValidateAbility();
+	UFUNCTION(Category="Macro")
+	bool RunActiveAbility(EAbilityTrigger AbilityTrigger);
+	UFUNCTION(Category="Macro")
+	bool CheckAbilityUseState(EAbilityTrigger CheckAbilityTrigger,ECardUseState CheckCardUseState,int32 AbilityIndex, bool SearchAllAbilities);
 public:
-	// UFUNCTION(BlueprintCallable, Category="Gameplay")
-	// void MoveCardToGraveyard();
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="Description Generator")
-	// void GenerateDescription(FString Description Text, int32 CurrentString Character);
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Card Data")
+	void SetTurnStateVisual(bool IsActive);
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Card Data")
+	void SetCardData(FName CardTableName, ECardSet CardSet);
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Card Data")
+	void SetCardVisuals();
+	
+	UFUNCTION(BlueprintCallable, Category="Gameplay")
+	void MoveCardToGraveyard();
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Gameplay")
+	void PlayMovementAnimation(E3DCardMovementState CardMovementState, FVector ManualGoalDestination, FRotator ManualGoalRotation, AActor* OR_GoalActor=nullptr, float ZOffset=0.f, float ErrorTolerance=0.f, float InterpSpeed=1.f);
+	
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="Description Generator")
+	void GenerateDescription(FString DescriptionText);
+	
+	/** Please add a function description */
+	UFUNCTION(BlueprintPure, Category="Card Location and Rotation")
+	FRotator InterpSelfToRotation(bool& Arrived);
+	/** Please add a function description */
+	UFUNCTION(BlueprintPure, Category="Card Location and Rotation")
+	FVector InterpSelfToLocation(bool& Arrived);
+	
+	/** Please add a function description */
+	UFUNCTION(BlueprintCallable, Category="System")
+	void LogDisplayMessage(FString Message, FLinearColor SpecifiedColor);
+	
+	/** Run the Cards ability */
+	UFUNCTION(BlueprintCallable, Category="Abilities")
+	bool RunCardAbility(int32 AbilityIndex);
 
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="Card Data")
-	// void SetTurnStateVisual(bool IsActive);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintPure, Category="Card Location and Rotation")
-	// FRotator InterpSelfToRotation(bool& Arrived);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintPure, Category="Card Location and Rotation")
-	// FVector InterpSelfToLocation(bool& Arrived);
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="Card Data")
-	// void SetCardData(FName CardTableName, TEnumAsByte<CardSet_Enum> CardSet, FCard_Struct CardStruct, bool SetCardDataFromStruct);
-
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="Card Data")
-	// void SetCardVisuals();
-	//
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="Gameplay")
-	// void PlayMovementAnimation(TEnumAsByte<3DCardMovementState_Enum> CardMovementState, FVector ManualGoalDestination, FRotator ManualGoalRotation, AActor* OR_GoalActor, double Z Offset, double ErrorTolerance, double InterSpeed, AActor* NewLocalVar_0);
-
-	// /** Please add a function description */
-	// UFUNCTION(BlueprintCallable, Category="System")
-	// void LogDisplayMessage(FString Message, FLinearColor Specified Color);
-	//
-	// /** Run the Cards ability */
-	// UFUNCTION(BlueprintCallable, Category="Abilities")
-	// void RunCardAbility(int32 AbilityIndex, bool& Successful, int32 AbilityIndex_Ref);
-
+	UFUNCTION(Category="Event")
+	void SpawnEffect(ECardEffects CardEffect);
+	UFUNCTION(Category="Event")
+	void OpenGate();
+	UFUNCTION(Category="Event")
+	void CloseGate();
+	UFUNCTION(Category="Event")
+	void ArrivedAtDestination();
 	UFUNCTION(Category="Event")
 	void SetClientSideData(FName CardTableName,ECardSet CardRace);
-	UFUNCTION(Category="Event")
-	void EnableMobileCardPreview();
-	UFUNCTION(Category="Event")
-	void DisableMobileCardPreview();
-	UFUNCTION(Category="Event")
-	void Selected(int32 SelectingPlayerID);
-	UFUNCTION(Category="Event")
-	void Deselected();
 
-	UFUNCTION(Server,Reliable)
-	void Server_SetCardData(const FName& CardTableName,ECardSet CardRace);
-	UFUNCTION(Server,Reliable)
-	void Server_RemoveCardActor();
+	UFUNCTION(Category="Event|Selection")
+	void Selected(int32 SelectingPlayerID);
+	UFUNCTION(Category="Event|Selection")
+	void Deselected();
 	
-	UFUNCTION(NetMulticast,Reliable)
-	void Multicast_Attacking(AActor* board_player);
+	UFUNCTION(Category="Event|Card Preview")
+	void EnableMobileCardPreview();
+	UFUNCTION(Category="Event|Card Preview")
+	void DisableMobileCardPreview();
 
 	UFUNCTION(NetMulticast,Reliable)
 	void Multicast_UpdateCardVisual(bool IsVisual);
-	
 	UFUNCTION(NetMulticast,Reliable)
 	void Multicast_UpdateVisualStats();
-
-	UFUNCTION(NetMulticast,Reliable)
-	void Multicast_ForceMoveCardDirectlyToGraveyard(AGraveyard* Graveyard);
+	UFUNCTION(NetMulticast,Unreliable)
+	void Multicast_SpawnEffect(ECardEffects CardEffect);
 	UFUNCTION(NetMulticast,Reliable)
 	void Multicast_SetCardHiddenState(bool IsHidden);
 	UFUNCTION(NetMulticast,Reliable)
 	void Multicast_PlaceCardOnBoard(const FTransform& Destination);
-
+	UFUNCTION(NetMulticast,Reliable)
+	void Multicast_Attacking(AActor* board_player);
+	UFUNCTION(NetMulticast,Reliable)
+	void Multicast_MoveToGraveyard();
+	UFUNCTION(NetMulticast,Reliable)
+	void Multicast_ForceMoveCardDirectlyToGraveyard(AGraveyard* Graveyard);
+	UFUNCTION(NetMulticast,Reliable)
+	void Multicast_SetCardVisuals();
+	UFUNCTION(NetMulticast,Unreliable)
+	void Multicast_DamageVisual();
+	UFUNCTION(NetMulticast,Unreliable)
+	void Multicast_AbilityVisual();
+	
+	UFUNCTION(Server,Reliable)
+	void Server_SetCardData(const FName& CardTableName,ECardSet CardRace);
+	UFUNCTION(Server,Reliable)
+	void Server_ActivateAbility(int32 AbilityIndex);
+	UFUNCTION(Server,Reliable)
+	void Server_RemoveCardActor();
+	
 	FORCEINLINE ACardPlacement* GetPlacementOwner()  {return mPlacementOwner;}
 	FORCEINLINE FCard* GetCardData()  {return &mCardData;}
 	FORCEINLINE FName GetCardDataTableName() const {return mCardDataTableName;}
