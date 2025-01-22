@@ -9,6 +9,7 @@
 #include "Interface/CardInteractionInterface.h"
 #include "Card3D.generated.h"
 
+class UCCGameInstance;
 class ACCGState;
 class ACCGPlayerController;
 class UBoxComponent;
@@ -36,39 +37,42 @@ private:
 
 protected:
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
+	TObjectPtr<UBoxComponent> mBox;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
 	TObjectPtr<UTextRenderComponent> mNameText;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
 	TObjectPtr<UTextRenderComponent> mCardTypeText;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
 	TObjectPtr<UTextRenderComponent> mDescriptionText;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<UTextRenderComponent> mAttackText;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<UStaticMeshComponent> mAttackMesh;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<UTextRenderComponent> mHealthText;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<UStaticMeshComponent> mHeartMesh;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<UTextRenderComponent> mManaCostText;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<UStaticMeshComponent> mManaGemMesh;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
 	TObjectPtr<UStaticMeshComponent> mCardBaseMesh;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="디폴트")
-	TObjectPtr<UBoxComponent> mBox;
-
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
+	TObjectPtr<UStaticMeshComponent> mHeartMesh;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
+	TObjectPtr<UTextRenderComponent> mHealthText;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
+	TObjectPtr<UStaticMeshComponent> mManaGemMesh;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
+	TObjectPtr<UTextRenderComponent> mManaCostText;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
+	TObjectPtr<UStaticMeshComponent> mAttackMesh;
+	/** Please add a variable description */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Component")
+	TObjectPtr<UTextRenderComponent> mAttackText;
+	
+	UPROPERTY(EditDefaultsOnly,Category="Asset")
+	TSubclassOf<UUserWidget> mCardPreviewClass;
+	
 	/** Home Destination a variable which holds the placement destination of the card. This is where the card will always end up if it is still in play.  */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Misc Variables", Replicated)
 	FVector mHomeDestination;
@@ -86,32 +90,26 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
 	TObjectPtr<ACardPlacement> mPlacementOwner;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
+	UPROPERTY(BlueprintReadWrite, Category="System")
 	TObjectPtr<ACCGPlayerController> mOwningPlayer;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
 	TObjectPtr<ACCGState> mGameState;
 	/** Current platform the game is being played on */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
-	EPlatform mPlatform;
+	TObjectPtr<UCCGameInstance> mGameInstance;
 	/** The movement state which the card is currently moving within. This determines the result when the movement is completed, and whether to trigger additional evens or functions.  */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
 	E3DCardMovementState mCardMovementState;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
-	ETurnState mCardGameState;
 	/** The maximum amount of characters that the 3D text renderer can hold per line. Note: This does not currently filter full words. Which may result in words being split between lines.  */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
 	int32 mMaxDescCharacterLineLength;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", ReplicatedUsing="OnRep_OwningPlayerID")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
 	int32 mOwningPlayerID;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
 	int32 mCardID;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
-	double mDeltaTime;
 	/** Interpolation Speed */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
 	double mInterpSpeed;
@@ -133,9 +131,6 @@ protected:
 	/** Has the card been moved to the player graveyard */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
 	bool bInGraveyard;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System")
-	bool bIsPlatformMobile;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="System", Replicated)
 	bool bEnableLifeExpectancy;
@@ -159,13 +154,13 @@ protected:
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
 	ECardSet mCardSet;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", ReplicatedUsing="OnRep_Attack")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", ReplicatedUsing="OnRep_Stat")
 	int32 mAttack;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", ReplicatedUsing="OnRep_Health")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", ReplicatedUsing="OnRep_Stat")
 	int32 mHealth;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", ReplicatedUsing="OnRep_ManaCostPlacement")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", ReplicatedUsing="OnRep_Stat")
 	int32 mManaCostPlacement;
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Data", Replicated)
@@ -186,30 +181,12 @@ protected:
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Preview")
 	bool bPreviewEnabled;
-
-	/** This is an extra layer around the card which can be set to display anything like an outline or a shadow without needing any complex material setup. Mostly used for optimisation purposes.   */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Visual")
-	TObjectPtr<UMaterial> mOuterMaterial;
+	
 	/** Reference to Shadow material */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Visual")
 	TObjectPtr<UMaterial> mShadowMaterial;
-	/** The cards frame material.  */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Visual")
-	TObjectPtr<UMaterialInstance> mCardFrameMaterial;
-	/** Card Frame Material */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Visual")
-	TObjectPtr<UMaterialInstanceDynamic> mCardFrameMaterial_Instance;
-	/** The cards image material.  */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Visual")
-	TObjectPtr<UMaterialInstance> mCardImageMaterial;
-	/** Card Image Material */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Visual")
-	TObjectPtr<UMaterialInstanceDynamic> mCardImageMaterial_Instance;
-	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Visual")
-	TObjectPtr<UMaterialInstanceDynamic> mCardBackMaterial;
 	/** A mouse over card widget reference */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Visual")
+	UPROPERTY(BlueprintReadWrite, Category="Visual")
 	TObjectPtr<UUserWidget> mViewCardPreview;
 	
 	/** Please add a variable description */
@@ -231,35 +208,35 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Abilities")
 	TArray<FCardAbility> mAbilities;
 
+private:
+	void ShowPreviewCard();
+	
 protected:
 	UFUNCTION()
-	void OnRep_Attack();
-	UFUNCTION()
-	void OnRep_Health();
+	void OnRep_Stat();
 	UFUNCTION()
 	void OnRep_TurnsAlive();
 	UFUNCTION()
 	void OnRep_bCardActive();
 	UFUNCTION()
-	void OnRep_OwningPlayerID();
-	UFUNCTION()
-	void OnRep_ManaCostPlacement();
-	UFUNCTION()
 	void OnRep_CardType();
 
 	UFUNCTION(Category="Delegate")
-	void OnCardBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
+	void OnCardBeginOverlap(AActor* TouchedActor);
 	UFUNCTION(Category="Delegate")
-	void OnCardEndOverlap(AActor* OverlappedActor, AActor* OtherActor);
+	void OnCardEndOverlap(AActor* TouchedActor);
+
+	UFUNCTION(Category="Timer")
+	void ShowPreviewCardTimer();
 
 	UFUNCTION(Category="Macro")
-	void ChangeTurnStateVisual(ECardGameState CardGameState);
+	void ChangeTurnStateVisual(ETurnState CardGameState) const;
 	UFUNCTION(Category="Macro")
 	void RemoveMouseOverPreview();
 	UFUNCTION(Category="Macro")
 	void SaveCardStateToStruct();
 	UFUNCTION(Category="Macro")
-	bool ValidateAbility();
+	bool ValidateAbility() const;
 	UFUNCTION(Category="Macro")
 	bool RunActiveAbility(EAbilityTrigger AbilityTrigger);
 	UFUNCTION(Category="Macro")
@@ -291,10 +268,6 @@ public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure, Category="Card Location and Rotation")
 	FVector InterpSelfToLocation(bool& Arrived);
-	
-	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, Category="System")
-	void LogDisplayMessage(FString Message, FLinearColor SpecifiedColor);
 	
 	/** Run the Cards ability */
 	UFUNCTION(BlueprintCallable, Category="Abilities")

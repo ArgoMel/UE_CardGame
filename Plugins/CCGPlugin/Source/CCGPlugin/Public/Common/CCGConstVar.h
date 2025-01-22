@@ -27,6 +27,7 @@ namespace CCG_ZOrder
 	constexpr int32 MainMenu=5;
 	constexpr int32 DisplayMessage=5;
 	constexpr int32 Countdown=5;
+	constexpr int32 CardPreview=5;
 	constexpr int32 PlayerGameUI=2;
 	constexpr int32 OpponentUI=1;
 	constexpr int32 AIBar=11;
@@ -61,6 +62,13 @@ namespace CCG_BB
 	const FName PlaySpeed(TEXT("PlaySpeed"));
 	const FName TurnState(TEXT("TurnState"));
 	const FName TurnActive(TEXT("bTurnActive"));
+}
+
+namespace CCG_Mat_Param
+{
+	const FName Tint(TEXT("Tint"));
+	const FName Brightness(TEXT("Brightness"));
+	const FName OutlineColor(TEXT("OutlineColor"));
 }
 
 UCLASS()

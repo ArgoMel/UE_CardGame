@@ -339,4 +339,5 @@ public:
 	FORCEINLINE TArray<FName> GetPlayerDeck(){return mPlayerDeck;}
 	FORCEINLINE TArray<FName> GetCardsInHand(){return mCardsInHand;}
 	FORCEINLINE int32 GetOpponentIndex() const {return mRecentOpponentIndex;}
+	FORCEINLINE ECardPlayerState GetCardPlayerState() const {return mCardPlayerState;}
 };
