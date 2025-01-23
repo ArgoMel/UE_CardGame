@@ -51,7 +51,7 @@ public:
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)
-	static FVector2D GetMousePositionInRange(UWorld* World,FVector2D SizeOffset, double GlobalEdgeOffset, FVector2D EdgeOffset);
+	static FVector2D GetMousePositionInRange(UObject* WorldContextObject,FVector2D SizeOffset, double GlobalEdgeOffset, FVector2D EdgeOffset);
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure)

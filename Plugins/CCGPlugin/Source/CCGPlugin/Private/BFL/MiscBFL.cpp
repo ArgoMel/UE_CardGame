@@ -6,14 +6,12 @@
 #include "BFL/CCGBFL.h"
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
-#include "Camera/CameraActor.h"
 #include "GameInstance/CCGameInstance.h"
 #include "Gameplay/Card3D.h"
 #include "Interface/WidgetInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "PlayerController/CCGPlayerController.h"
-#include "PlayerState/CCGPlayerState.h"
 
 TSubclassOf<UUserWidget> UMiscBFL::mDisplayWidgetClass;
 
@@ -152,17 +150,19 @@ FRotator UMiscBFL::GetWorldRotationForPlayer(const UObject* WorldContextObject, 
 	return returnRot;
 }
 
-FVector2D UMiscBFL::GetMousePositionInRange(UWorld* World, FVector2D SizeOffset, double GlobalEdgeOffset, FVector2D EdgeOffset)
+FVector2D UMiscBFL::GetMousePositionInRange(UObject* WorldContextObject, FVector2D SizeOffset, double GlobalEdgeOffset, FVector2D EdgeOffset)
 {
-	IF_RET(FVector2D::ZeroVector,World);
-	const APlayerController* playerController=World->GetFirstPlayerController();
+	IF_RET(FVector2D::ZeroVector,WorldContextObject);
+	const UWorld* world=WorldContextObject->GetWorld();
+	IF_RET(FVector2D::ZeroVector,world);
+	const APlayerController* playerController=world->GetFirstPlayerController();
 	IF_RET(FVector2D::ZeroVector,playerController);
 
 	FVector2D returnValue;
 	float locX;
 	float locY;
 	playerController->GetMousePosition(locX,locY);
-	const FVector2D viewportSize=UWidgetLayoutLibrary::GetViewportSize(World);
+	const FVector2D viewportSize=UWidgetLayoutLibrary::GetViewportSize(WorldContextObject);
 	returnValue.X=FMath::Clamp(locX,GlobalEdgeOffset,
 		viewportSize.X-GlobalEdgeOffset-(SizeOffset.X+EdgeOffset.X));
 	returnValue.Y=FMath::Clamp(locY,GlobalEdgeOffset+EdgeOffset.Y,
