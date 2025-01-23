@@ -14,12 +14,16 @@ namespace CCG_MSG
 	const FString InvalidPlacement(TEXT("Placement Not Valid")); 
 	const FString NotEnoughMana(TEXT("Not Enough Mana")); 
 	const FString DeckCreated(TEXT("Deck Created!")); 
+	const FString NoAbility(TEXT("This Card has no ability")); 
 }
 
 namespace CCG_Default
 {
 	const FName DefaultAIPersonality(TEXT("Personality_1"));
 	constexpr int32 MaxManaCost=10;
+	/** The maximum amount of characters that the 3D text renderer can hold per line. Note: This does not currently filter full words. Which may result in words being split between lines.  */
+	constexpr int32 MaxDescLineLength=43;
+	constexpr float CardPreviewScale=0.7f;
 }
 
 namespace CCG_ZOrder

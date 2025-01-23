@@ -88,7 +88,7 @@ void UGameSnapshotBFL::GenerateCardSnapshotSimulation(const UObject* WorldContex
 	IF_RET_VOID(AIController);
 
 	if (Card->GetTurnPoint()<=0||
-		!AIController->mValidInteractionTypes.Contains(Card->GetCardType()))
+		!AIController->mValidInteractionTypes.Contains(Card->GetCardData()->Type))
 	{
 		return;
 	}

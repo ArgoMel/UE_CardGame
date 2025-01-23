@@ -25,7 +25,7 @@ void UCardAbilityBFL::DrawCard(ACard3D* CallingCard, int32 AbilityIndex)
 	IF_RET_VOID(controller);
 	if (controller->Implements<UCardsInHandInterface>())
 	{
-		const int32 cardsToDraw=CallingCard->mAbilities[AbilityIndex].AbilityInt;
+		const int32 cardsToDraw=CallingCard->GetCardData()->Abilities[AbilityIndex].AbilityInt;
 		ICardsInHandInterface::Execute_DrawCard(controller,FName(),false,cardsToDraw);
 	}
 }
@@ -33,7 +33,7 @@ void UCardAbilityBFL::DrawCard(ACard3D* CallingCard, int32 AbilityIndex)
 void UCardAbilityBFL::IncreaseAttack(ACard3D* CallingCard, int32 AbilityIndex)
 {
 	IF_RET_VOID(CallingCard);
-	const int32 value=CallingCard->GetAttack()+CallingCard->mAbilities[AbilityIndex].AbilityInt;
+	const int32 value=CallingCard->GetCardData()->Attack.Damage+CallingCard->GetCardData()->Abilities[AbilityIndex].AbilityInt;
 	CallingCard->SetAttack(value);
 	CallingCard->Multicast_UpdateVisualStats();
 }
@@ -44,7 +44,7 @@ void UCardAbilityBFL::CloneCard(ACard3D* CallingCard, int32 AbilityIndex, bool R
 	const UWorld* world=CallingCard->GetWorld();
 	IF_RET_VOID(world);
 	ACardPlacement* goalPlacement=nullptr;
-	const int32 abilityInt=CallingCard->mAbilities[AbilityIndex].AbilityInt;
+	const int32 abilityInt=CallingCard->GetCardData()->Abilities[AbilityIndex].AbilityInt;
 	const int32 playerID=CallingCard->GetOwningPlayerID();
 	
 	for (int32 i=0;i<abilityInt;++i)
@@ -89,19 +89,19 @@ void UCardAbilityBFL::IncreasePlayerHealth(ACard3D* CallingCard, int32 AbilityIn
 	IF_RET_VOID(playerState);
 	if (playerState->Implements<UPlayerStateInterface>())
 	{
-		IPlayerStateInterface::Execute_IncreasePlayerHealth(playerState,CallingCard->mAbilities[AbilityIndex].AbilityInt);
+		IPlayerStateInterface::Execute_IncreasePlayerHealth(playerState,CallingCard->GetCardData()->Abilities[AbilityIndex].AbilityInt);
 	}
 }
 
 void UCardAbilityBFL::DealRetaliationDamage(ACard3D* CallingCard, int32 AbilityIndex)
 {
 	IF_RET_VOID(CallingCard);
-	if (CallingCard->mDamageDealingCard)
+	if (CallingCard->GetDamageDealingCard())
 	{
 		EInteractionConditions calling;
 		EInteractionConditions talking;
-		UCardInteractionBFL::DealDamageToCard(true,CallingCard,CallingCard->mDamageDealingCard,CallingCard->mAbilities[AbilityIndex].AbilityInt,calling,talking);
-		CallingCard->mDamageDealingCard=nullptr;
+		UCardInteractionBFL::DealDamageToCard(true,CallingCard,CallingCard->GetDamageDealingCard(),CallingCard->GetCardData()->Abilities[AbilityIndex].AbilityInt,calling,talking);
+		CallingCard->SetDamageDealingCard(nullptr);
 	}
 }
 
@@ -125,7 +125,7 @@ void UCardAbilityBFL::DamageAllCardsOnBoard(ACard3D* CallingCard, int32 AbilityI
 		{
 			continue;
 		}
-		UCardInteractionBFL::DealDamageToCard(true,CallingCard,card,CallingCard->mAbilities[AbilityIndex].AbilityInt,calling,talking);
+		UCardInteractionBFL::DealDamageToCard(true,CallingCard,card,CallingCard->GetCardData()->Abilities[AbilityIndex].AbilityInt,calling,talking);
 	}
 }
 
@@ -134,7 +134,7 @@ void UCardAbilityBFL::SpawnRandomCardFromDeck(ACard3D* CallingCard, int32 Abilit
 	IF_RET_VOID(CallingCard);
 	AController* controller=UControllerBFL::GetControllerReferenceFromID(CallingCard,CallingCard->GetOwningPlayerID());
 	IF_RET_VOID(controller);
-	const int32 loopCount=CallingCard->mAbilities[AbilityIndex].AbilityInt;
+	const int32 loopCount=CallingCard->GetCardData()->Abilities[AbilityIndex].AbilityInt;
 	
 	for (int32 i=0;i<loopCount;++i)
 	{
@@ -170,7 +170,7 @@ void UCardAbilityBFL::GiveTurnPointsToAllActiveCards(ACard3D* CallingCard, int32
 	
 	for (const auto& card : cards)
 	{
-		card->SetTurnPoint(card->GetTurnPoint()+CallingCard->mAbilities[AbilityIndex].AbilityInt);
+		card->SetTurnPoint(card->GetTurnPoint()+CallingCard->GetCardData()->Abilities[AbilityIndex].AbilityInt);
 		card->Multicast_UpdateCardVisual(true);
 	}
 }
@@ -178,7 +178,7 @@ void UCardAbilityBFL::GiveTurnPointsToAllActiveCards(ACard3D* CallingCard, int32
 void UCardAbilityBFL::IncreaseTurnPoints(ACard3D* CallingCard, int32 AbilityIndex)
 {
 	IF_RET_VOID(CallingCard);
-	CallingCard->SetTurnPoint(CallingCard->GetTurnPoint()+CallingCard->mAbilities[AbilityIndex].AbilityInt);
+	CallingCard->SetTurnPoint(CallingCard->GetTurnPoint()+CallingCard->GetCardData()->Abilities[AbilityIndex].AbilityInt);
 }
 
 void UCardAbilityBFL::DiscardRandomCardFromHand(ACard3D* CallingCard, int32 AbilityIndex)
@@ -190,7 +190,7 @@ void UCardAbilityBFL::DiscardRandomCardFromHand(ACard3D* CallingCard, int32 Abil
 	const int32 playerID=UControllerBFL::GetControllerIDs(owningController,IDs);
 	IDs.Remove(CallingCard->GetOwningPlayerID());
 	const int32 randOpponentID=IDs[FMath::RandRange(0,IDs.Num()-1)];
-	const FCardAbility ability=CallingCard->mAbilities[AbilityIndex];
+	const FCardAbility ability=CallingCard->GetCardData()->Abilities[AbilityIndex];
 	int32 loopCount=1;
 	
 	if (ability.AffectingPlayer==ECardPlayers::SelfAndOpponent)
@@ -258,7 +258,7 @@ void UCardAbilityBFL::PickupCardFromGraveyard(ACard3D* CallingCard, int32 Abilit
 	const int32 playerID=UControllerBFL::GetControllerIDs(owningController,IDs);
 	IDs.Remove(CallingCard->GetOwningPlayerID());
 	const int32 randOpponentID=IDs[FMath::RandRange(0,IDs.Num()-1)];
-	const FCardAbility ability=CallingCard->mAbilities[AbilityIndex];
+	const FCardAbility ability=CallingCard->GetCardData()->Abilities[AbilityIndex];
 	int32 playerIndex=0;
 	
 	switch (ability.AffectingPlayer)
@@ -350,7 +350,7 @@ void UCardAbilityBFL::ChangePlayedCardOwner(ACard3D* CallingCard, int32 AbilityI
 	const int32 playerID=UControllerBFL::GetControllerIDs(owningController,IDs);
 	IDs.Remove(CallingCard->GetOwningPlayerID());
 	const int32 randOpponentID=IDs[FMath::RandRange(0,IDs.Num()-1)];
-	const FCardAbility ability=CallingCard->mAbilities[AbilityIndex];
+	const FCardAbility ability=CallingCard->GetCardData()->Abilities[AbilityIndex];
 	int32 loopCount=1;
 	
 	if (ability.AffectingPlayer==ECardPlayers::SelfAndOpponent)

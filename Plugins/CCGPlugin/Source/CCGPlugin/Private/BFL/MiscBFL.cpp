@@ -74,7 +74,7 @@ int32 UMiscBFL::ReadInteractingCardDataAttack(ACard3D* ReadCard)
 	{
 		return 0;
 	}
-	return ReadCard->GetAttack();
+	return ReadCard->GetCardData()->Attack.Damage;
 }
 
 FTransform UMiscBFL::MouseDistanceInWorldSpace(ACCGPlayerController* PlayerController, double Distance)

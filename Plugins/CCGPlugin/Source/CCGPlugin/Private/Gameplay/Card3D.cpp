@@ -2,12 +2,20 @@
 
 #include "Gameplay/Card3D.h"
 
+#include "BFL/CardAbilityBFL.h"
+#include "BFL/CCGBFL.h"
+#include "BFL/DeckBFL.h"
+#include "BFL/EffectBFL.h"
+#include "BFL/MiscBFL.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/BoxComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "GameInstance/CCGameInstance.h"
+#include "Gameplay/CardPlacement.h"
+#include "Gameplay/Graveyard.h"
 #include "GameState/CCGState.h"
 #include "Interface/CardPreviewInterface.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "PlayerController/CCGPlayerController.h"
 
@@ -18,28 +26,18 @@ ACard3D::ACard3D()
 , mGoalRotation()
 , mHomeRotation()
 , mCardMovementState(E3DCardMovementState::Placing)
-, mMaxDescCharacterLineLength(43)
 , mOwningPlayerID(0)
 , mCardID(0)
 , mInterpSpeed(15.f)
 , mErrorTolerance(0.001f)
-, mCardPreviewScale(0.7f)
 , bIsPlaced(false)
 , bIsSelected(false)
 , bIsAttacking(true)
 , bInGraveyard(false)
-, bEnableLifeExpectancy(false)
 , bCardActive(false)
-, mType(ECardType::Creature)
 , mCardSet(ECardSet::Empty)
-, mAttack(0)
-, mHealth(0)
-, mManaCostPlacement(0)
 , mTurnPoint(1)
-, mLifeExpectancy(0)
 , mTurnsAlive(0)
-, bCanAttackPlayer(false)
-, bCanAttackCard(false)
 , bPreviewEnabled(false)
 , bIsAbilityActive(true)
 {
@@ -94,26 +92,13 @@ void ACard3D::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLif
 	DOREPLIFETIME(ThisClass,mOwningPlayerID)
 	DOREPLIFETIME(ThisClass,bIsPlaced)
 	DOREPLIFETIME(ThisClass,bInGraveyard)
-	DOREPLIFETIME(ThisClass,bEnableLifeExpectancy)
 	DOREPLIFETIME(ThisClass,bCardActive)
 	
 	DOREPLIFETIME(ThisClass,mCardData)
 	DOREPLIFETIME(ThisClass,mCardDataTableName)
-	DOREPLIFETIME(ThisClass,mName)
-	DOREPLIFETIME(ThisClass,mDescription)
-	DOREPLIFETIME(ThisClass,mType)
 	DOREPLIFETIME(ThisClass,mCardSet)
-	DOREPLIFETIME(ThisClass,mAttack)
-	DOREPLIFETIME(ThisClass,mHealth)
-	DOREPLIFETIME(ThisClass,mManaCostPlacement)
 	DOREPLIFETIME(ThisClass,mTurnPoint)
-	DOREPLIFETIME(ThisClass,mLifeExpectancy)
 	DOREPLIFETIME(ThisClass,mTurnsAlive)
-	DOREPLIFETIME(ThisClass,bCanAttackPlayer)
-	DOREPLIFETIME(ThisClass,bCanAttackCard)
-	
-	DOREPLIFETIME(ThisClass,mAbilityTriggers)
-	DOREPLIFETIME(ThisClass,mAbilityTypes)
 }
 
 void ACard3D::BeginPlay()
@@ -137,8 +122,8 @@ void ACard3D::Tick(float DeltaTime)
 		FTransform newTransform=GetActorTransform();
 		bool bLocArrived;
 		bool bRotArrived;
-		newTransform.SetLocation(InterpSelfToLocation(bLocArrived));
-		newTransform.SetRotation(InterpSelfToRotation(bRotArrived).Quaternion());
+		newTransform.SetLocation(InterpSelfToLocation(DeltaTime,bLocArrived));
+		newTransform.SetRotation(InterpSelfToRotation(DeltaTime,bRotArrived).Quaternion());
 		if (bLocArrived&&bRotArrived)
 		{
 			ArrivedAtDestination();
@@ -153,8 +138,8 @@ void ACard3D::TakesDamage_Implementation(ACard3D* DealingCard, int32 DamageAttac
 		return;
 	}
 	mDamageDealingCard=DealingCard;
-	mAttack=FMath::Clamp(mAttack-DamageAttack,0,100);
-	mHealth=FMath::Clamp(mHealth-DamageHealth,0,100);
+	mCardData.Attack.Damage=FMath::Clamp(mCardData.Attack.Damage-DamageAttack,0,100);
+	mCardData.Health.Health=FMath::Clamp(mCardData.Health.Health-DamageHealth,0,100);
 	Multicast_DamageVisual();
 	Multicast_SpawnEffect(ECardEffects::DecreasedHealth);
 	if (!ValidateAbility())
@@ -162,7 +147,7 @@ void ACard3D::TakesDamage_Implementation(ACard3D* DealingCard, int32 DamageAttac
 		return;
 	}
 	RunActiveAbility(EAbilityTrigger::TakesDamage);
-	if (mHealth<=0)
+	if (mCardData.Health.Health<=0)
 	{
 		bInGraveyard=true;
 		MoveCardToGraveyard();
@@ -180,7 +165,7 @@ void ACard3D::ShowPreviewCard()
 	}
 	if (mViewCardPreview->Implements<UCardPreviewInterface>())
 	{
-		float scale=mCardPreviewScale;
+		float scale=CCG_Default::CardPreviewScale;
 		if (mGameInstance->IsMobilePlatform())
 		{
 			scale*=1.5f;
@@ -211,10 +196,11 @@ void ACard3D::OnEndActivePlayerTurn_Implementation()
 		return;
 	}
 	bCardActive=true;
-	++mTurnPoint;
-	if (bEnableLifeExpectancy
+	++mTurnsAlive;
+	--mCardData.Health.LifeExpectancy;
+	if (mCardData.Health.LifeExpectancy>0
 		&&!bInGraveyard
-		&&mTurnsAlive>=mLifeExpectancy)
+		&&mTurnsAlive>=mCardData.Health.LifeExpectancy)
 	{
 		RunActiveAbility(EAbilityTrigger::DeathByLifeExpectancy);
 		MoveCardToGraveyard();
@@ -229,35 +215,12 @@ void ACard3D::OnEndActivePlayerTurn_Implementation()
 void ACard3D::OnRep_Stat()
 {
 	Multicast_UpdateVisualStats();
-	if (HasAuthority())
-	{
-		if(bIsPlaced&&!bInGraveyard)
-		{
-			SaveCardStateToStruct();
-		}
-	}
-}
-
-void ACard3D::OnRep_TurnsAlive()
-{
-	if (HasAuthority())
-	{
-		if(bIsPlaced&&!bInGraveyard)
-		{
-			SaveCardStateToStruct();
-		}
-	}
+	mCardTypeText->SetText(UEnum::GetDisplayValueAsText(mCardData.Type));
 }
 
 void ACard3D::OnRep_bCardActive()
 {
 	Multicast_UpdateCardVisual(bCardActive);
-}
-
-// ReSharper disable once CppMemberFunctionMayBeConst
-void ACard3D::OnRep_CardType()
-{
-	mCardTypeText->SetText(UEnum::GetDisplayValueAsText(mType));
 }
 
 void ACard3D::OnCardBeginOverlap(AActor* TouchedActor)
@@ -309,6 +272,33 @@ void ACard3D::ShowPreviewCardTimer()
 	}
 }
 
+void ACard3D::StartDamageCardFlash()
+{
+	mCardBaseMesh->SetVectorParameterValueOnMaterials(CCG_Mat_Param::Tint,FVector(FLinearColor::Red));
+	mCardBaseMesh->SetScalarParameterValueOnMaterials(CCG_Mat_Param::Brightness,1.5f);
+
+	FTimerDelegate tempTimerDel;
+	FTimerHandle tempTH;
+	tempTimerDel.BindUFunction(this, FName("ChangeTurnStateVisual"), ETurnState::UpdateCurrentState);
+	GetWorld()->GetTimerManager().SetTimer(tempTH, tempTimerDel, 0.3f, false);
+}
+
+void ACard3D::StartAbilityCardFlash()
+{
+	mCardBaseMesh->SetVectorParameterValueOnMaterials(CCG_Mat_Param::Tint,FVector(FLinearColor::Blue));
+	mCardBaseMesh->SetScalarParameterValueOnMaterials(CCG_Mat_Param::Brightness,2.f);
+
+	FTimerDelegate tempTimerDel;
+	FTimerHandle tempTH;
+	tempTimerDel.BindUFunction(this, FName("ChangeTurnStateVisual"), ETurnState::UpdateCurrentState);
+	GetWorld()->GetTimerManager().SetTimer(tempTH, tempTimerDel, 0.3f, false);
+}
+
+void ACard3D::RemoveCardActor()
+{
+	Destroy();
+}
+
 void ACard3D::ChangeTurnStateVisual(ETurnState CardGameState) const
 {
 	switch (CardGameState)
@@ -322,6 +312,8 @@ void ACard3D::ChangeTurnStateVisual(ETurnState CardGameState) const
 		mCardBaseMesh->SetScalarParameterValueOnMaterials(CCG_Mat_Param::Brightness,1.3f);
 		break;
 	case ETurnState::UpdateCurrentState:
+		mCardBaseMesh->SetVectorParameterValueOnMaterials(CCG_Mat_Param::Tint,FVector(FLinearColor::White));
+		mCardBaseMesh->SetScalarParameterValueOnMaterials(CCG_Mat_Param::Brightness,1.f);
 		break;
 	default: ;
 	}
@@ -340,32 +332,23 @@ void ACard3D::RemoveMouseOverPreview()
 	}
 }
 
-void ACard3D::SaveCardStateToStruct()
-{
-	mCardData.Attack.Damage=mAttack;
-	mCardData.Health.Health=mHealth;
-	mCardData.Health.LifeExpectancy=mLifeExpectancy-mTurnsAlive;
-	mCardData.PlacementSetting.ManaCost=mManaCostPlacement;
-}
-
 bool ACard3D::ValidateAbility() const
 {
-	return !mAbilityTypes.IsEmpty();
+	return !mCardData.Abilities.IsEmpty();
 }
 
 bool ACard3D::RunActiveAbility(EAbilityTrigger AbilityTrigger)
 {
 	if (!HasAuthority()
-		||!mAbilityTriggers.Contains(AbilityTrigger)
-		||(!bIsAbilityActive&&!(mType==ECardType::Spell||mType==ECardType::Booster)))
+		||(!bIsAbilityActive&&!(mCardData.Type==ECardType::Spell||mCardData.Type==ECardType::Booster)))
 	{
 		return false;
 	}
 	
 	int32 index=0;
-	for (const auto& ability : mAbilityTriggers)
+	for (const auto& ability : mCardData.Abilities)
 	{
-		if (ability==AbilityTrigger)
+		if (ability.Trigger==AbilityTrigger)
 		{
 			if (CheckAbilityUseState(EAbilityTrigger::None,ECardUseState::SingleUse_SendToGraveyardBeforeAbility,index,false))
 			{
@@ -399,47 +382,195 @@ bool ACard3D::CheckAbilityUseState(EAbilityTrigger CheckAbilityTrigger, ECardUse
 		&&mCardData.Abilities[AbilityIndex].AfterUseState!=ECardUseState::RemainInPlay;
 }
 
-void ACard3D::SetTurnStateVisual(bool IsActive)
+void ACard3D::SetTurnStateVisual(bool IsActive) const
 {
+	if (IsActive)
+	{
+		ChangeTurnStateVisual(ETurnState::TurnActive);
+	}
+	else
+	{
+		ChangeTurnStateVisual(ETurnState::TurnInactive);
+	}
 }
 
 void ACard3D::SetCardData(FName CardTableName, ECardSet CardSet)
 {
+	mCardData=UDeckBFL::GetCardData(CardTableName,CardSet);
+	mCardDataTableName=CardTableName;
+	mCardSet=CardSet;
 }
 
 void ACard3D::SetCardVisuals()
 {
+	if (!UCCGBFL::CanExecuteCosmeticEvents(this))
+	{
+		return;
+	}
+	mCardBaseMesh->SetMaterial(1,mCardData.Visual.ImageMaterial);
+	mCardBaseMesh->SetMaterial(2,mCardData.Visual.BackMaterial);
+	mCardBaseMesh->SetMaterial(3,mCardData.Visual.FrameMaterial);
+	mNameText->SetText(mCardData.Name);
+	mCardTypeText->SetText(UEnum::GetDisplayValueAsText(mCardData.Type));
+	GenerateDescription(mCardData.Description.Description);
+	Multicast_UpdateVisualStats();
 }
 
 void ACard3D::MoveCardToGraveyard()
 {
+	if (!HasAuthority())
+	{
+		return;
+	}
+	GetWorldTimerManager().ClearTimer(mMoveToGraveyardTimer);
+	bIsPlaced=false;
+	mTurnPoint=0;
+	bInGraveyard=true;
+	mCardMovementState=E3DCardMovementState::Graveyard;
+	if (ValidateAbility())
+	{
+		RunActiveAbility(EAbilityTrigger::SentToGraveyard);
+	}
+	bIsAbilityActive=false;
+	IF_RET_VOID(mGameState);
+	AGraveyard* graveyard=mGameState->GetGraveyardReference(mOwningPlayerID);
+	if (mCardData.DeckSetting.AddToPlayerDeck
+		&&graveyard)
+	{
+		graveyard->Server_AddToGraveyard(this);
+		Multicast_MoveToGraveyard();
+	}
+	else
+	{
+		Multicast_SetCardHiddenState(true);
+		Server_RemoveCardActor();
+	}
+	mGameState->RemoveCardOnBoard(this,mOwningPlayerID);
+	if (mPlacementOwner)
+	{
+		mPlacementOwner->Server_RemoveCardFromPlacement(this);
+	}
 }
 
 void ACard3D::PlayMovementAnimation(E3DCardMovementState CardMovementState, FVector ManualGoalDestination,	FRotator ManualGoalRotation, AActor* OR_GoalActor, float ZOffset, float ErrorTolerance, float InterpSpeed)
 {
+	mCardMovementState=CardMovementState;
+	if (OR_GoalActor)
+	{
+		mGoalDestination=OR_GoalActor->GetActorLocation()+FVector(0.f,0.f,ZOffset);
+		mGoalRotation=OR_GoalActor->GetActorRotation();
+	}
+	else
+	{
+		mGoalDestination=ManualGoalDestination;
+		mGoalRotation=ManualGoalRotation;
+	}
+	mErrorTolerance=ErrorTolerance;
+	mInterpSpeed=InterpSpeed;
+	OpenGate();
 }
 
-void ACard3D::GenerateDescription(FString DescriptionText)
+void ACard3D::GenerateDescription(FString DescriptionText) const
 {
+	mDescriptionText->SetText(FText::GetEmpty());
+	int32 curStringChar=0;
+	for (int32 i=0;i<=DescriptionText.Len()/CCG_Default::MaxDescLineLength;++i)
+	{
+		FString text=mDescriptionText->Text.ToString();
+		text.Append(DescriptionText.Mid(curStringChar,CCG_Default::MaxDescLineLength));
+		text.Append("\n");
+		mDescriptionText->SetText(FText::FromString(text));
+		curStringChar+=CCG_Default::MaxDescLineLength;
+	}
 }
 
-FRotator ACard3D::InterpSelfToRotation(bool& Arrived)
+FRotator ACard3D::InterpSelfToRotation(float DeltaTime,bool& Arrived) const
 {
-	return FRotator();
+	const FRotator curRot=GetActorRotation();
+	if (mGoalRotation.Equals(curRot,mErrorTolerance/5.f))
+	{
+		return mGoalRotation;
+	}
+	return UKismetMathLibrary::RInterpTo(curRot,mGoalRotation,DeltaTime,mInterpSpeed);
 }
 
-FVector ACard3D::InterpSelfToLocation(bool& Arrived)
+FVector ACard3D::InterpSelfToLocation(float DeltaTime,bool& Arrived) const
 {
-	return FVector();
+	const FVector curLoc=GetActorLocation();
+	if (mGoalDestination.Equals(curLoc,mErrorTolerance))
+	{
+		return mGoalDestination;
+	}
+	return UKismetMathLibrary::VInterpTo(curLoc,mGoalDestination,DeltaTime,mInterpSpeed);
 }
 
 bool ACard3D::RunCardAbility(int32 AbilityIndex)
 {
-	return false;
+	if (!HasAuthority())
+	{
+		return false;
+	}
+	switch (mCardData.Abilities[AbilityIndex].Type)
+	{
+	case EAbilityType::None:
+		UMiscBFL::CreateScreenDisplayMessage(this,CCG_MSG::NoAbility,FLinearColor::Red,2.f);
+		break;
+	case EAbilityType::DrawCard:
+		UCardAbilityBFL::DrawCard(this,AbilityIndex);
+		break;
+	case EAbilityType::IncreaseAttack:
+		UCardAbilityBFL::IncreaseAttack(this,AbilityIndex);
+		break;
+	case EAbilityType::Clone:
+		UCardAbilityBFL::CloneCard(this,AbilityIndex);
+		break;
+	case EAbilityType::IncreasePlayerHealth:
+		UCardAbilityBFL::IncreasePlayerHealth(this,AbilityIndex);
+		break;
+	case EAbilityType::RetaliationDamage:
+		UCardAbilityBFL::DealRetaliationDamage(this,AbilityIndex);
+		break;
+	case EAbilityType::DamageAllCardsOnBoard:
+		UCardAbilityBFL::DamageAllCardsOnBoard(this,AbilityIndex);
+		break;
+	case EAbilityType::SpawnRandomCardFromDeck:
+		UCardAbilityBFL::SpawnRandomCardFromDeck(this,AbilityIndex);
+		break;
+	case EAbilityType::GiveTurnPointsToAllActiveCards:
+		UCardAbilityBFL::GiveTurnPointsToAllActiveCards(this,AbilityIndex);
+		break;
+	case EAbilityType::IncreaseTurnPoints:
+		UCardAbilityBFL::IncreaseTurnPoints(this,AbilityIndex);
+		break;
+	case EAbilityType::DiscardCardsInHand:
+		UCardAbilityBFL::DiscardRandomCardFromHand(this,AbilityIndex);
+		break;
+	case EAbilityType::PickupFirstCreatureInTheGraveyard_ToBoard:
+		UCardAbilityBFL::PickupCardFromGraveyard(this,AbilityIndex,true,ECardType::Creature);
+		break;
+	case EAbilityType::PickupFirstCreatureInTheGraveyard_ToHand:
+		UCardAbilityBFL::PickupCardFromGraveyard(this,AbilityIndex,false,ECardType::None);
+		break;
+	case EAbilityType::PossessOpponentsCard:
+		UCardAbilityBFL::ChangePlayedCardOwner(this,AbilityIndex);
+		break;
+	case EAbilityType::SwapCardsInHand:
+		UCardAbilityBFL::ChangeInHandCardOwner(this,AbilityIndex);
+		break;
+	default: ;
+	}
+	return true;
 }
 
 void ACard3D::SpawnEffect(ECardEffects CardEffect)
 {
+	if (!UCCGBFL::CanExecuteCosmeticEvents(this))
+	{
+		return;
+	}
+	USoundBase* sound;
+	UParticleSystem* particle=UEffectBFL::GetCardEffectForState(CardEffect,mCardData,0,sound);
+	UEffectBFL::SpawnParticleAndSoundEffect(this,particle,FVector::ZeroVector,this,FVector::OneVector,true,sound);
 }
 
 void ACard3D::OpenGate()
@@ -454,10 +585,49 @@ void ACard3D::CloseGate()
 
 void ACard3D::ArrivedAtDestination()
 {
+	switch (mCardMovementState)
+	{
+	case E3DCardMovementState::Placing:
+		break;
+	case E3DCardMovementState::MoveToHomeDestination:
+		if (!CheckAbilityUseState(EAbilityTrigger::OnDrop,ECardUseState::RemainInPlay,0,true))
+		{
+			mCardBaseMesh->SetCollisionEnabled(ECollisionEnabled::Type::QueryOnly);
+		}
+		CloseGate();
+		SpawnEffect(ECardEffects::OnCardPlaced);
+		if (ValidateAbility())
+		{
+			RunActiveAbility(EAbilityTrigger::OnDrop);
+		}
+		break;
+	case E3DCardMovementState::MovingToDestination:
+		break;
+	case E3DCardMovementState::PlacedOnBoard:
+		break;
+	case E3DCardMovementState::Attacking:
+		bIsAttacking=false;
+		Multicast_SpawnEffect(ECardEffects::OnAttack);
+		bCardActive=mTurnPoint>0;
+		PlayMovementAnimation(E3DCardMovementState::MoveToHomeDestination,mGoalDestination,mGoalRotation,nullptr,50.f,5.f,12.f);
+		break;
+	case E3DCardMovementState::Selected:
+		break;
+	case E3DCardMovementState::Graveyard:
+		CloseGate();
+		if (mPlacementOwner)
+		{
+			mPlacementOwner->GetGraveyard()->Multicast_AddToGraveyardVisual();
+		}
+		break;
+	default: ;
+	}
 }
 
 void ACard3D::SetClientSideData(FName CardTableName, ECardSet CardRace)
 {
+	SetCardData(CardTableName,CardRace);
+	SetCardVisuals();
 }
 
 void ACard3D::Selected(int32 SelectingPlayerID)
@@ -517,56 +687,124 @@ void ACard3D::DisableMobileCardPreview()
 
 void ACard3D::Multicast_UpdateCardVisual_Implementation(bool IsVisual)
 {
+	SetTurnStateVisual(IsVisual);
 }
 
 void ACard3D::Multicast_UpdateVisualStats_Implementation()
 {
+	mAttackText->SetText(FText::AsNumber(mCardData.Attack.Damage));
+	mHealthText->SetText(FText::AsNumber(mCardData.Health.Health));
+	mManaCostText->SetText(FText::AsNumber(mCardData.PlacementSetting.ManaCost));
 }
 
 void ACard3D::Multicast_SpawnEffect_Implementation(ECardEffects CardEffect)
 {
+	SpawnEffect(CardEffect);
 }
 
 void ACard3D::Multicast_SetCardHiddenState_Implementation(bool IsHidden)
 {
+	SetActorHiddenInGame(IsHidden);
+	mCardBaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void ACard3D::Multicast_PlaceCardOnBoard_Implementation(const FTransform& Destination)
 {
+	mHomeDestination=Destination.GetLocation();
+	const FRotator playerRot=UMiscBFL::GetWorldRotationForPlayer(this,FRotator::ZeroRotator);
+	if (!bIsPlaced)
+	{
+		bIsPlaced=true;
+		SetActorRotation(playerRot);
+		//그림자 쉐이더 활성화
+	}
+	mHomeRotation=playerRot+Destination.GetRotation().Rotator();
+	PlayMovementAnimation(E3DCardMovementState::MoveToHomeDestination,mHomeDestination,mHomeRotation,nullptr,50.f,5.f,12.f);
 }
 
-void ACard3D::Multicast_Attacking_Implementation(AActor* board_player)
+void ACard3D::Multicast_Attacking_Implementation(AActor* Attacking)
 {
+	if (HasAuthority()
+		&&!UCCGBFL::CanExecuteCosmeticEvents(this))
+	{
+		return;
+	}
+	bIsAttacking=true;
+	mCardBaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	PlayMovementAnimation(E3DCardMovementState::Attacking,FVector::ZeroVector,FRotator::ZeroRotator,Attacking,50.f,50.f,12.f);
 }
 
 void ACard3D::Multicast_MoveToGraveyard_Implementation()
 {
+	if (!UCCGBFL::CanExecuteCosmeticEvents(this))
+	{
+		return;
+	}
+	Deselected();
+	SetTurnStateVisual(true);
+	RemoveMouseOverPreview();
+	mCardBaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	//그림자 쉐이더 끄기
+	IF_RET_VOID(mGameState);
+	const AGraveyard* graveyard=mGameState->GetGraveyardReference(mOwningPlayerID);
+	IF_RET_VOID(graveyard);
+	PlayMovementAnimation(E3DCardMovementState::Graveyard,graveyard->GetCardInGraveyardLoc(0),graveyard->GetActorRotation(),nullptr,50.f,2.5f,12.f);
 }
 
 void ACard3D::Multicast_ForceMoveCardDirectlyToGraveyard_Implementation(AGraveyard* Graveyard)
 {
+	const FRotator playerRot=UMiscBFL::GetWorldRotationForPlayer(this,FRotator::ZeroRotator);
+	SetActorRotation(playerRot);
+	//그림자 쉐이더 설정
+	IF_RET_VOID(Graveyard);
+	PlayMovementAnimation(E3DCardMovementState::Graveyard,Graveyard->GetCardInGraveyardLoc(-1),Graveyard->GetActorRotation(),nullptr,50.f,2.5f,12.f);
 }
 
 void ACard3D::Multicast_SetCardVisuals_Implementation()
 {
+	SetCardVisuals();
 }
 
 void ACard3D::Multicast_DamageVisual_Implementation()
 {
+	ChangeTurnStateVisual(ETurnState::UpdateCurrentState);
+
+	FTimerHandle tempTH;
+	GetWorldTimerManager().SetTimer(tempTH,this,&ThisClass::StartDamageCardFlash,0.1f);
 }
 
 void ACard3D::Multicast_AbilityVisual_Implementation()
 {
+	ChangeTurnStateVisual(ETurnState::UpdateCurrentState);
+
+	FTimerHandle tempTH;
+	GetWorldTimerManager().SetTimer(tempTH,this,&ThisClass::StartAbilityCardFlash,0.1f);
 }
 
 void ACard3D::Server_SetCardData_Implementation(const FName& CardTableName, ECardSet CardRace)
 {
+	SetCardData(CardTableName,CardRace);
+	Multicast_SetCardVisuals();
 }
 
 void ACard3D::Server_ActivateAbility_Implementation(int32 AbilityIndex)
 {
+	if (!HasAuthority())
+	{
+		return;
+	}
+	Multicast_AbilityVisual();
+	Multicast_SpawnEffect(ECardEffects::OnAbilityUsed);
+	if (RunCardAbility(AbilityIndex)
+		&&CheckAbilityUseState(EAbilityTrigger::None,ECardUseState::SingleUse_SendToGraveyardAfterAbility,AbilityIndex,false)
+		&&!mMoveToGraveyardTimer.IsValid())
+	{
+		GetWorldTimerManager().SetTimer(mMoveToGraveyardTimer,this,&ThisClass::MoveCardToGraveyard,1.f);
+	}
 }
 
 void ACard3D::Server_RemoveCardActor_Implementation()
 {
+	FTimerHandle tempTH;
+	GetWorld()->GetTimerManager().SetTimer(tempTH, this,&ACard3D::RemoveCardActor, 0.5f, false);
 }

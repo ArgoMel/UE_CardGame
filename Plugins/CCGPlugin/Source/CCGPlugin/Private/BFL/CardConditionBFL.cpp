@@ -108,7 +108,7 @@ bool UCardConditionBFL::ConditionIfPlacedOnOwnedPlacement(int32 PlayerID, ACard3
 bool UCardConditionBFL::ConditionIfReceivingCardType(ACard3D* ReceivingCard, ECardType ReceivingCardType)
 {
 	IF_RET_BOOL(ReceivingCard);
-	return ReceivingCard->GetCardType()==ReceivingCardType;
+	return ReceivingCard->GetCardData()->Type==ReceivingCardType;
 }
 
 bool UCardConditionBFL::ConditionIsNotOwningPlayer(int32 PlayerID, ACard3D* ReceivingCard)

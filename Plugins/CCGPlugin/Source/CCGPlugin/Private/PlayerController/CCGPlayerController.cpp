@@ -381,7 +381,7 @@ void ACCGPlayerController::OnRep_TurnState()
 	Client_UpdateGameUI(false);
 }
 
-// ReSharper disable once CppUE4BlueprintCallableFunctionMayBeConst
+// ReSharper disable once CppMemberFunctionMayBeConst
 void ACCGPlayerController::OnRep_RecentOpponentIndex()
 {
 	IF_RET_VOID(mOpponentUI);
@@ -714,7 +714,7 @@ void ACCGPlayerController::DetectCardInteraction()
 				ClearCardInteractionState();
 				mCardPlayerState=ECardPlayerState::PendingAction;
 			}
-			else if (mTalkingCard->CanAttackCard())
+			else if (mTalkingCard->GetCardData()->Attack.CanAttackCards)
 			{
 				mReceivingCard=mHitCard;
 				mReceivingCard->Selected(mPlayerState->GetCardGamePlayerId());
@@ -781,7 +781,7 @@ void ACCGPlayerController::DetectInteractionOnMove()
 	{
 		IF_RET_VOID(mTalkingCard);
 		IF_RET_VOID(mPlayerState);
-		if (mTalkingCard->CanAttackCard()
+		if (mTalkingCard->GetCardData()->Attack.CanAttackCards
 			&&mHitCard!=mReceivingCard)
 		{
 			mReceivingCard->Deselected();
@@ -797,7 +797,7 @@ void ACCGPlayerController::DetectInteractionOnMove()
 	else if (ABoardPlayer* hitPlayer=Cast<ABoardPlayer>(result.GetActor()))
 	{
 		IF_RET_VOID(mTalkingCard);
-		if (mTalkingCard->CanAttackPlayer())
+		if (mTalkingCard->GetCardData()->Attack.CanAttackPlayer)
 		{
 			mReceivingPlayer=hitPlayer;
 		}
@@ -969,20 +969,6 @@ FString ACCGPlayerController::LoadClientDeck(TArray<FName>& Deck) const
 void ACCGPlayerController::ShufflePlayerDeck(TArray<FName>& TargetArray) const
 {
 	UCCGBFL::ShuffleArray(TargetArray);
-}
-
-void ACCGPlayerController::NotifyCardTurnActive() const
-{
-	IF_RET_VOID(mGameState);
-	IF_RET_VOID(mPlayerState);
-	mGameState->BeginPlayerTurn(mPlayerState->GetCardGamePlayerId());
-}
-
-void ACCGPlayerController::NotifyCardsEndTurn() const
-{
-	IF_RET_VOID(mGameState);
-	IF_RET_VOID(mPlayerState);
-	mGameState->EndOfPlayerTurn(mPlayerState->GetCardGamePlayerId());
 }
 
 void ACCGPlayerController::DragCanceled()

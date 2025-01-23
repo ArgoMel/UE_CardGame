@@ -117,10 +117,10 @@ bool UCardInteractionBFL::ValidateCardInteraction(ACard3D* TalkingCard, ACard3D*
 	IF_RET_BOOL(ReceivingCard);
 	
 	return TalkingCard->GetTurnPoint()>0
-	&&TalkingCard->GetAttack()>0
+	&&TalkingCard->GetCardData()->Attack.Damage>0
 	&&!TalkingCard->IsInGraveyard()
 	&&TalkingCard->GetCardData()->Attack.CanAttackCards
-	&&ReceivingCard->GetHealth()>0
+	&&ReceivingCard->GetCardData()->Health.Health>0
 	&&!ReceivingCard->IsInGraveyard()
 	&&ValidateCardInteractionConditions(TalkingCard,ReceivingCard,false,CallingCardConditionFailure)
 	&&ValidateCardInteractionConditions(TalkingCard,ReceivingCard,true,TalkingCardConditionFailure);
@@ -133,7 +133,7 @@ bool UCardInteractionBFL::ValidatePlayerInteraction(ACard3D* TalkingCard, ABoard
 	FPlayerStat playerStat;
 	UControllerBFL::GetControllersStateStat(TalkingCard,ReceivingBoardPlayer->GetPlayerIndex(),playerStat);
 	return TalkingCard->GetTurnPoint()>0
-	&&TalkingCard->GetAttack()>0
+	&&TalkingCard->GetCardData()->Attack.Damage>0
 	&&!TalkingCard->IsInGraveyard()
 	&&TalkingCard->GetCardData()->Attack.CanAttackPlayer
 	&&playerStat.Health>=0

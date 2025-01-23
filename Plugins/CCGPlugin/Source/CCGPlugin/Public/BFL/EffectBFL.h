@@ -14,7 +14,7 @@ class CCGPLUGIN_API UEffectBFL : public UBlueprintFunctionLibrary
 public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintPure,DisplayName="Get Card Effects for State")
-	static UParticleSystem* GetCardEffectForState(ECardEffects Effect, FCard CardStruct, int32 WildcardIndex, USoundCue*& SoundCue);
+	static UParticleSystem* GetCardEffectForState(ECardEffects Effect, FCard CardStruct, int32 WildcardIndex, USoundBase*& SoundCue);
 
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable,DisplayName="Spawn Particle and Sound Effects")

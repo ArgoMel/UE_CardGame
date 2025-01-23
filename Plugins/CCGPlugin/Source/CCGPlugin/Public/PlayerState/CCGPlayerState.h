@@ -62,10 +62,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdatePlayersCardStates(int32 CardsInHand, int32 CardsInDeck, int32 ActiveCards);
 
-	/** Please add a function description */
-	UFUNCTION(BlueprintCallable)
-	void SetMana(int32 Mana);
-
 	UFUNCTION(Server,Reliable)
 	void Server_NotifyPlayerStateChange();
 

@@ -274,13 +274,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Deck / Hand  Functions")
 	void ShufflePlayerDeck(TArray<FName>& TargetArray) const;
 	
-	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, Category="Game")
-	void NotifyCardTurnActive() const;
-	/** Please add a function description */
-	UFUNCTION(BlueprintCallable, Category="Game")
-	void NotifyCardsEndTurn() const;
-	
 	UFUNCTION(BlueprintCallable,Category="Event")
 	void DragCanceled();
 

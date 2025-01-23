@@ -107,16 +107,6 @@ void ACCGPlayerState::UpdatePlayersCardStates(int32 CardsInHand, int32 CardsInDe
 	}
 }
 
-void ACCGPlayerState::SetMana(int32 Mana)
-{
-	if (HasAuthority())
-	{
-		mPlayerStat.Mana=Mana;
-		mPlayerStat.ManaMax=Mana;
-		UpdateUI();
-	}
-}
-
 void ACCGPlayerState::Server_NotifyPlayerStateChange_Implementation()
 {
 	IF_RET_VOID(mGameMode);

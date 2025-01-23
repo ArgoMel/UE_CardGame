@@ -79,7 +79,7 @@ void UCardBFL::FilterCardsWithTurnPoints(TArray<ACard3D*>& CardArray, TArray<ECa
 	for (auto& card : CardArray)
 	{
 		if (card->GetTurnPoint()>0&&
-			ValidCardTypes.Contains(card->GetCardType()))
+			ValidCardTypes.Contains(card->GetCardData()->Type))
 		{
 			ReturnCardArray.Add(card);
 		}

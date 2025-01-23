@@ -5,7 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 
-UParticleSystem* UEffectBFL::GetCardEffectForState(ECardEffects Effect, FCard CardStruct, int32 WildcardIndex, USoundCue*& SoundCue)
+UParticleSystem* UEffectBFL::GetCardEffectForState(ECardEffects Effect, FCard CardStruct, int32 WildcardIndex, USoundBase*& SoundCue)
 {
 	switch (Effect)
 	{
