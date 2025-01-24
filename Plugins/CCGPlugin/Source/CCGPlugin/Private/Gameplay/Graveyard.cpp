@@ -17,7 +17,7 @@ AGraveyard::AGraveyard()
 : mPlayerIndex(0)
 {
 	PrimaryActorTick.bCanEverTick = false;
-	SetReplicates(true);
+	bReplicates=true;
 	SetNetUpdateFrequency(50.f);
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));

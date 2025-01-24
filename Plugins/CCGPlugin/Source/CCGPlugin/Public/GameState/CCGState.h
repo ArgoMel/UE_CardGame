@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Common/CCGEnum.h"
 #include "Common/CCGStruct.h"
-#include "GameFramework/GameStateBase.h"
+#include "GameFramework/GameState.h"
 #include "CCGState.generated.h"
 
 class ACCGMode;
@@ -15,7 +15,7 @@ struct FPlayerBoard;
 class ACardPlacement;
 
 UCLASS()
-class CCGPLUGIN_API ACCGState : public AGameStateBase
+class CCGPLUGIN_API ACCGState : public AGameState
 {
 	GENERATED_BODY()
 public:
@@ -127,9 +127,9 @@ public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Gameplay")
 	void BeginPlayerTurn(int32 PlayerID);
-
-	/** Please add a function description */
+	
 	UFUNCTION(BlueprintCallable, Category="Recorded Game Data")
+	// ReSharper disable once CppUEBlueprintCallableFunctionUnused
 	void RecordGameStateSnapshot();
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable, Category="Recorded Game Data")

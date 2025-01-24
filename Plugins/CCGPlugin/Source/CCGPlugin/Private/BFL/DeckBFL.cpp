@@ -23,20 +23,24 @@ void UDeckBFL::GetChosenDeckArray(int32 Index, const TArray<UDataTable*>& Target
 
 FCard UDeckBFL::GetCardData(FName CardName, ECardSet CardSet)
 {
-	FCard card;
+	FCard* card = nullptr;
 	switch (CardSet)
 	{
 	case ECardSet::Empty:
 	case ECardSet::BasicSet:
-		UDataTableFunctionLibrary::GetDataTableRowFromName(mBasicSet,CardName,card);
+		card=mBasicSet->FindRow<FCard>(CardName,nullptr);
 		break;
 	case ECardSet::DebugCardSet:
-		UDataTableFunctionLibrary::GetDataTableRowFromName(mDebugSet,CardName,card);
+		card=mDebugSet->FindRow<FCard>(CardName,nullptr);
 		break;
 	default:
 		break;
 	}
-	return card;
+	if (card)
+	{
+		return *card;
+	}
+	return FCard();
 }
 
 int32 UDeckBFL::GetRandomCardFromDeck(AController* Controller, FName& Card)

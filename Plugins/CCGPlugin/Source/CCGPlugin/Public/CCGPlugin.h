@@ -7,6 +7,8 @@
 #include "Common/CCGConstVar.h"
 #include "Modules/ModuleManager.h"
 
+#define ECC_CardPlacement ECC_GameTraceChannel1
+
 #pragma region LOG_MESSAGE
 #define LOG_CLONE_CARD(CARDNAME,ABILITY_INT)\
 FString::printf(TEXT("%s cloned up to + %d times!"),*CARDNAME.ToString(),ABILITY_INT);

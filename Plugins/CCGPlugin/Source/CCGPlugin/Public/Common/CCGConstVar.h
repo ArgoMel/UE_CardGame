@@ -75,6 +75,11 @@ namespace CCG_Mat_Param
 	const FName OutlineColor(TEXT("OutlineColor"));
 }
 
+namespace CCG_Col_Profile
+{
+	const FName CardPlacement(TEXT("CardPlacement"));
+}
+
 UCLASS()
 class CCGPLUGIN_API UCCGConstVar : public UObject
 {

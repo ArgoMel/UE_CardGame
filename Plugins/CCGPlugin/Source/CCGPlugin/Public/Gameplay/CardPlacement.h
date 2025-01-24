@@ -22,6 +22,12 @@ protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+
+private:
+	UPROPERTY()
+	TArray<UChildActorComponent*> mChildActors;
+	UPROPERTY()
+	TArray<UStaticMeshComponent*> mDemoMesh;
 	
 protected:
 	/** Please add a variable description */
@@ -37,22 +43,22 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly, Category="Card Placement| Settings", Replicated)
 	TObjectPtr<AGraveyard> mGraveyard;
 	/** Please add a variable description */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Placement| Settings")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Card Placement| Settings")
 	ECardDirection mFillDirection;
 	/** Player which this placement belongs to. Set to '0' if both players can play cards on this placement.  */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Card Placement| Settings", Replicated)
 	int32 mPlayerIndex;
 	/** Max Number of cards allowed in the placement */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Placement| Settings")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Card Placement| Settings")
 	int32 mMaxCardsInPlacement;
 	/** The number of card widths this placement will span across */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Placement| Settings")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Card Placement| Settings")
 	float mPlacementWidth;
 	/** Card spacing determining the minimum spacing between each of the cards. */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Placement| Settings")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Card Placement| Settings")
 	float mCardSpacing;
 	/** Card width determines the overall width of each individual card. It is used to calculate the local size of the placement, and also specifies the maximum spacing cards can have between one another. */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Placement| Settings")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Card Placement| Settings")
 	float mCardWidth;
 	/** Scale the card placement or stack cards on top of one another */
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Placement| Settings")
@@ -60,7 +66,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category="Card Placement| Settings", Replicated)
 	bool bIsFull;
 	/** Dynamic spacing will dynamically change the spacing between each of the cards based on the current number of cards in the placement (Min = Card Spacing, Max = Card Width) */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Card Placement| Settings")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Card Placement| Settings")
 	bool bDynamicSpacing;
 	/** Whether the cards in the placement should dynamically position themselves within the placement bounds. */
 	UPROPERTY(BlueprintReadWrite, Category="Card Placement| Settings")
@@ -125,6 +131,9 @@ public:
 	void Server_RemoveCardFromPlacement(ACard3D* CardToClear);
 	UFUNCTION(Server,Reliable)
 	void Server_AddCardToBoardPlacement(ACard3D* CardToAdd);
+
+	UFUNCTION(BlueprintCallable,CallInEditor, Category="Editor")
+	void FindAndSetAroundPlacement();
 
 	FORCEINLINE bool IsFull() const { return bIsFull; }
 	FORCEINLINE ACardPlacement* GetPlacementLeft() const { return mPlacementLeft; }

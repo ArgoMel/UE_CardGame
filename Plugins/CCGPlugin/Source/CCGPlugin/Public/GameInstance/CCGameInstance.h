@@ -59,14 +59,11 @@ protected:
 	bool MoveToGameState(ECardGameState InState);
 
 public:
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable,Category="Event")
 	void ShowMainMenuEvent();
-	void ShowMainMenuEvent_Implementation();
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable,Category="Event")
 	void ShowLoadingScreen();
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable,Category="Event")
 	void HostGame(EArenaList SelectedArena);
 	
 	void JoinGameSession(const FOnlineSessionSearchResult& Result);

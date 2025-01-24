@@ -6,8 +6,6 @@
 #include "CCGPlugin.h"
 #include "BFL/CCGBFL.h"
 #include "BFL/EffectBFL.h"
-#include "Components/ArrowComponent.h"
-#include "Components/BillboardComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "Components/TimelineComponent.h"
@@ -15,13 +13,12 @@
 #include "Net/UnrealNetwork.h"
 #include "PlayerController/CCGPlayerController.h"
 
-// Sets default values
 ABoardPlayer::ABoardPlayer()
 : mPlayerIndex(0)
 , mPlayerHealth(0)
 {
 	PrimaryActorTick.bCanEverTick = true;
-	SetReplicates(true);
+	bReplicates=true;
 	SetNetUpdateFrequency(20.f);
 	
 	mParticles.Init(nullptr,static_cast<int32>(EBoardPlayerEffects::Max));

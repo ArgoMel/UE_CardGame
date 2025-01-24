@@ -164,55 +164,6 @@ float UArrayFilterBFL::GetManaInDeck(const TArray<FName>& Array, TArray<int32>& 
 	return UMiscBFL::CalculateFloatPrecision(average/ReturnArray.Num());
 }
 
-int32 UArrayFilterBFL::CalculateDeckStatMana(TArray<FName>& FilterArray, TArray<int32>& ManaStats)
-{
-	int32 cardAbility=0;
-	if (FilterArray.IsEmpty())
-	{
-		return cardAbility;
-	}
-	ManaStats.Init(0,CCG_Default::MaxManaCost+1);
-
-	for (const auto& name : FilterArray)
-	{
-		FCard card=UDeckBFL::GetCardData(name, ECardSet::Empty);
-		++ManaStats[card.PlacementSetting.ManaCost];
-
-		if (!card.Abilities.IsEmpty()
-			&&card.Abilities[0].Type!=EAbilityType::None)
-		{
-			++cardAbility;
-		}
-	}
-	return cardAbility;
-}
-
-int32 UArrayFilterBFL::CalculateDeckStatUnlockedCard(TArray<FName>& FilterArray, TArray<FName>& UnlockedCards)
-{
-	int32 cardAbility=0;
-	if (FilterArray.IsEmpty())
-	{
-		return cardAbility;
-	}
-	UnlockedCards.Empty();
-
-	for (const auto& name : FilterArray)
-	{
-		FCard card=UDeckBFL::GetCardData(name, ECardSet::Empty);
-		if (card.DeckSetting.Unlocked)
-		{
-			UnlockedCards.Add(name);
-		}
-
-		if (!card.Abilities.IsEmpty()
-			&&card.Abilities[0].Type!=EAbilityType::None)
-		{
-			++cardAbility;
-		}
-	}
-	return cardAbility;
-}
-
 int32 UArrayFilterBFL::CalculateDeckStatRarity(TArray<FName>& FilterArray, TArray<int32>& Rarity)
 {
 	int32 cardAbility=0;

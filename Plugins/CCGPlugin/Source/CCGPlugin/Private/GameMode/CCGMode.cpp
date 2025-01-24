@@ -28,8 +28,9 @@ void ACCGMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 	const UWorld* world = GetWorld();
-	if (!world||
-		world->GetMapName()==CCG_Level::MainMenu)
+	IF_RET_VOID(world);
+	/*agg_test_MainMenu 이런식으로 출력 */
+	if (world->GetMapName().Contains(CCG_Level::MainMenu.ToString()))
 	{
 		return;
 	}

@@ -30,14 +30,6 @@ public:
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)
 	static float GetManaInDeck(UPARAM(ref) const TArray<FName>& Array, TArray<int32>& ReturnArray);
-
-	/** Please add a function description */
-	UFUNCTION(BlueprintCallable)
-	static int32 CalculateDeckStatMana(UPARAM(ref) TArray<FName>& FilterArray, TArray<int32>& ManaStats);
-
-	/** Please add a function description */
-	UFUNCTION(BlueprintCallable)
-	static int32 CalculateDeckStatUnlockedCard(UPARAM(ref) TArray<FName>& FilterArray, TArray<FName>& UnlockedCards);
 	
 	/** Please add a function description */
 	UFUNCTION(BlueprintCallable)

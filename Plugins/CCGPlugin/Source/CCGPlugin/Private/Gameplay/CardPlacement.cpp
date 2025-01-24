@@ -2,7 +2,9 @@
 
 #include "Gameplay/CardPlacement.h"
 
+#include "CCGPlugin.h"
 #include "Components/BoxComponent.h"
+#include "Components/ChildActorComponent.h"
 #include "Gameplay/Card3D.h"
 #include "Net/UnrealNetwork.h"
 
@@ -22,7 +24,7 @@ ACardPlacement::ACardPlacement()
 , bDisplayDemoCards(false)
 {
 	PrimaryActorTick.bCanEverTick = false;
-	SetReplicates(true);
+	bReplicates=true;
 
 	for (const ECardType cardType : TEnumRange<ECardType>())
 	{
@@ -42,7 +44,7 @@ ACardPlacement::ACardPlacement()
 	mPlacementCollision->SetBoxExtent(FVector::OneVector);
 	mPlacementCollision->SetEnableGravity(false);
 	mPlacementCollision->CanCharacterStepUpOn=ECB_No;
-	mPlacementCollision->SetCollisionProfileName(TEXT("BlockAll"));
+	mPlacementCollision->SetCollisionProfileName(CCG_Col_Profile::CardPlacement);
 }
 
 void ACardPlacement::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -94,18 +96,24 @@ void ACardPlacement::OnConstruction(const FTransform& Transform)
 	}
 	mPlacementCollision->SetWorldScale3D(FVector(220.f,scaleY,5.f));
 
+	for (const auto& demoMesh : mDemoMesh)
+	{
+		demoMesh->DestroyComponent();
+	}
+	mDemoMesh.Empty();
+
 	if (bDisplayDemoCards)
 	{
 		for (int32 i=0;i<mDemoCards;++i)
 		{
-			UStaticMeshComponent* mesh = NewObject<UStaticMeshComponent>(this,TEXT("CardMesh"));
+			UStaticMeshComponent* mesh = NewObject<UStaticMeshComponent>(this);
 			mesh->RegisterComponent();
-			mesh->SetupAttachment(mPlacementCollision);
 			mesh->SetStaticMesh(mCardMesh);
 			mesh->SetHiddenInGame(true);
 			FTransform placementTransform=GetCardInPlacementLocation(i,mMaxCardsInPlacement,mDemoCards);
 			mesh->SetWorldTransform(placementTransform);
 			mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			mDemoMesh.Add(mesh);
 		}
 	}
 }
@@ -173,20 +181,27 @@ void ACardPlacement::RemoveCardFromPlacement(ACard3D* CardToClear)
 
 void ACardPlacement::CreateVisualBoardTiles()
 {
+	TArray<AActor*> actors;
+	GetAllChildActors(actors);
+	for (int32 i=0;i<actors.Num();++i)
+	{
+		actors[i]->Destroy();
+	}
+	for (const auto& child : mChildActors)
+	{
+		child->DestroyComponent();
+	}
+	mChildActors.Empty();
 	if (!bScaleMultiCardPlacement)
 	{
 		return;
 	}
+	
 	const int32 lastIndex=FMath::FloorToInt32(mPlacementWidth);
 	for (int32 i=0;i<lastIndex;++i)
 	{
 		UChildActorComponent* childActor = NewObject<UChildActorComponent>(this);
 		childActor->RegisterComponent();
-		childActor->SetupAttachment(mPlacementCollision);
-
-		const float y=mCardWidth*(i-lastIndex-1/2.f);
-		childActor->SetRelativeLocation(FVector(0.f,y,7.f));
-
 		if (lastIndex==1)
 		{
 			childActor->SetChildActorClass(mSingleTIle);
@@ -203,6 +218,11 @@ void ACardPlacement::CreateVisualBoardTiles()
 		{
 			childActor->SetChildActorClass(mCenterTile);
 		}
+
+		const float y=mCardWidth*(i-(lastIndex-1)/2.f);
+		childActor->SetWorldLocation(GetActorLocation()+GetActorRightVector()*y+GetActorUpVector()*FVector(7.f));
+		childActor->SetWorldRotation(GetActorRotation());
+		mChildActors.Add(childActor);
 	}
 }
 
@@ -230,6 +250,39 @@ float ACardPlacement::CalculateSpacingLocation(int32 Index, int32 MaxCardsInPlac
 {
 	const float placementValue=bCenterOut?CardInPlacement:MaxCardsInPlacement;
 	return (Index-(placementValue/2.f-0.5f))*Spacing;
+}
+
+void ACardPlacement::FindAndSetAroundPlacement()
+{
+	const UWorld* world=GetWorld();
+	FHitResult hitResult;
+	const FVector leftLoc=mChildActors[0]->GetRelativeLocation()+GetActorRightVector()*-mCardSpacing;
+	const FVector rightLoc=mChildActors.Last()->GetRelativeLocation()+GetActorRightVector()*mCardSpacing;
+	FCollisionShape shape;
+	shape.SetBox(FVector3f(100.f,100.f,150.f));
+	FCollisionQueryParams param;
+	param.AddIgnoredActor(this);
+	
+	if (world->SweepSingleByChannel(hitResult,leftLoc,GetActorLocation(),FQuat::Identity,ECC_CardPlacement,shape,param))
+	{
+		//DrawDebugBox(world,(leftLoc+GetActorLocation())*0.5f,shape.GetExtent(),FColor::Red,false,2.f);
+		//UE_LOG(LogTemp,Warning,TEXT("Sweep obj : %s"),*hitResult.GetActor()->GetFName().ToString());
+		mPlacementLeft=Cast<ACardPlacement>(hitResult.GetActor());
+	}
+	else
+	{
+		mPlacementLeft=nullptr;
+	}
+	if (world->SweepSingleByChannel(hitResult,rightLoc,GetActorLocation(),FQuat::Identity,ECC_CardPlacement,shape,param))
+	{
+		//DrawDebugBox(world,(rightLoc+GetActorLocation())*0.5f,shape.GetExtent(),FColor::Red,false,2.f);
+		//UE_LOG(LogTemp,Warning,TEXT("Sweep obj : %s"),*hitResult.GetActor()->GetFName().ToString());
+		mPlacementRight=Cast<ACardPlacement>(hitResult.GetActor());
+	}
+	else
+	{
+		mPlacementRight=nullptr;
+	}
 }
 
 void ACardPlacement::Server_RemoveCardFromPlacement_Implementation(ACard3D* CardToClear)

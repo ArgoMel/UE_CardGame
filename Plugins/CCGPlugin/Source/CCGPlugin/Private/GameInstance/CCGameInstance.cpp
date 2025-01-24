@@ -43,7 +43,7 @@ void UCCGameInstance::OnCreateSession(bool bWasSuccessful)
 		UWorld* world = GetWorld();
 		if (world)
 		{
-			world->ServerTravel(FString::Printf(TEXT("%s%s?listen"),*mPathToLobby,*UEnum::GetDisplayValueAsText(mArena).ToString()));
+			world->ServerTravel(FString::Printf(TEXT("/CCGPlugin/CCGToolkit/Maps/ExampleArenas/Arena_Classic.Arena_Classic/CCGToolkit/Maps/ExampleArenas/%s?listen"),*UEnum::GetDisplayValueAsText(mArena).ToString()));
 		}
 	}
 	else
@@ -115,7 +115,7 @@ bool UCCGameInstance::MoveToGameState(ECardGameState InState)
 	return true;
 }
 
-void UCCGameInstance::ShowMainMenuEvent_Implementation()
+void UCCGameInstance::ShowMainMenuEvent()
 {
 	const UWorld* world = GetWorld();
 	IF_RET_VOID(world)
@@ -140,7 +140,7 @@ void UCCGameInstance::ShowMainMenuEvent_Implementation()
 	}
 }
 
-void UCCGameInstance::ShowLoadingScreen_Implementation()
+void UCCGameInstance::ShowLoadingScreen()
 {
 	const UWorld* world = GetWorld();
 	IF_RET_VOID(world)
@@ -160,7 +160,7 @@ void UCCGameInstance::ShowLoadingScreen_Implementation()
 	}
 }
 
-void UCCGameInstance::HostGame_Implementation(EArenaList SelectedArena)
+void UCCGameInstance::HostGame(EArenaList SelectedArena)
 {
 	ShowLoadingScreen();
 	UMultiplayerSessionsSubsystem* subsystem=GetSubsystem<UMultiplayerSessionsSubsystem>();
