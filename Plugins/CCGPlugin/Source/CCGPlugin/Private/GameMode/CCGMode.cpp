@@ -138,6 +138,7 @@ void ACCGMode::FinishCountdown()
 {
 	GetWorldTimerManager().ClearTimer(mCountdownTH);
 	bGameActive=true;
+	IF_RET_VOID(mGameState);
 	mGameState->Server_OnGameStart();
 }
 

@@ -144,6 +144,6 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_NotifyEndGameState(const TArray<EEndGameResults>& array);
 
-	FORCEINLINE AController* GetCurPlayerTurn() { return mPlayerTurns[0]; }
+	AController* GetCurPlayerTurn();
 	FORCEINLINE int32 GetGameTimeSecond() const { return mGameTimeSecond; }
 };

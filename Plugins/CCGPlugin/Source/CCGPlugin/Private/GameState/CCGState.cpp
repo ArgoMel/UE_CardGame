@@ -343,3 +343,12 @@ void ACCGState::Server_NotifyEndGameState_Implementation(const TArray<EEndGameRe
 	IF_RET_VOID(gameInstance);
 	gameInstance->ShowMainMenuEvent();
 }
+
+AController* ACCGState::GetCurPlayerTurn()
+{
+	if (mPlayerTurns.IsEmpty())
+	{
+		return nullptr;
+	}
+	return mPlayerTurns[0];
+}

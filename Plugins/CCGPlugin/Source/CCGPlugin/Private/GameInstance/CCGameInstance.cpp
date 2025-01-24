@@ -43,7 +43,8 @@ void UCCGameInstance::OnCreateSession(bool bWasSuccessful)
 		UWorld* world = GetWorld();
 		if (world)
 		{
-			world->ServerTravel(FString::Printf(TEXT("/CCGPlugin/CCGToolkit/Maps/ExampleArenas/Arena_Classic.Arena_Classic/CCGToolkit/Maps/ExampleArenas/%s?listen"),*UEnum::GetDisplayValueAsText(mArena).ToString()));
+			world->ServerTravel(FString::Printf(TEXT("/CCGPlugin/CCGToolkit/Maps/ExampleArenas/%s?listen"),*UEnum::GetDisplayValueAsText(mArena).ToString()));
+			//world->ServerTravel(FString::Printf(TEXT("/CCGToolkit/Maps/ExampleArenas/%s?listen"),*UEnum::GetDisplayValueAsText(mArena).ToString()));
 		}
 	}
 	else
